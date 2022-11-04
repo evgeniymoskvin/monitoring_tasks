@@ -1,0 +1,22 @@
+{% extends  "login/base.html" %}
+
+{% block content %}
+    <div class="box">
+        <form method="post">
+            {% csrf_token %}
+            <h4 class="m-3">Авторизуйтесь</h4>
+            <div class="form-floating">
+                {{ form.username }}
+                <label for="floatingInput">Login</label>
+            </div>
+            <div class="form-floating">
+                {{ form.password }}
+                <label for="floatingPassword">Password</label>
+            </div>
+            <button class="w-100 btn btn-lg btn-primary" type="submit">Войти</button>
+
+        </form>
+
+
+    </div>
+{% endblock %}
