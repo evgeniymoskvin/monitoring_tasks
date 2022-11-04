@@ -34,7 +34,7 @@ class AddTaskView(View):
     def get(self, request):
         form = TaskForm()
         context = {'form': form,
-                   'user': request.user}
+                   'user': Employee.objects.get(user=request.user)}
         return render(request, 'todo_tasks/add_task.html', context)
 
     def post(self, request):
