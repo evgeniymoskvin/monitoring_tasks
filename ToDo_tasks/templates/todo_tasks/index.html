@@ -1,0 +1,78 @@
+{% extends "todo_tasks/base.html" %}
+
+{% block title %}
+    Главная страница
+{% endblock %}
+
+{% block content %}
+
+    <h2 class="m-3, text-center">Выданные задания</h2>
+
+    <ul class="nav nav-tabs" id="myTab" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#all_tasks" type="button"
+                    role="tab" aria-controls="home" aria-selected="true">Все задания
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#my_tasks" type="button"
+                    role="tab" aria-controls="profile" aria-selected="false">Мои задания
+            </button>
+        </li>
+    </ul>
+    <!Содержимое вкладок>
+    <!Вкладка со всеми заданиями>
+    <div class="tab-content" id="myTabContent">
+        <div class="tab-pane fade show active" id="all_tasks" role="tabpanel" aria-labelledby="home-tab">
+            <table class="table table-hover">
+                <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Номер задания</th>
+                    <th scope="col">Текст задания</th>
+                    <th scope="col">Автор задания</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for obj in data_all %}
+                    <tr>
+                        <th scope="row">{{ forloop.counter }}</th>
+                        <td><a href="{% url 'details' pk=obj.id %}"
+                               style="position: absolute; width: 100%; left: 0px; height: 1.5em;"></a>
+                            {{ obj.task_number }}</td>
+                        <td>{{ obj.text_task }}</td>
+                        <td>{{ obj.author }}</td>
+
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <!Вкладка "мои задания">
+        <div class="tab-pane fade" id="my_tasks" role="tabpanel" aria-labelledby="profile-tab">
+            <table class="table table-hover">
+                <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Номер задания</th>
+                    <th scope="col">Текст задания</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                {% for obj in data_user %}
+                    <tr href="{% url 'details' pk=obj.id %}">
+                        <th scope="row">{{ forloop.counter }}</th>
+                        <td><a href="{% url 'details' pk=obj.id %}"
+                               style="position: absolute; width: 100%; left: 0px; height: 1.5em;"></a>
+                            {{ obj.task_number }}</td>
+                        <td>{{ obj.text_task }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">...</div>
+    </div>
+
+{% endblock %}

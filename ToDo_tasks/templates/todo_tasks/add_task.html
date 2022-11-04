@@ -1,0 +1,12 @@
+{% extends "todo_tasks/base.html" %}
+
+{% block title %}
+    Добавить задание
+{% endblock %}
+
+{% block content %}
+    <form method="post">
+        {% csrf_token %}
+        {{ form.text_task }}
+    <button type="submit" class="btn btn-success" href="{% url 'add_task' %}">Добавить</button>
+{% endblock %}

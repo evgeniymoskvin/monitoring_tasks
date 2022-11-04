@@ -1,0 +1,10 @@
+{% extends "todo_tasks/base.html" %}
+
+{% block title %}
+    Подробности
+{% endblock %}
+{% block content %}
+    {{ obj.task_number }}
+    <br>
+    {{ obj.text_task }}
+{% endblock %}
