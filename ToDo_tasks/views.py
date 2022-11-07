@@ -43,7 +43,9 @@ class AddTaskView(View):
             new_post = form.save(commit=False)
             new_post.author = Employee.objects.get(user=request.user)
             new_post.department_number = new_post.author.department
-            number_task_new = TaskModel.objects.all().filter(department_number=new_post.author.department)
-            print(number_task_new.latest('task_number'))
+            last_task = TaskModel.objects.all().filter(department_number=new_post.author.department)
+            number_task_new = int(last_task.latest('task_number').task_number.split('-')[2]) + 1
+            new_post.task_number = f'ЗД-{new_post.department_number}-{number_task_new}'
+            print(new_post.task_number)
             # form.save()
             return redirect('index')

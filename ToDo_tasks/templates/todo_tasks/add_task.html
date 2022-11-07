@@ -5,8 +5,10 @@
 {% endblock %}
 
 {% block content %}
+        <h2 class="m-3, text-center">Выдать задание</h2>
     <form method="post">
         {% csrf_token %}
         {{ form.text_task }}
+        {{ form.task_type_work }}
     <button type="submit" class="btn btn-success" href="{% url 'add_task' %}">Добавить</button>
 {% endblock %}
