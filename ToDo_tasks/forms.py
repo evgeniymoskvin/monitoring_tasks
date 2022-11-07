@@ -1,5 +1,6 @@
 from .models import TaskModel
-from django.forms import ModelForm, TextInput, Textarea, CheckboxInput, Select
+from django.forms import ModelForm, TextInput, Textarea, CheckboxInput, Select, modelformset_factory
+from django.views import View
 
 class TaskForm(ModelForm):
     class Meta:
@@ -11,3 +12,6 @@ class TaskForm(ModelForm):
                    "task_type_work": Select(attrs={"class": "form-select",
                                                    "aria-label": "Вид документации"})
                    }
+
+# TaskFormSet = modelformset_factory(TaskModel, fields=("task_type_work", "text_task"), extra=1)
+

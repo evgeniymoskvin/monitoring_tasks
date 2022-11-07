@@ -84,7 +84,6 @@ class StageModel(models.Model):
 
 class TaskModel(models.Model):
     """    Таблица заданий    """
-
     class StatusTask(models.IntegerChoices):
         """        Тест тест        """
         ACTIVE = 1, _('Активно')
@@ -103,6 +102,8 @@ class TaskModel(models.Model):
     department_number = models.IntegerField("Номер отдела", choices=COMAND_CHOICES, default=000)
     task_type_work = models.IntegerField("Вид документации:", choices=TypeWorkTask.choices, default=3)
     task_order = models.ForeignKey(OrdersModel, on_delete=models.PROTECT, verbose_name="Номер заказа")
+
+
 
     def __str__(self):
         return f'{self.task_number}, {self.author}'

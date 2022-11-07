@@ -21,4 +21,5 @@ urlpatterns = [
     path('', views.IndexView.as_view(), name='index'),
     path('add_task/', views.AddTaskView.as_view(), name='add_task'),
     path('details/<int:pk>', views.DetailView.as_view(), name='details'),
+    path('get_contract/<str:contract_req>', views.GetContractView.as_view(), name='contract_req')
 ]
