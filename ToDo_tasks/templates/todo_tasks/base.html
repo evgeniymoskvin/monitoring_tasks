@@ -1,22 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    {% load static %}
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>{% block title %}{% endblock %}</title>
 
-{#    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>#}
-    <script src="https://unpkg.com/@popperjs/core@2.11.5/dist/umd/popper.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.2.0/css/bootstrap.min.css">
-    <link href="https://cdn.datatables.net/1.12.1/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="{% static 'todo_tasks/Bootstrap-5-5.1.3/css/bootstrap.css' %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'todo_tasks/DataTables-1.12.1/css/dataTables.bootstrap5.css' %}"/>
+    <script type="text/javascript" src="{% static 'todo_tasks/Bootstrap-5-5.1.3/js/bootstrap.bundle.js' %}">
 
-    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
-    <script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.12.1/js/dataTables.bootstrap5.min.js"></script>
+        {# todo переделать под статику #}
 
-{#    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>#}
-{#    <script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>#}
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/pdfmake.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/v/bs5/jq-3.6.0/jszip-2.5.0/dt-1.12.1/b-2.2.3/b-colvis-2.2.3/b-html5-2.2.3/b-print-2.2.3/sp-2.0.2/datatables.min.js"></script>
 
 </head>
 
@@ -25,25 +23,27 @@
         <ul class="nav me-auto">
             <li class="nav-item"><a href="{% url 'index' %}" class="nav-link link-dark px-2 active" aria-current="page">Главная</a>
             </li>
-{#            <li class="nav-item"><a href="{% url 'add_task' %}" class="nav-link link-dark px-2">Добавить запись</a></li>#}
-{#            <li class="nav-item"><a href="{% url 'about' %}" class="nav-link link-dark px-2">About</a></li>#}
-{#            <li class="nav-item"><a href="{% url 'api' %}" class="nav-link link-dark px-2">API</a></li>#}
+            {#            <li class="nav-item"><a href="{% url 'add_task' %}" class="nav-link link-dark px-2">Добавить запись</a></li>#}
+            {#            <li class="nav-item"><a href="{% url 'about' %}" class="nav-link link-dark px-2">About</a></li>#}
+            {#            <li class="nav-item"><a href="{% url 'api' %}" class="nav-link link-dark px-2">API</a></li>#}
         </ul>
         <ul class="nav">
-                <li class="nav-item"><a class="nav-link link-dark px-2 active">{{ user }}</a></li>
-                <div class="dropdown">
-                    <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton1"
-                            data-bs-toggle="dropdown" aria-expanded="false">
-                        Меню
-                    </button>
-                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-{#                        <li><a class="dropdown-item" href="#">Action</a></li>#}
-                        <li><a class="dropdown-item" href="{% url 'add_task' %}">Добавить задание</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="{% url 'logout' %}">Выйти</a></li>
-                    </ul>
-                </div>
+            <li class="nav-item"><a class="nav-link link-dark px-2 active">{{ user }}</a></li>
+            <div class="dropdown">
+                <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton1"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                    Меню
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                    {#                        <li><a class="dropdown-item" href="#">Action</a></li>#}
+                    <li><a class="dropdown-item" href="{% url 'add_task' %}">Добавить задание</a></li>
+                    <li>
+                        <hr class="dropdown-divider">
                     </li>
+                    <li><a class="dropdown-item" href="{% url 'logout' %}">Выйти</a></li>
+                </ul>
+            </div>
+            </li>
         </ul>
     </div>
 </nav>
