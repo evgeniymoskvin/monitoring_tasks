@@ -102,7 +102,9 @@ class TaskModel(models.Model):
     department_number = models.IntegerField("Номер отдела", choices=COMAND_CHOICES, default=000)
     task_type_work = models.IntegerField("Вид документации:", choices=TypeWorkTask.choices, default=3)
     task_order = models.ForeignKey(OrdersModel, on_delete=models.PROTECT, verbose_name="Номер заказа")
-
+    task_object = models.ForeignKey(ObjectModel, on_delete=models.PROTECT, verbose_name="Наименование объекта")
+    task_contract = models.ForeignKey(ContractModel, on_delete=models.PROTECT, verbose_name="Номер контракта")
+    task_stage = models.ForeignKey(StageModel, on_delete=models.PROTECT, verbose_name="Этап договора")
 
 
     def __str__(self):

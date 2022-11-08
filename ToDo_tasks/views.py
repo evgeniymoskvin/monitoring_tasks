@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse
 from django.views import View
-from .models import Employee, TaskModel, ContractModel, ObjectModel
+from .models import Employee, TaskModel, ContractModel, ObjectModel, StageModel
 from .forms import TaskForm
 
 class IndexView(View):
@@ -42,6 +42,9 @@ class AddTaskView(View):
 
     def post(self, request):
         form = TaskForm(request.POST)
+        # print(form)
+        # new_post = form.save(commit=False)
+        # print(new_post)
         if form.is_valid():
             new_post = form.save(commit=False)
             new_post.author = Employee.objects.get(user=request.user)
@@ -50,26 +53,35 @@ class AddTaskView(View):
             number_task_new = int(last_task.latest('task_number').task_number.split('-')[2]) + 1
             new_post.task_number = f'ЗД-{new_post.department_number}-{number_task_new}'
             print(new_post.task_number)
-            # form.save()
+            print(new_post)
+            form.save()
             return redirect('index')
         return redirect('index')
 
 
-class GetContractView(View):
-    def get(self, request, contract_req):
-        print(contract_req)
-        contracts = ContractModel.objects.filter(contract_object=contract_req).values('id', 'contract_name')
-        print(contracts)
-        print(list(contracts))
-        return JsonResponse({'data': list(contracts)})
+def load_contracts(request):
+    print("ajax contract пришел")
+    object_id = request.GET.get("object")
+    contracts = ContractModel.objects.filter(contract_object=int(object_id))
+    print(contracts)
+    for contract in contracts:
+        print(contract.id, contract.contract_name)
+    return render(request, 'todo_tasks/dropdown_update/contracts_dropdown_list_update.html', {'contracts': contracts})
 
-
-#
+def load_stages(request):
+    print("ajax load пришел")
+    contract_id = request.GET.get("contract")
+    print(type(contract_id), contract_id)
+    contract_id_name = str(contract_id).split(', ')
+    print(contract_id_name)
+    stages = StageModel.objects.filter(stage_contract=int(contract_id))
+    print(stages)
+    return render(request, 'todo_tasks/dropdown_update/stages_dropdown_list_update.html', {'stages': stages})
 # class GetStageView(View):
 #
 #     def get(self, request, contract_req):
 #         contracts = ContractModel.objects.filter(contract_object=contract_req).values('id', 'contract_name')
 #         return JsonResponse({'data': list(contracts)})
-#
+
 #
 #
