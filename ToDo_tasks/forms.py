@@ -1,5 +1,5 @@
 from .models import TaskModel, ObjectModel, ContractModel, StageModel, OrdersModel
-from django.forms import ModelForm, TextInput, Textarea, CheckboxInput, Select, modelformset_factory
+from django.forms import ModelForm, TextInput, Textarea, CheckboxInput, Select, modelformset_factory, ChoiceField
 from django.views import View
 
 
@@ -24,16 +24,19 @@ class TaskForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # self.fields['task_contract'].queryset = ContractModel.objects.none()
-        # self.fields['task_stage'].queryset = StageModel.objects.none()
+        self.fields['task_contract'].queryset = ContractModel.objects  # подгрузка значений
+        self.fields['task_stage'].queryset = StageModel.objects  # подгрузка значений
+        self.fields['task_contract'].choices = [(0, '---------')]  # исходное отображение
+        self.fields['task_stage'].choices = [(0, '---------')]  # исходное отображение
+
         print(self.data)
 
-        # if 'task_object' in self.data:
-        #     try:
-        #         object_id = int(self.data.get('task_object'))
-        #         self.fields['object_id'].queryset = ContractModel.objects.filter(contract_object=object_id)
-        #     except (ValueError, TypeError):
-        #         pass  # invalid input from the client; ignore and fallback to empty City queryset
+        if 'task_object' in self.data:
+            try:
+                object_id = int(self.data.get('task_object'))
+                self.fields['task_contract'].queryset = ContractModel.objects.filter(contract_object=object_id)
+            except (ValueError, TypeError):
+                pass  # invalid input from the client; ignore and fallback to empty City queryset
         # elif self.instance.pk:
         #     self.fields['task_contract'].queryset = self.instance
 

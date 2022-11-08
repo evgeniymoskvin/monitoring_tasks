@@ -4,6 +4,7 @@ from django.views import View
 from .models import Employee, TaskModel, ContractModel, ObjectModel, StageModel
 from .forms import TaskForm
 
+
 class IndexView(View):
     def get(self, request):
         # user_dict = user.values()
@@ -42,9 +43,6 @@ class AddTaskView(View):
 
     def post(self, request):
         form = TaskForm(request.POST)
-        # print(form)
-        # new_post = form.save(commit=False)
-        # print(new_post)
         if form.is_valid():
             new_post = form.save(commit=False)
             new_post.author = Employee.objects.get(user=request.user)
@@ -60,28 +58,18 @@ class AddTaskView(View):
 
 
 def load_contracts(request):
-    print("ajax contract пришел")
-    object_id = request.GET.get("object")
-    contracts = ContractModel.objects.filter(contract_object=int(object_id))
-    print(contracts)
-    for contract in contracts:
-        print(contract.id, contract.contract_name)
+    print("ajax contract пришел")  # Проверка, сработал ли ajax с отправкой данных
+    object_id = request.GET.get("object")  # достаем значение объекта из запроса
+    contracts = ContractModel.objects.filter(
+        contract_object=int(object_id))  # получаем все контракты для данного объекта
+    print(contracts)  # Проверка полученных контрактов
     return render(request, 'todo_tasks/dropdown_update/contracts_dropdown_list_update.html', {'contracts': contracts})
 
+
 def load_stages(request):
-    print("ajax load пришел")
+    print("ajax load пришел") # Проверка, сработал ли ajax с отправкой данных
     contract_id = request.GET.get("contract")
-    print(type(contract_id), contract_id)
-    contract_id_name = str(contract_id).split(', ')
-    print(contract_id_name)
     stages = StageModel.objects.filter(stage_contract=int(contract_id))
     print(stages)
     return render(request, 'todo_tasks/dropdown_update/stages_dropdown_list_update.html', {'stages': stages})
-# class GetStageView(View):
-#
-#     def get(self, request, contract_req):
-#         contracts = ContractModel.objects.filter(contract_object=contract_req).values('id', 'contract_name')
-#         return JsonResponse({'data': list(contracts)})
-
-#
 #

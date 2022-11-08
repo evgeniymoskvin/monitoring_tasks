@@ -11,7 +11,13 @@
     {{ form.as_table }}
     <button type="submit" class="btn btn-success" href="{% url 'add_task' %}">Добавить</button>
 
-    <script>
+
+
+
+{% endblock %}
+
+{% block js_stuff %}
+ <script>
         $("#id_task_object").change(function () {
             var url = $("#formAdd").attr("data-contracts-url");  // get the url of the `load_cities` view
             var objectId = $(this).val();  // get the selected country ID from the HTML input
@@ -43,11 +49,5 @@
 
         });
     </script>
-
-
-{% endblock %}
-
-{% block js_stuff %}
-
 {% endblock %}
 

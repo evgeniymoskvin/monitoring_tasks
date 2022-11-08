@@ -1,4 +1,4 @@
 <option value="">---------</option>
 {% for stage in stages %}
-<option value="{{ stage.id }}" selected>{{ stage.stage_name }}</option>
+<option value="{{ stage.id|safe }}" selected>{{ stage.stage_name }}</option>
 {% endfor %}
