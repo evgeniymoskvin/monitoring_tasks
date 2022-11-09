@@ -9,6 +9,7 @@
     <form id="formAdd" method="post" data-contracts-url="{% url 'ajax_load_contracts' %}" data-stages-url="{% url 'ajax_load_stages' %}">
     {% csrf_token %}
     {{ form.as_table }}
+    <br>
     <button type="submit" class="btn btn-success" href="{% url 'add_task' %}">Добавить</button>
 
 

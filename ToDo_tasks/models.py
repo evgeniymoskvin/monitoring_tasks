@@ -92,19 +92,21 @@ class TaskModel(models.Model):
 
     class TypeWorkTask(models.IntegerChoices):
         """        Выбор вида документации        """
+        WD = 0, _('Не указан')
         RD = 1, _('РД')
         PD = 2, _('ПД')
-        WD = 3, _('Не указан')
+
 
     author = models.ForeignKey(Employee, on_delete=models.PROTECT, verbose_name="Автор задания")
     text_task = models.TextField("Текст задания", max_length=5000)
     task_number = models.CharField("Номер задания", max_length=10)
     department_number = models.IntegerField("Номер отдела", choices=COMAND_CHOICES, default=000)
-    task_type_work = models.IntegerField("Вид документации:", choices=TypeWorkTask.choices, default=3)
+    task_type_work = models.IntegerField("Вид документации:", choices=TypeWorkTask.choices, default=0)
     task_order = models.ForeignKey(OrdersModel, on_delete=models.PROTECT, verbose_name="Номер заказа")
     task_object = models.ForeignKey(ObjectModel, on_delete=models.PROTECT, verbose_name="Наименование объекта")
     task_contract = models.ForeignKey(ContractModel, on_delete=models.PROTECT, verbose_name="Номер контракта")
     task_stage = models.ForeignKey(StageModel, on_delete=models.PROTECT, verbose_name="Этап договора")
+    taas_change_number = models.IntegerField("Номер изменения", default=None, null=True)
 
 
     def __str__(self):

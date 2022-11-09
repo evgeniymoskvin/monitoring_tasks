@@ -28,7 +28,9 @@ class IndexView(View):
 class DetailView(View):
     def get(self, request, pk):
         obj = TaskModel.objects.get(pk=pk)
-        content = {'obj': obj}
+        user = Employee.objects.get(user=request.user)
+        content = {'obj': obj,
+                   'user': user}
         return render(request, 'todo_tasks/details.html', content)
 
 

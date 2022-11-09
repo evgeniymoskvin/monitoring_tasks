@@ -7,7 +7,7 @@ class TaskForm(ModelForm):
     class Meta:
         model = TaskModel
         # fields = '__all__'
-        exclude = ["author", 'department_number', 'task_number']
+        exclude = ["author", 'department_number', 'task_number', 'taas_change_number']
         widgets = {"task_order": Select(attrs={"class": "form-select",
                                                "aria-label": "Номер заказа"}),
                    "task_object": Select(attrs={"class": "form-select",
