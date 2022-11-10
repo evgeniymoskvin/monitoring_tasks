@@ -5,6 +5,19 @@ from django.utils.translation import gettext_lazy as _
 COMAND_CHOICES = [(000, "000 - Не указан"), (201, "201 - Строительный первый"), (202, "202 - Строительный второй")]
 
 
+class JobTitleModel(models.Model):
+    """ Таблица должностей """
+
+    job_title = models.CharField("Должность", max_length=200)
+
+    class Meta:
+        verbose_name = _("должность")
+        verbose_name_plural = _("должности")
+
+    def __str__(self):
+        return f'{self.job_title}'
+
+
 class Employee(models.Model):
     """
     Дополнительные параметры пользователей
@@ -19,9 +32,11 @@ class Employee(models.Model):
     last_name = models.CharField("Фамилия", max_length=150)
     first_name = models.CharField("Имя", max_length=150)
     middle_name = models.CharField("Отчество", max_length=150)
+    job_title = models.ForeignKey(JobTitleModel, on_delete=models.PROTECT, null=True, verbose_name="Должность")
     department = models.IntegerField("№ отдела", choices=COMAND_CHOICES, default=000)
     user_phone = models.IntegerField("№ телефона")
     department_group = models.IntegerField(verbose_name="Управление", default=None, choices=GroupDepartment.choices)
+    right_to_sign = models.BooleanField(verbose_name="Право подписывать", default=False)
     check_edit = models.BooleanField("Возможность редактирования", default=False)
 
     def __str__(self):
@@ -84,8 +99,9 @@ class StageModel(models.Model):
 
 class TaskModel(models.Model):
     """    Таблица заданий    """
+
     class StatusTask(models.IntegerChoices):
-        """        Тест тест        """
+        """        Тест       """
         ACTIVE = 1, _('Активно')
         POSTPONED = 2, _('Отложено')
         DONE = 3, _('Выполнено')
@@ -96,7 +112,6 @@ class TaskModel(models.Model):
         RD = 1, _('РД')
         PD = 2, _('ПД')
 
-
     author = models.ForeignKey(Employee, on_delete=models.PROTECT, verbose_name="Автор задания")
     text_task = models.TextField("Текст задания", max_length=5000)
     task_number = models.CharField("Номер задания", max_length=10)
@@ -106,8 +121,17 @@ class TaskModel(models.Model):
     task_object = models.ForeignKey(ObjectModel, on_delete=models.PROTECT, verbose_name="Наименование объекта")
     task_contract = models.ForeignKey(ContractModel, on_delete=models.PROTECT, verbose_name="Номер контракта")
     task_stage = models.ForeignKey(StageModel, on_delete=models.PROTECT, verbose_name="Этап договора")
-    taas_change_number = models.IntegerField("Номер изменения", default=None, null=True)
-
+    task_change_number = models.IntegerField("Номер изменения", default=None, null=True)
+    first_sign_user = models.ForeignKey(Employee, on_delete=models.PROTECT, null=True,
+                                        verbose_name="Первый руководитель", related_name="first_sign_user_employee")
+    first_sign_status = models.BooleanField("Подпись первого руководителя", default=False)
+    second_sign_user = models.ForeignKey(Employee, on_delete=models.PROTECT, null=True,
+                                         verbose_name="Второй руководитель", related_name="second_sign_user_employee")
+    second_sign_status = models.BooleanField("Подпись второго руководителя", default=False)
+    cpe_sign_user = models.ForeignKey(Employee, on_delete=models.PROTECT, null=True,
+                                      verbose_name="Главный инженер проекта", related_name="cpe_sign_user_employee")
+    cpe_sign_status = models.BooleanField("Подпись ГИП-а", default=False)
+    back_to_change = models.BooleanField("Возвращено на доработку", default=False)
 
     def __str__(self):
         return f'{self.task_number}, {self.author}'

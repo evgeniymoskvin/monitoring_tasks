@@ -5,6 +5,7 @@
 {% endblock %}
 
 {% block content %}
+    <br>
     <h2 class="m-3, text-center">Выдать задание</h2>
     <form id="formAdd" method="post" data-contracts-url="{% url 'ajax_load_contracts' %}" data-stages-url="{% url 'ajax_load_stages' %}">
     {% csrf_token %}
@@ -17,9 +18,11 @@
 
 {% endblock %}
 
-<!Блок с js>
+
 
 {% block js_stuff %}
+
+    <!JS для фильтрации списка контрактов>
  <script>
         $("#id_task_object").change(function () {
             var url = $("#formAdd").attr("data-contracts-url");  // url of the `load_contact` view
@@ -36,6 +39,7 @@
             });
 
         });
+        //!JS для фильтрации списка этапов
         $("#id_task_contract").change(function () {
             var url = $("#formAdd").attr("data-stages-url");
             var conractId = $(this).val();

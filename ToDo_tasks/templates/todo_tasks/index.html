@@ -84,6 +84,7 @@
 {% endblock %}
 
 {% block js_stuff %}
+    <!JS для работы таблицы со всеми заданиями>
     <script>
         $(document).ready(function () {
             var table = $('#all_tasks_table').DataTable({
@@ -111,7 +112,7 @@
                 .appendTo($('.col-sm-6:eq(0)', table.table().container()));
         });
     </script>
-
+    <!JS для работы таблицы c заданиями пользователя>
     <script>
         $(document).ready(function () {
             $('#my_tasks_table').DataTable({
