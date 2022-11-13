@@ -7,12 +7,84 @@
 {% block content %}
     <br>
     <h2 class="m-3, text-center">Выдать задание</h2>
-    <form id="formAdd" method="post" data-contracts-url="{% url 'ajax_load_contracts' %}" data-stages-url="{% url 'ajax_load_stages' %}">
-    {% csrf_token %}
-    {{ form.as_table }}
     <br>
-    <button type="submit" class="btn btn-success" href="{% url 'add_task' %}">Добавить задание</button>
+    <form id="formAdd" method="post" data-contracts-url="{% url 'ajax_load_contracts' %}"
+          data-stages-url="{% url 'ajax_load_stages' %}">
+        <div class="container">
 
+            <div class="row">
+                <div class="col">
+                    {% csrf_token %}
+
+                    Объект:
+                    {{ form.task_object }}
+                    Номер договора:
+                    {{ form.task_contract }}
+                    Этап:
+                    {{ form.task_stage }}
+                    Номер заказа:
+                    {{ form.task_order }}
+                    Вид документации:
+                    {{ form.task_type_work }}
+                    <br>
+
+                </div>
+                <div class="col">
+                    Текст задания:
+                    {{ form.text_task }}
+                    <br>
+                    {#                    Здесь должно быть поле для загрузки файла#}
+                </div>
+            </div>
+
+
+            <br>
+            {#        <h2 class="m-3, text-center">Выдать задание</h2>#}
+
+            {#        {% csrf_token %}#}
+            {#        {{ form.as_table }}#}
+            <br>
+
+
+            <div class="row justify-content-center">
+                <div class="col-2">
+                    Первый руководитель:
+                </div>
+                <div class="col-3">
+                    {{ form.first_sign_user }}
+                </div>
+            </div>
+
+            <div class="row justify-content-center">
+                <div class="col-2">
+                    Второй руководитель:
+                </div>
+                <div class="col-3">
+                    {{ form.second_sign_user }}
+                </div>
+            </div>
+
+            <div class="row justify-content-center">
+                <div class="col-2">
+                    ГИП:
+                </div>
+                <div class="col-3">
+                    {{ form.cpe_sign_user }}
+                </div>
+            </div>
+            <br>
+            <div class="row justify-content-center">
+                <div class="col">
+                    <figure class="text-center">
+                        <button type="submit" class="btn btn-success" href="{% url 'add_task' %}">Добавить задание
+                        </button>
+                    </figure>
+                </div>
+            </div>
+        </div>
+
+
+    </form>
 
 
 
@@ -23,7 +95,7 @@
 {% block js_stuff %}
 
     <!JS для фильтрации списка контрактов>
- <script>
+    <script>
         $("#id_task_object").change(function () {
             var url = $("#formAdd").attr("data-contracts-url");  // url of the `load_contact` view
             var objectId = $(this).val();  // получаем object ID из HTML input

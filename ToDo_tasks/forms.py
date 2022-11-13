@@ -1,7 +1,6 @@
 from .models import TaskModel, ObjectModel, ContractModel, StageModel, OrdersModel, Employee
 from django.forms import ModelForm, TextInput, Textarea, CheckboxInput, Select, modelformset_factory, ChoiceField
 
-
 from django.views import View
 
 
@@ -19,7 +18,7 @@ class TaskForm(ModelForm):
                                                   "aria-label": "Номер контракта"}),
                    "task_stage": Select(attrs={"class": "form-select",
                                                "aria-label": "Этап договора"}),
-                   "text_task": Textarea(attrs={"placeholder": "Введите текст",
+                   "text_task": Textarea(attrs={"placeholder": "Введите текст задания",
                                                 "class": "form-control"}),
                    "task_type_work": Select(attrs={"class": "form-select",
                                                    "aria-label": "Вид документации"}),
@@ -55,17 +54,18 @@ class TaskCheckForm(ModelForm):
     # todo Доделать просмотр подробностей
     class Meta:
         model = TaskModel
-        exclude = ["author", 'department_number', 'task_number', 'task_change_number', "first_sign_status",
+        exclude = ['department_number', 'task_number', 'task_change_number', "first_sign_status",
                    "second_sign_status", "cpe_sign_status", "back_to_change"]
         widgets = {"task_order": Select(attrs={"class": "form-select",
-                                               "aria-label": "Номер заказа"}),
-                   "task_object": Select(attrs={"class": "form-select",
-                                                "aria-label": "Наименование объекта"}),
-                   "task_contract": Select(attrs={"class": "form-select",
-                                                  "aria-label": "Номер контракта"}),
-                   "task_stage": Select(attrs={"class": "form-select",
-                                               "aria-label": "Этап договора",
-                                               "placeholder": "Disabled input"}),
+                                               "disabled": True}),
+                   "author": TextInput(attrs={"class": "form-control",
+                                              "readonly": True}),
+                   "task_object": TextInput(attrs={"class": "form-select",
+                                                   "disabled": True}),
+                   "task_contract": TextInput(attrs={"class": "form-select",
+                                                     "disabled": True}),
+                   "task_stage": TextInput(attrs={"class": "form-select",
+                                                  "disabled": True}),
                    "text_task": Textarea(attrs={"class": "form-control",
                                                 "type": "text",
                                                 "value": "Disabled readonly input",

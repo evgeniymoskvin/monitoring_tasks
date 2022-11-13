@@ -2,10 +2,12 @@ from django.shortcuts import render, redirect
 from django.views import View
 from .models import Employee, TaskModel, ContractModel, ObjectModel, StageModel
 from .forms import TaskForm, TaskCheckForm
+from .functions import get_signature_info, get_data_for_form
 
 
 class IndexView(View):
     """Главная страница"""
+
     def get(self, request):
         """
         Проверяет авторизацию пользователя и выводит данные на странице,
@@ -29,19 +31,25 @@ class IndexView(View):
 
 
 class DetailView(View):
+    """Формирование страницы просмотра деталей"""
+
     def get(self, request, pk):
+        """Получаем номер задания из ссылки и формируем страницу подробностей"""
         obj = TaskModel.objects.get(pk=pk)
-        data = {"text_task": obj.text_task}
+        signature_info = get_signature_info(obj)  # получаем информацию о подписях
+        data = get_data_for_form(obj)  # получаем данные для подгрузки в форму
         form = TaskCheckForm(initial=data)
         user = Employee.objects.get(user=request.user)
         content = {'obj': obj,
                    'user': user,
-                   'form': form}
+                   'form': form,
+                   "sign_info": signature_info}
         return render(request, 'todo_tasks/details.html', content)
 
 
 class AddTaskView(View):
     """Добавление нового задания"""
+
     def get(self, request):
         form = TaskForm()
         # Фильтруем поля руководителей в соответствии с отделом пользователя
@@ -63,15 +71,17 @@ class AddTaskView(View):
             new_post.author = Employee.objects.get(user=request.user)  # добавляем пользователя из request
             new_post.department_number = new_post.author.department  # добавляем номер отдела пользователя
             # Получаем номер последнего задания. Сначала фильтруем задания без изменений, затем по номеру отдела
-            last_task = TaskModel.objects.all().filter(task_change_number=None).filter(
+            last_task = TaskModel.objects.all().filter(task_change_number=0).filter(
                 department_number=new_post.author.department)
             # Формируем номер нового задания
             number_task_new = int(last_task.latest('task_number').task_number.split('-')[2]) + 1
             new_post.task_number = f'ЗД-{new_post.department_number}-{number_task_new}'
+            new_post.task_change_number = 0  # номер изменения присваиваем 0
             print(new_post.task_number)
-            print(new_post)
             form.save()  # сохраняем форму в бд
-            return redirect('index')
+            # После сохранения получаем id записи в бд, для формирования ссылки
+            number_id_for_redirect = TaskModel.objects.get(task_number=new_post.task_number).id
+            return redirect(f'/details/{number_id_for_redirect}')
         return redirect('index')
 
 
@@ -90,4 +100,3 @@ def load_stages(request):
     contract_id = request.GET.get("contract")
     stages = StageModel.objects.filter(stage_contract=int(contract_id))
     return render(request, 'todo_tasks/dropdown_update/stages_dropdown_list_update.html', {'stages': stages})
-

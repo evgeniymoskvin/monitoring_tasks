@@ -40,7 +40,7 @@ class Employee(models.Model):
     check_edit = models.BooleanField("Возможность редактирования", default=False)
 
     def __str__(self):
-        return f'{("%s %s" % (self.user.first_name, self.user.last_name)).strip()}'
+        return f'{("%s %s %s" % (self.last_name, self.first_name, self.middle_name)).strip()}'
 
     class Meta:
         verbose_name = _("сотрудник")

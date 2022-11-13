@@ -4,8 +4,104 @@
     Подробности
 {% endblock %}
 {% block content %}
-    {{ form.as_table }}
-    {{ obj.task_number }}
     <br>
-    {{ obj.text_task }}
+    <h2 class="m-3, text-center">Детали задания {{ obj.task_number }}</h2>
+    <br>
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <p>Автор задания:</p>
+                {{ form.author }}
+                <br>
+                <p>Объект:</p>
+                {{ form.task_object }}
+                <br>
+                <p>Номер договора:</p>
+                {{ form.task_contract }}
+                <br>
+                <p>Этап:</p>
+                {{ form.task_stage }}
+                <br>
+                <p>Номер заказа:</p>
+                {{ form.task_order }}
+            </div>
+            <div class="col">
+                <p>Текст задания:</p>
+                {{ form.text_task }}
+                <br>
+
+                <! Формирование строку с первым подписантом>
+
+                <div class="row">
+                    <div class="col">
+                        {{ sign_info.first_sign_job_title }}:
+                    </div>
+
+                    <div class="col">
+                        {{ sign_info.first_sign_name }}
+                    </div>
+
+                    {% if obj.first_sign_status %}
+                        <div class="col bg-success text-white text-right">
+                            Подписано
+                        </div>
+                    {% else %}
+                        <div class="col bg-light text-right ">
+                            Не подписано
+                        </div>
+                    {% endif %}
+
+                </div>
+
+            <! Формирование строку со вторым подписантом>
+
+                <div class="row">
+                    <div class="col">
+                        {{ sign_info.second_sign_job_title }}:
+                    </div>
+                    <div class="col">
+                        {{ sign_info.second_sign_name }}
+                    </div>
+                    {% if obj.second_sign_status %}
+                        <div class="col bg-success text-white text-right">
+                            Подписано
+                        </div>
+                    {% else %}
+                        <div class="col bg-light text-right ">
+                            Не подписано
+                        </div>
+                    {% endif %}
+                </div>
+
+
+            <! Формирование строку с третьим подписантом>
+
+
+                <div class="row">
+                    <div class="col">
+                        {{ sign_info.cpe_sign_job_title }}:
+                    </div>
+                    <div class="col">
+                        {{ sign_info.cpe_sign_name }}
+                    </div>
+                    {% if obj.cpe_sign_status %}
+                        <div class="col bg-success text-white text-right">
+                            Подписано
+                        </div>
+                    {% else %}
+                        <div class="col bg-light text-right ">
+                            Не подписано
+                        </div>
+                    {% endif %}
+                </div>
+
+            </div>
+        </div>
+        {#        {{ form.as_table }}#}
+        {#        {{ form.author }}#}
+        {##}
+        {##}
+        {#        {{ obj.task_number }}#}
+        {#        {{ obj.author }}#}
+        <br>
 {% endblock %}
