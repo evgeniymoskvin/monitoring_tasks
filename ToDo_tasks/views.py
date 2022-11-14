@@ -1,5 +1,7 @@
 from django.shortcuts import render, redirect
 from django.views import View
+from django.views.generic import UpdateView
+
 from .models import Employee, TaskModel, ContractModel, ObjectModel, StageModel
 from .forms import TaskForm, TaskCheckForm
 from .functions import get_signature_info, get_data_for_form
@@ -15,19 +17,27 @@ class IndexView(View):
         """
         if request.user.is_authenticated:
             # Получаем список заданий пользователя
-            data_user = TaskModel.objects.get_queryset().filter(author__user=request.user)
+            # data_user = TaskModel.objects.get_queryset().filter(author__user=request.user)
             # Получаем список всех заданий
             data_all = TaskModel.objects.get_queryset()
             # Получаем информацию о пользователе из таблицы Employee на основании request
             user = Employee.objects.get(user=request.user)
             print(request.user)  # login
             print(user)  # Фамилия Имя
-            content = {'data_user': data_user,
-                       'data_all': data_all,
+            content = {'data_all': data_all,
                        'user': user}
             return render(request, 'todo_tasks/index.html', content)
         else:
             return redirect('login/')
+
+
+class UserTaskView(View):
+    def get(self, request):
+        data_user = TaskModel.objects.get_queryset().filter(author__user=request.user)
+        user = Employee.objects.get(user=request.user)
+        content = {'data_user': data_user,
+                   'user': user}
+        return render(request, 'todo_tasks/my_tasks.html', content)
 
 
 class DetailView(View):
@@ -83,6 +93,18 @@ class AddTaskView(View):
             number_id_for_redirect = TaskModel.objects.get(task_number=new_post.task_number).id
             return redirect(f'/details/{number_id_for_redirect}')
         return redirect('index')
+
+
+class IncomingTasksView(View):
+    def get(self, request):
+        return render(request, 'todo_tasks/incoming.html')
+
+
+class EditTaskView(UpdateView):
+    # todo переписать, не работает
+    model = TaskModel
+    template_name = 'todo_tasks/add_task.html'
+    form_class = TaskForm
 
 
 def load_contracts(request):

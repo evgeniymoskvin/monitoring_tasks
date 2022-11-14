@@ -40,12 +40,12 @@ class TaskForm(ModelForm):
         # self.fields['first_sign_user'].queryset = Employee.objects.filter(department=department_id).filter(right_to_sign=True)
         # load_department_signature(self.data)
 
-        if 'task_object' in self.data:
-            try:
-                object_id = int(self.data.get('task_object'))
-                self.fields['task_contract'].queryset = ContractModel.objects.filter(contract_object=object_id)
-            except (ValueError, TypeError):
-                pass  # invalid input from the client; ignore and fallback to empty City queryset
+        # if 'task_object' in self.data:
+        #     try:
+        #         object_id = int(self.data.get('task_object'))
+        #         self.fields['task_contract'].queryset = ContractModel.objects.filter(contract_object=object_id)
+        #     except (ValueError, TypeError):
+        #         pass  # invalid input from the client; ignore and fallback to empty City queryset
 
         print(self.data)
 

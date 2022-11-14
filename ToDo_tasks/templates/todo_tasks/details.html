@@ -53,7 +53,7 @@
 
                 </div>
 
-            <! Формирование строку со вторым подписантом>
+                <! Формирование строку со вторым подписантом>
 
                 <div class="row">
                     <div class="col">
@@ -74,7 +74,7 @@
                 </div>
 
 
-            <! Формирование строку с третьим подписантом>
+                <! Формирование строку с третьим подписантом>
 
 
                 <div class="row">
@@ -97,11 +97,14 @@
 
             </div>
         </div>
-        {#        {{ form.as_table }}#}
-        {#        {{ form.author }}#}
-        {##}
-        {##}
-        {#        {{ obj.task_number }}#}
-        {#        {{ obj.author }}#}
-        <br>
+        {% if obj.author.user == request.user and obj.first_sign_status == 0 %}
+            <br>
+            <div class="row justify-content-center">
+                <div class="col">
+                    <figure class="text-center">
+                        <a href="{% url "change" pk=obj.id %}" class="btn btn-primary">Редактировать</a>
+                    </figure>
+                </div>
+            </div>
+        {% endif %}
 {% endblock %}
