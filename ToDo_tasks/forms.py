@@ -47,7 +47,7 @@ class TaskForm(ModelForm):
         #     except (ValueError, TypeError):
         #         pass  # invalid input from the client; ignore and fallback to empty City queryset
 
-        print(self.data)
+        # print(self.data)
 
 
 class TaskCheckForm(ModelForm):

@@ -95,16 +95,63 @@ class AddTaskView(View):
         return redirect('index')
 
 
+class EditTaskView(View):
+    """
+    Страница редактирования записи.
+    Реализация через UpdateView не возможна, так как в исходном class AddTask формируется номер нового задания,
+    а нам необходимо обновить данные уже существующего
+    """
+
+    def get(self, request, pk):
+        """Получаем номер редактируемого задания из query params (pk) и заполняем форму с данными из бд"""
+        obj = TaskModel.objects.get(pk=pk)
+        form = TaskForm(instance=obj)
+
+        department_user = Employee.objects.get(user=request.user).department
+        form.fields['first_sign_user'].queryset = Employee.objects.filter(department=department_user).filter(
+            right_to_sign=True)  # получаем в 1ое поле список пользователей по двум фильтрам
+        form.fields['second_sign_user'].queryset = Employee.objects.filter(department=department_user).filter(
+            right_to_sign=True)  # получаем во 2ое поле список пользователей по двум фильтрам
+
+        context = {
+            'form': form,
+            'user': Employee.objects.get(user=request.user),
+            'obj': obj
+        }
+        return render(request, 'todo_tasks/update_task.html', context)
+
+    def post(self, request, pk):
+        """Обновляем данные базы данных"""
+        form = TaskForm(request.POST)
+
+        if form.is_valid():
+            obj = TaskModel.objects.get(pk=pk)  # Получаем объект из бд
+            # Присваиваем вручную новые данные из формы, почему только так работает, сказать не могу
+            # Номер задания и автор остаются исходными
+            obj.task_object.id = form.data['task_object']
+            obj.task_contract.id = form.data['task_contract']
+            obj.task_stage.id = form.data['task_stage']
+            obj.task_order.id = form.data['task_stage']
+            obj.task_type_work = form.data['task_type_work']
+            obj.text_task = form.data['text_task']
+            obj.first_sign_user.id = form.data['first_sign_user']
+            obj.second_sign_user.id = form.data['second_sign_user']
+            obj.cpe_sign_user.id = form.data['cpe_sign_user']
+            # На случай, если задание было возвращено, обнуляем значения подписей и флаг back_to_change
+            obj.first_sign_status = False
+            obj.second_sign_status = False
+            obj.cpe_sign_status = False
+            obj.back_to_change = False
+            # Сохраняем новые данные в базу данных
+            obj.save()
+
+        print(f"сработал пост{pk}")
+        return redirect(f'/details/{pk}')
+
+
 class IncomingTasksView(View):
     def get(self, request):
         return render(request, 'todo_tasks/incoming.html')
-
-
-class EditTaskView(UpdateView):
-    # todo переписать, не работает
-    model = TaskModel
-    template_name = 'todo_tasks/add_task.html'
-    form_class = TaskForm
 
 
 def load_contracts(request):

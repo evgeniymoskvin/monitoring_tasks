@@ -1,0 +1,133 @@
+{% extends "todo_tasks/base.html" %}
+
+{% block title %}
+    Добавить задание
+{% endblock %}
+
+{% block content %}
+    <br>
+    <h2 class="m-3, text-center">Отредактировать задание {{ obj.task_number }}</h2>
+    <br>
+    <form id="formAdd" method="post" data-contracts-url="{% url 'ajax_load_contracts' %}"
+          data-stages-url="{% url 'ajax_load_stages' %}">
+        <div class="container">
+
+            <div class="row">
+                <div class="col">
+                    {% csrf_token %}
+
+                    Объект:
+                    {{ form.task_object }}
+                    Номер договора:
+                    {{ form.task_contract }}
+                    Этап:
+                    {{ form.task_stage }}
+                    Номер заказа:
+                    {{ form.task_order }}
+                    Вид документации:
+                    {{ form.task_type_work }}
+                    <br>
+
+                </div>
+                <div class="col">
+                    Текст задания:
+                    {{ form.text_task }}
+                    <br>
+                    {#                    Здесь должно быть поле для загрузки файла#}
+                </div>
+            </div>
+
+
+            <br>
+            {#        <h2 class="m-3, text-center">Выдать задание</h2>#}
+
+            {#        {% csrf_token %}#}
+            {#        {{ form.as_table }}#}
+            <br>
+
+
+            <div class="row justify-content-center">
+                <div class="col-2">
+                    Первый руководитель:
+                </div>
+                <div class="col-3">
+                    {{ form.first_sign_user }}
+                </div>
+            </div>
+
+            <div class="row justify-content-center">
+                <div class="col-2">
+                    Второй руководитель:
+                </div>
+                <div class="col-3">
+                    {{ form.second_sign_user }}
+                </div>
+            </div>
+
+            <div class="row justify-content-center">
+                <div class="col-2">
+                    ГИП:
+                </div>
+                <div class="col-3">
+                    {{ form.cpe_sign_user }}
+                </div>
+            </div>
+            <br>
+            <div class="row justify-content-center">
+                <div class="col">
+                    <figure class="text-center">
+                        <a href="{% url "details" pk=obj.id %}" class="btn btn-secondary">Отмена</a>
+                        <button type="submit" class="btn btn-success" href="{% url 'change' pk=obj.id%}">Сохранить
+                        </button>
+                    </figure>
+                </div>
+            </div>
+        </div>
+
+
+    </form>
+
+
+
+{% endblock %}
+
+
+
+{% block js_stuff %}
+
+    <!JS для фильтрации списка контрактов>
+    <script>
+        $("#id_task_object").change(function () {
+            var url = $("#formAdd").attr("data-contracts-url");  // url of the `load_contact` view
+            var objectId = $(this).val();  // получаем object ID из HTML input
+
+            $.ajax({                       // формируем AJAX запрос
+                url: url,                    // подгружаем URL адрес для запроса
+                data: {
+                    'object': objectId       // добавляем objectID в query параметры GET запроса
+                },
+                success: function (data) {   // `data` результат выполнения  функции `load_contract`
+                    $("#id_task_contract").html(data);  // помещаем результат в выпадающее меню
+                }
+            });
+
+        });
+        //!JS для фильтрации списка этапов
+        $("#id_task_contract").change(function () {
+            var url = $("#formAdd").attr("data-stages-url");
+            var conractId = $(this).val();
+
+            $.ajax({
+                url: url,
+                data: {
+                    'contract': conractId
+                },
+                success: function (data) {
+                    $("#id_task_stage").html(data);
+                }
+            });
+
+        });
+    </script>
+{% endblock %}
+
