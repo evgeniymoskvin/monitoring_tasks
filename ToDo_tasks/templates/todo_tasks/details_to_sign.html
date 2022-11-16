@@ -1,0 +1,67 @@
+{#{% extends "todo_tasks/base.html" %}#}
+{% extends 'todo_tasks/details.html' %}
+
+{#{% block title %}#}
+{#    Подробности#}
+{#{% endblock %}#}
+{% block buttons %}
+
+    <br>
+    <form method="POST">
+
+        {% csrf_token %}
+        <div class="row justify-content-center">
+            <div class="col">
+                <figure class="text-center">
+                    {% if obj.first_sign_user == user %}
+                        {% if obj.first_sign_status == False %}
+                            <input type="submit" class="btn btn-success" name="sign1" value="Подписать 1">
+                        {% else %}
+                            <input type="submit" class="btn btn-secondary" name="cancel1" value="Отменить подпись">
+                        {% endif %}
+                    {% endif %}
+                    {% if obj.second_sign_user == user %}
+                        {% if obj.second_sign_status == False %}
+                            <input type="submit" class="btn btn-success" name="sign2" value="Подписать 2">
+                        {% else %}
+                            <input type="submit" class="btn btn-secondary" name="cancel2" value="Отменить подпись">
+                        {% endif %}
+                    {% endif %}
+                    <input type="submit" class="btn btn-danger" name="back_to_change" value="Вернуть">
+                    {#                        <a href="{% url "details" pk=obj.id %}" class="btn btn-secondary">Подписать</a>#}
+                    <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#back_modal">
+                        Вернуть тест модальное отправка
+                    </button>
+                </figure>
+            </div>
+        </div>
+        {#    </form>#}
+
+
+        <!-- Модальное окно -->
+        <div class="modal fade" id="back_modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+             aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="staticBackdropLabel">Вернуть задание на исправление</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+                    </div>
+                    <div class="modal-body">
+                        <textarea class="form-control" rows="4" name="text_modal_rows"></textarea>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                        <input type="submit" class="btn btn-danger" name="testmodal" value="Вернуть">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
+
+{% endblock %}
+
+
+
+

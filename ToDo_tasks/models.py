@@ -40,11 +40,23 @@ class Employee(models.Model):
     check_edit = models.BooleanField("Возможность редактирования", default=False)
 
     def __str__(self):
-        return f'{("%s %s %s" % (self.last_name, self.first_name, self.middle_name)).strip()}'
+        return f'{self.last_name} {self.first_name} {self.middle_name}'
 
     class Meta:
         verbose_name = _("сотрудник")
         verbose_name_plural = _("сотрудники")
+
+
+class CanAcceptModel(models.Model):
+    """Таблица тех, кому могут назначаться задания"""
+    user_accept = models.ForeignKey(Employee, on_delete=models.PROTECT, verbose_name="Сотрудник", null=True)
+
+    def __str__(self):
+        return f'{self.user_accept}'
+
+    class Meta:
+        verbose_name = _("принимающий задания")
+        verbose_name_plural = _("принимающие задания")
 
 
 class OrdersModel(models.Model):
@@ -95,6 +107,20 @@ class StageModel(models.Model):
 
     def __str__(self):
         return f'{self.stage_contract.contract_object}, {self.stage_contract}, {self.stage_name}'
+
+
+class CpeModel(models.Model):
+    """Таблица ГИП-ов"""
+    cpe_user = models.ForeignKey(Employee, on_delete=models.SET_NULL, verbose_name="Сотрудник", null=True)
+    cpe_object = models.ForeignKey(ObjectModel, on_delete=models.PROTECT, verbose_name="Объект", null=True)
+
+    class Meta:
+        verbose_name = _("ГИП")
+        verbose_name_plural = _("ГИПЫ")
+
+    def __str__(self):
+        return f'{self.cpe_user}, {self.cpe_object}'
+
 
 
 class TaskModel(models.Model):

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import TaskModel, Employee, OrdersModel, ObjectModel, ContractModel, StageModel, JobTitleModel
+from .models import TaskModel, Employee, OrdersModel, ObjectModel, ContractModel, StageModel, JobTitleModel, CpeModel, CanAcceptModel
 
 
 class TaskAdmin(admin.ModelAdmin):
@@ -30,3 +30,5 @@ admin.site.register(ObjectModel)
 admin.site.register(ContractModel, ContractAdmin)
 admin.site.register(StageModel, StageAdmin)
 admin.site.register(JobTitleModel)
+admin.site.register(CpeModel)
+admin.site.register(CanAcceptModel)

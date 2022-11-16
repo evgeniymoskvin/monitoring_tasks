@@ -1,10 +1,9 @@
 from django.shortcuts import render, redirect
 from django.views import View
-from django.views.generic import UpdateView
 
 from .models import Employee, TaskModel, ContractModel, ObjectModel, StageModel
 from .forms import TaskForm, TaskCheckForm
-from .functions import get_signature_info, get_data_for_form
+from .functions import get_signature_info, get_data_for_form, get_data_for_detail, get_list_to_sign
 
 
 class IndexView(View):
@@ -16,16 +15,22 @@ class IndexView(View):
         либо redirect на страницу авторизации
         """
         if request.user.is_authenticated:
+            if request.user.id == 1:
+                return redirect('admin/')
             # Получаем список заданий пользователя
             # data_user = TaskModel.objects.get_queryset().filter(author__user=request.user)
             # Получаем список всех заданий
             data_all = TaskModel.objects.get_queryset()
             # Получаем информацию о пользователе из таблицы Employee на основании request
             user = Employee.objects.get(user=request.user)
+            count_task_to_sign = 0
+            if user.right_to_sign == True:
+                count_task_to_sign = len(get_list_to_sign(user))  # Получение количества заданий ожидающих подписи
             print(request.user)  # login
             print(user)  # Фамилия Имя
             content = {'data_all': data_all,
-                       'user': user}
+                       'user': user,
+                       "count_task_to_sign": f'({count_task_to_sign})'}
             return render(request, 'todo_tasks/index.html', content)
         else:
             return redirect('login/')
@@ -45,15 +50,7 @@ class DetailView(View):
 
     def get(self, request, pk):
         """Получаем номер задания из ссылки и формируем страницу подробностей"""
-        obj = TaskModel.objects.get(pk=pk)
-        signature_info = get_signature_info(obj)  # получаем информацию о подписях
-        data = get_data_for_form(obj)  # получаем данные для подгрузки в форму
-        form = TaskCheckForm(initial=data)
-        user = Employee.objects.get(user=request.user)
-        content = {'obj': obj,
-                   'user': user,
-                   'form': form,
-                   "sign_info": signature_info}
+        content = get_data_for_detail(request, pk)
         return render(request, 'todo_tasks/details.html', content)
 
 
@@ -124,34 +121,78 @@ class EditTaskView(View):
         """Обновляем данные базы данных"""
         form = TaskForm(request.POST)
 
-        if form.is_valid():
-            obj = TaskModel.objects.get(pk=pk)  # Получаем объект из бд
-            # Присваиваем вручную новые данные из формы, почему только так работает, сказать не могу
-            # Номер задания и автор остаются исходными
-            obj.task_object.id = form.data['task_object']
-            obj.task_contract.id = form.data['task_contract']
-            obj.task_stage.id = form.data['task_stage']
-            obj.task_order.id = form.data['task_stage']
-            obj.task_type_work = form.data['task_type_work']
-            obj.text_task = form.data['text_task']
-            obj.first_sign_user.id = form.data['first_sign_user']
-            obj.second_sign_user.id = form.data['second_sign_user']
-            obj.cpe_sign_user.id = form.data['cpe_sign_user']
-            # На случай, если задание было возвращено, обнуляем значения подписей и флаг back_to_change
-            obj.first_sign_status = False
-            obj.second_sign_status = False
-            obj.cpe_sign_status = False
-            obj.back_to_change = False
-            # Сохраняем новые данные в базу данных
-            obj.save()
+        # if form.is_valid():
+        obj = TaskModel.objects.get(pk=pk)  # Получаем объект из бд
+        # Присваиваем вручную новые данные из формы, почему только так работает, сказать не могу
+        # Номер задания и автор остаются исходными
+        obj.task_object.id = form.data['task_object']
+        obj.task_contract.id = form.data['task_contract']
+        obj.task_stage.id = form.data['task_stage']
+        obj.task_order.id = form.data['task_stage']
+        obj.task_type_work = form.data['task_type_work']
+        obj.text_task = form.data['text_task']
+        print(form.data['first_sign_user'])
+        obj.first_sign_user_id = form.data['first_sign_user']
+        obj.second_sign_user_id = form.data['second_sign_user']
+        obj.cpe_sign_user_id = form.data['cpe_sign_user']
+        # На случай, если задание было возвращено, обнуляем значения подписей и флаг back_to_change
+        obj.first_sign_status = 0
+        obj.second_sign_status = 0
+        obj.cpe_sign_status = 0
+        obj.back_to_change = 0
+        # Сохраняем новые данные в базу данных
+        obj.save()
 
         print(f"сработал пост{pk}")
         return redirect(f'/details/{pk}')
 
 
-class IncomingTasksView(View):
+class ToSignListView(View):
+    """Страница со списком заданий ожидающих подписи"""
+
     def get(self, request):
-        return render(request, 'todo_tasks/incoming.html')
+        sign_user = Employee.objects.get(user=request.user)  # получаем пользователя
+        sign_list = get_list_to_sign(sign_user)  # получаем список заданий
+        content = {
+            'sign_list': sign_list,
+            'user': sign_user}
+        return render(request, 'todo_tasks/incoming_to_sign.html', content)
+
+
+class ToSignDetailView(View):
+    """Страница подписи задания"""
+
+    def get(self, request, pk):
+        content = get_data_for_detail(request, pk)
+        return render(request, 'todo_tasks/details_to_sign.html', content)
+
+    # Отработка кнопок подписи задания
+    def post(self, request, pk):
+        obj = TaskModel.objects.get(pk=pk)
+        if 'sign1' in request.POST:
+            print(pk, ' sign')
+            obj.first_sign_status = True
+            obj.save()
+        elif 'sign2' in request.POST:
+            obj.second_sign_status = True
+            obj.save()
+            print(pk, ' sign')
+        elif 'cancel1' in request.POST:
+            print(pk, ' cancel1')
+            obj.first_sign_status = False
+            obj.save()
+        elif 'cancel2' in request.POST:
+            print(pk, ' cancel1')
+            obj.second_sign_status = False
+            obj.save()
+        elif 'back_to_change' in request.POST:
+            obj.back_to_change = True
+            obj.save()
+            print(pk, ' back to change')
+            return redirect('incoming_to_sign')
+        elif 'testmodal' in request.POST:
+            print(request.POST.get('text_modal_rows'))
+        return redirect(request.META['HTTP_REFERER'])
 
 
 def load_contracts(request):

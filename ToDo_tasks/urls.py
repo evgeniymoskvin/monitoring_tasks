@@ -14,5 +14,6 @@ urlpatterns = [
         template_name='todo_tasks/system_user/change_password.html',
         success_url='/'), name='change_password'),
     path('details/<int:pk>/change', views.EditTaskView.as_view(), name='change'),
-    path('incoming/', views.IncomingTasksView.as_view(), name='incoming')
+    path('details_to_sign/<int:pk>', views.ToSignDetailView.as_view(), name='details_to_sign'),
+    path('incoming_to_sign/', views.ToSignListView.as_view(), name='incoming_to_sign')
 ]
