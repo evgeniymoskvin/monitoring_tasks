@@ -1,7 +1,10 @@
+import datetime
+
 from django.shortcuts import render, redirect
+from django.utils import timezone
 from django.views import View
 
-from .models import Employee, TaskModel, ContractModel, ObjectModel, StageModel
+from .models import Employee, TaskModel, ContractModel, ObjectModel, StageModel, TaskNumbersModel, CommandNumberModel
 from .forms import TaskForm, TaskCheckForm
 from .functions import get_signature_info, get_data_for_form, get_data_for_detail, get_list_to_sign
 
@@ -73,23 +76,34 @@ class AddTaskView(View):
 
     def post(self, request):
         form = TaskForm(request.POST)
+        # print(form.errors)
         if form.is_valid():
             new_post = form.save(commit=False)  # отменяем отправку form в базу
             new_post.author = Employee.objects.get(user=request.user)  # добавляем пользователя из request
-            new_post.department_number = new_post.author.department  # добавляем номер отдела пользователя
-            # Получаем номер последнего задания. Сначала фильтруем задания без изменений, затем по номеру отдела
-            last_task = TaskModel.objects.all().filter(task_change_number=0).filter(
-                department_number=new_post.author.department)
-            # Формируем номер нового задания
-            number_task_new = int(last_task.latest('task_number').task_number.split('-')[2]) + 1
-            new_post.task_number = f'ЗД-{new_post.department_number}-{number_task_new}'
+            new_post.department_number = new_post.author.department  # добавляем номер отдела пользователя, пока не знаю зачем
+            # Получаем номер последнего задания из таблицы TaskNumbers
+            last_number = TaskNumbersModel.objects.get(command_number=new_post.department_number)
+            print(last_number.count_of_task)
+            print(last_number.year_of_task)
+            today_year = datetime.datetime.today().year  # выносим в отдельную переменную, что бы каждый раз не вызывалась функция
+            # Проверяем год. Если отличается от нынешнего, обнуляем счетчик заданий
+            if last_number.year_of_task == today_year:
+                last_number.count_of_task += 1
+            else:
+                last_number.year_of_task = today_year
+                last_number.count_of_task = 1
+            last_number.save()  # сохраняем в таблице счетчиков (TaskNumbersModel) обновленные данные
+
+            new_post.task_last_edit = datetime.datetime.now()  # Присваиваем дату последнего изменения
+
+            new_post.task_number = f'ЗД-{new_post.department_number.command_number}-{last_number.count_of_task}-{str(today_year)[2:4]}'
             new_post.task_change_number = 0  # номер изменения присваиваем 0
             print(new_post.task_number)
             form.save()  # сохраняем форму в бд
             # После сохранения получаем id записи в бд, для формирования ссылки
             number_id_for_redirect = TaskModel.objects.get(task_number=new_post.task_number).id
             return redirect(f'/details/{number_id_for_redirect}')
-        return redirect('index')
+        return redirect('/')
 
 
 class EditTaskView(View):
@@ -140,6 +154,7 @@ class EditTaskView(View):
         obj.second_sign_status = 0
         obj.cpe_sign_status = 0
         obj.back_to_change = 0
+        obj.task_last_edit = timezone.now()
         # Сохраняем новые данные в базу данных
         obj.save()
 
@@ -172,28 +187,54 @@ class ToSignDetailView(View):
         if 'sign1' in request.POST:
             print(pk, ' sign')
             obj.first_sign_status = True
+            obj.first_sign_date = timezone.now()
             obj.save()
         elif 'sign2' in request.POST:
             obj.second_sign_status = True
+            obj.second_sign_date = timezone.now()
+            obj.save()
+            print(pk, ' sign')
+        elif 'sign3' in request.POST:
+            obj.cpe_sign_status = True
+            obj.cpe_sign_date = timezone.now()
+            obj.task_status = 2
             obj.save()
             print(pk, ' sign')
         elif 'cancel1' in request.POST:
             print(pk, ' cancel1')
             obj.first_sign_status = False
+            obj.first_sign_date = None
             obj.save()
         elif 'cancel2' in request.POST:
             print(pk, ' cancel1')
             obj.second_sign_status = False
+            obj.second_sign_date = None
+            obj.save()
+        elif 'cancel3' in request.POST:
+            print(pk, ' cancel1')
+            obj.cpe_sign_status = False
+            obj.cpe_sign_date = None
+            obj.task_status = 1
             obj.save()
         elif 'back_to_change' in request.POST:
             obj.back_to_change = True
             obj.save()
             print(pk, ' back to change')
             return redirect('incoming_to_sign')
-        elif 'testmodal' in request.POST:
-            print(request.POST.get('text_modal_rows'))
+        elif 'back_modal_button' in request.POST:
+            print(request.POST.get('back_modal_text'))
+        elif 'comment_modal_button' in request.POST:
+            obj.cpe_sign_status = True
+            obj.cpe_sign_date = timezone.now()
+            obj.task_status = 2
+            obj.save()
+            print(pk, request.POST.get('comment_modal_text'))
         return redirect(request.META['HTTP_REFERER'])
 
+
+class IndexTestView(View):
+    def get(self, request):
+        return render(request, 'todo_tasks/index_test.html')
 
 def load_contracts(request):
     """Функция для получения списка контрактов"""

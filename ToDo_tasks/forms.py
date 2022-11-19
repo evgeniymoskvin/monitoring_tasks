@@ -8,8 +8,22 @@ class TaskForm(ModelForm):
     class Meta:
         model = TaskModel
         # fields = '__all__'
-        exclude = ["author", 'department_number', 'task_number', 'task_change_number', "first_sign_status",
-                   "second_sign_status", "cpe_sign_status", "back_to_change"]
+        exclude = [
+            "author",
+            'department_number',
+            'task_number',
+            'task_change_number',
+            "first_sign_status",
+            "second_sign_status",
+            "cpe_sign_status",
+            "back_to_change",
+            "first_sign_date",
+            "second_sign_date",
+            "cpe_sign_date",
+            "task_status",
+            "task_last_edit",
+            "cpe_comment"
+        ]
         widgets = {"task_order": Select(attrs={"class": "form-select",
                                                "aria-label": "Номер заказа"}),
                    "task_object": Select(attrs={"class": "form-select",
@@ -70,5 +84,7 @@ class TaskCheckForm(ModelForm):
                                                 "type": "text",
                                                 "value": "Disabled readonly input",
                                                 "aria-label": "Disabled input example",
-                                                "readonly": True})
+                                                "readonly": True}),
+                   "incoming_employee": TextInput(attrs={"class": "form-control",
+                                              "readonly": True})
                    }

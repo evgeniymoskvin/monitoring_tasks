@@ -5,13 +5,16 @@
 {% endblock %}
 {% block content %}
     <br>
-    <h2 class="m-3, text-center">Детали задания {{ obj.task_number }}</h2>
+    <h2 class="m-3, text-center">Детали задания {{ obj.task_number }} ({{ task_status }})</h2>
     <br>
     <div class="container">
         <div class="row">
             <div class="col">
                 <p>Автор задания:</p>
-                {{ form.author }}
+                <span data-toggle="tooltip" title="{{ obj.author.job_title }} тел. ({{ obj.author.user_phone }}), {{ obj.author.department.command_name }}">{{ form.author }}</span>
+                <br>
+                <p>Кому</p>
+                <span data-toggle="tooltip" title="(тел. {{ obj.incoming_employee.user_accept.user_phone }})">{{ form.incoming_employee }}</span>
                 <br>
                 <p>Объект:</p>
                 {{ form.task_object }}
@@ -29,7 +32,11 @@
                 <p>Текст задания:</p>
                 {{ form.text_task }}
                 <br>
-
+                Дата создания: {{ obj.task_create_date }}
+                <br>
+                Дата последнего изменения: {{ obj.task_last_edit }}
+                <br>
+                <br>
                 <! Формирование строку с первым подписантом>
 
                 <div class="row">
@@ -38,12 +45,12 @@
                     </div>
 
                     <div class="col">
-                        {{ sign_info.first_sign_name }}
+                        <span data-toggle="tooltip" title="{{obj.first_sign_user}} (тел. {{ obj.first_sign_user.user_phone }})">{{ sign_info.first_sign_name}}</span>
                     </div>
 
                     {% if obj.first_sign_status %}
                         <div class="col bg-success text-white text-right">
-                            Подписано
+                        <span data-toggle="tooltip" title="{{ obj.first_sign_date}}">Подписано</span>
                         </div>
                     {% else %}
                         <div class="col bg-light text-right ">
@@ -60,11 +67,12 @@
                         {{ sign_info.second_sign_job_title }}:
                     </div>
                     <div class="col">
-                        {{ sign_info.second_sign_name }}
+{#                        {{ sign_info.second_sign_name }}#}
+                        <span data-toggle="tooltip" title="{{obj.second_sign_user}} (тел. {{ obj.second_sign_user.user_phone }})">{{ sign_info.second_sign_name}}</span>
                     </div>
                     {% if obj.second_sign_status %}
                         <div class="col bg-success text-white text-right">
-                            Подписано
+                        <span data-toggle="tooltip" title="{{ obj.second_sign_date}}">Подписано</span>
                         </div>
                     {% else %}
                         <div class="col bg-light text-right ">
@@ -82,11 +90,11 @@
                         {{ sign_info.cpe_sign_job_title }}:
                     </div>
                     <div class="col">
-                        {{ sign_info.cpe_sign_name }}
+                        <span data-toggle="tooltip" title="{{obj.cpe_sign_user}} (тел. {{ obj.cpe_sign_user.user_phone }})">{{ sign_info.cpe_sign_name}}</span>
                     </div>
                     {% if obj.cpe_sign_status %}
                         <div class="col bg-success text-white text-right">
-                            Подписано
+                        <span data-toggle="tooltip" title="{{ obj.cpe_sign_date}}">Подписано</span>
                         </div>
                     {% else %}
                         <div class="col bg-light text-right ">
@@ -110,4 +118,13 @@
     </div>
         {% block buttons %}
         {% endblock %}
+{#<span data-toggle="tooltip" title="другой текст подсказки">некоторый текст</span>#}
+<script>
+// после загрузки страницы
+$(function(){
+    // инициализации подсказок для всех элементов на странице, имеющих атрибут data-toggle="tooltip"
+    $('[data-toggle="tooltip"]').tooltip();
+});
+</script>
+
 {% endblock %}

@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User, AbstractUser
 from django.utils.translation import gettext_lazy as _
+import datetime
 
 COMAND_CHOICES = [(000, "000 - Не указан"), (201, "201 - Строительный первый"), (202, "202 - Строительный второй")]
 
@@ -17,6 +18,17 @@ class JobTitleModel(models.Model):
     def __str__(self):
         return f'{self.job_title}'
 
+class CommandNumberModel(models.Model):
+    """Номера отделов"""
+    command_number = models.CharField("Номер отдела/Сокращение", max_length=15)
+    command_name = models.CharField("Наименование отдела", max_length=150)
+
+    def __str__(self):
+        return f'{self.command_number}, {self.command_name}'
+
+    class Meta:
+        verbose_name = _("номер отдела")
+        verbose_name_plural = _("номера отделов")
 
 class Employee(models.Model):
     """
@@ -33,7 +45,7 @@ class Employee(models.Model):
     first_name = models.CharField("Имя", max_length=150)
     middle_name = models.CharField("Отчество", max_length=150)
     job_title = models.ForeignKey(JobTitleModel, on_delete=models.PROTECT, null=True, verbose_name="Должность")
-    department = models.IntegerField("№ отдела", choices=COMAND_CHOICES, default=000)
+    department = models.ForeignKey(CommandNumberModel, on_delete=models.PROTECT, null=True, verbose_name="№ отдела")
     user_phone = models.IntegerField("№ телефона")
     department_group = models.IntegerField(verbose_name="Управление", default=None, choices=GroupDepartment.choices)
     right_to_sign = models.BooleanField(verbose_name="Право подписывать", default=False)
@@ -52,7 +64,7 @@ class CanAcceptModel(models.Model):
     user_accept = models.ForeignKey(Employee, on_delete=models.PROTECT, verbose_name="Сотрудник", null=True)
 
     def __str__(self):
-        return f'{self.user_accept}'
+        return f'{self.user_accept.department.command_number}, {self.user_accept} ({self.user_accept.job_title.job_title})'
 
     class Meta:
         verbose_name = _("принимающий задания")
@@ -123,14 +135,16 @@ class CpeModel(models.Model):
 
 
 
+
 class TaskModel(models.Model):
     """    Таблица заданий    """
 
-    class StatusTask(models.IntegerChoices):
-        """        Тест       """
-        ACTIVE = 1, _('Активно')
-        POSTPONED = 2, _('Отложено')
-        DONE = 3, _('Выполнено')
+    class StatusTaskChoice(models.IntegerChoices):
+        """        Статус задания       """
+        ON_SIGN = 1, _('На подписании')
+        ACTUAL = 2, _('Актуально')
+        CORRECTION = 3, _('На корректировке')
+        CANCELED = 0, _('Аннулировано')
 
     class TypeWorkTask(models.IntegerChoices):
         """        Выбор вида документации        """
@@ -141,23 +155,36 @@ class TaskModel(models.Model):
     author = models.ForeignKey(Employee, on_delete=models.PROTECT, verbose_name="Автор задания")
     text_task = models.TextField("Текст задания", max_length=5000)
     task_number = models.CharField("Номер задания", max_length=10)
-    department_number = models.IntegerField("Номер отдела", choices=COMAND_CHOICES, default=000)
+    department_number = models.ForeignKey(CommandNumberModel, verbose_name="Номер отдела", on_delete=models.PROTECT, null=True)
     task_type_work = models.IntegerField("Вид документации:", choices=TypeWorkTask.choices, default=0)
     task_order = models.ForeignKey(OrdersModel, on_delete=models.PROTECT, verbose_name="Номер заказа")
     task_object = models.ForeignKey(ObjectModel, on_delete=models.PROTECT, verbose_name="Наименование объекта")
     task_contract = models.ForeignKey(ContractModel, on_delete=models.PROTECT, verbose_name="Номер контракта")
     task_stage = models.ForeignKey(StageModel, on_delete=models.PROTECT, verbose_name="Этап договора")
-    task_change_number = models.IntegerField("Номер изменения", default=None, null=True)
+    task_change_number = models.IntegerField("Номер изменения", default=0, null=True)
     first_sign_user = models.ForeignKey(Employee, on_delete=models.PROTECT, null=True,
                                         verbose_name="Первый руководитель", related_name="first_sign_user_employee")
     first_sign_status = models.BooleanField("Подпись первого руководителя", default=False)
+    first_sign_date = models.DateTimeField("Дата и время подписи первого подписанта", default=None,
+                                           null=True)
     second_sign_user = models.ForeignKey(Employee, on_delete=models.PROTECT, null=True,
                                          verbose_name="Второй руководитель", related_name="second_sign_user_employee")
     second_sign_status = models.BooleanField("Подпись второго руководителя", default=False)
+    second_sign_date = models.DateTimeField("Дата и время подписи первого подписанта", default=None,
+                                            null=True)
     cpe_sign_user = models.ForeignKey(Employee, on_delete=models.PROTECT, null=True,
                                       verbose_name="Главный инженер проекта", related_name="cpe_sign_user_employee")
+    cpe_sign_date = models.DateTimeField("Дата и время подписи первого подписанта", default=None, null=True)
     cpe_sign_status = models.BooleanField("Подпись ГИП-а", default=False)
+    cpe_comment = models.TextField("Текст задания", max_length=5000, null=True, default=None)
     back_to_change = models.BooleanField("Возвращено на доработку", default=False)
+    task_status = models.IntegerField("Статус задания", choices=StatusTaskChoice.choices, default=StatusTaskChoice.ON_SIGN)
+    task_create_date = models.DateTimeField("Дата создания", auto_now_add=True, null=True)
+    task_last_edit = models.DateTimeField("Дата последнего изменения", null=True)
+    incoming_employee = models.ForeignKey(CanAcceptModel, verbose_name="Кто может принимает задание", on_delete=models.SET_NULL, null=True)
+    incoming_status = models.BooleanField("Принимающий принял задание", default=False)
+    incoming_date = models.DateTimeField("Дата и время подписи первого подписанта", default=None,
+                                            null=True)
 
     def __str__(self):
         return f'{self.task_number}, {self.author}'
@@ -165,3 +192,19 @@ class TaskModel(models.Model):
     class Meta:
         verbose_name = _("задание")
         verbose_name_plural = _("задания")
+
+
+
+class TaskNumbersModel(models.Model):
+    """Номера заданий под отделам"""
+
+    command_number = models.ForeignKey(CommandNumberModel, on_delete=models.PROTECT)
+    year_of_task = models.IntegerField("Год выдачи заданий", default=datetime.datetime.today().year)
+    count_of_task = models.IntegerField("Счетчик заданий", default=1)
+
+    def __str__(self):
+        return f'Отдел {self.command_number} в {self.year_of_task} году выдал {self.count_of_task}'
+
+    class Meta:
+        verbose_name = _("счетчик заданий")
+        verbose_name_plural = _("счетчики заданий")

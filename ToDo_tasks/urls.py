@@ -15,5 +15,6 @@ urlpatterns = [
         success_url='/'), name='change_password'),
     path('details/<int:pk>/change', views.EditTaskView.as_view(), name='change'),
     path('details_to_sign/<int:pk>', views.ToSignDetailView.as_view(), name='details_to_sign'),
-    path('incoming_to_sign/', views.ToSignListView.as_view(), name='incoming_to_sign')
+    path('incoming_to_sign/', views.ToSignListView.as_view(), name='incoming_to_sign'),
+    path('index_test/', views.IndexTestView.as_view(), name='test')
 ]
