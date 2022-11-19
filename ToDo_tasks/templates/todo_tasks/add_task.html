@@ -8,9 +8,8 @@
     <br>
     <h2 class="m-3, text-center">Выдать задание</h2>
     <br>
-{#    {% if field.errors %}<li>{{ field.errors|striptags }}</li>{% endif %}#}
     <form id="formAdd" method="post" data-contracts-url="{% url 'ajax_load_contracts' %}"
-          data-stages-url="{% url 'ajax_load_stages' %}">
+          data-stages-url="{% url 'ajax_load_stages' %}" data-incoming-emp-url="{% url 'ajax_load_inc_emp' %}">
         <div class="container">
 
             <div class="row">
@@ -37,14 +36,6 @@
                     {#                    Здесь должно быть поле для загрузки файла#}
                 </div>
             </div>
-
-
-            <br>
-            {#        <h2 class="m-3, text-center">Выдать задание</h2>#}
-
-            {#        {% csrf_token %}#}
-            {#        {{ form.as_table }}#}
-            <br>
 
 
             <div class="row justify-content-center">
@@ -74,6 +65,17 @@
                 </div>
             </div>
             <br>
+
+            <div class="row justify-content-center">
+                <div class="col-2">
+                    Принимает:
+                </div>
+                <div class="col-3">
+                    {{ form.incoming_employee }}
+                </div>
+            </div>
+            <br>
+
             <div class="row justify-content-center">
                 <div class="col">
                     <figure class="text-center">
@@ -98,7 +100,7 @@
     <!JS для фильтрации списка контрактов>
     <script>
         $("#id_task_object").change(function () {
-            var url = $("#formAdd").attr("data-contracts-url");  // url of the `load_contact` view
+            var url = $("#formAdd").attr("data-contracts-url");
             var objectId = $(this).val();  // получаем object ID из HTML input
 
             $.ajax({                       // формируем AJAX запрос
@@ -128,6 +130,24 @@
             });
 
         });
+
+        {#$("#id_incoming_dep").change(function () {#}
+        {#    var url = $("#formAdd").attr("data-incoming-emp-url");#}
+        {#    var depId = $(this).val();#}
+        {##}
+        {#    $.ajax({#}
+        {#        url: url,#}
+        {#        data: {#}
+        {#            'departament': depId#}
+        {#        },#}
+        {#        success: function (data) {#}
+        {#            $("#id_incoming_employee").html(data);#}
+        {#        }#}
+        {#    });#}
+        {##}
+        {#});#}
     </script>
 {% endblock %}
+
+
 

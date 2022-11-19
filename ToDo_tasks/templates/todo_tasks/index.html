@@ -1,12 +1,12 @@
 {% extends "todo_tasks/base.html" %}
 {% load static %}
-{% block title %}
-    Главная страница
-{% endblock %}
+{#{% block title %}#}
+{#    Главная страница#}
+{#{% endblock %}#}
 
 {% block content %}
     <br>
-    <h3 class="text-center">Задания отдела {{ user.department }}</h3>
+    <h3 class="text-center">Исходящие задания отдела {{ user.department.command_number }}</h3>
     <!-- Подключение вкладок -->
     <ul class="nav nav-tabs" id="myTab" role="tablist">
         <!-- Первая вкладка -->
@@ -17,15 +17,8 @@
         </li>
         <!-- Вторая вкладка -->
         <li class="nav-item" role="presentation">
-            <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#my_tasks" type="button"
+            <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#tasks_to_sign" type="button"
                     role="tab" aria-controls="profile" aria-selected="false">Задания на подписи
-            </button>
-        </li>
-        <!-- Третья вкладка -->
-        <li class="nav-item" role="presentation">
-            <button class="nav-link" id="profile-tab-2" data-bs-toggle="tab" data-bs-target="#incoming_tasks"
-                    type="button"
-                    role="tab" aria-controls="profile" aria-selected="false">Все входящие задания
             </button>
         </li>
     </ul>
@@ -48,16 +41,16 @@
                     </thead>
                     <tbody>
                     {% for obj in data_all %}
-                        <tr>
-                            <th scope="row">{{ forloop.counter }}</th>
-                            <td>
-                                <a href="{% url 'details' pk=obj.id %}"
-                                   style="position: absolute; width: 100%; left: 0px; height: 1.5em;"></a>
-                                {{ obj.task_number }}</td>
-                            <td>
-                                {{ obj.text_task|truncatechars:100 }}
-                            </td>
-                            <td>{{ obj.author }}</td>
+                        <tr">
+                        <th scope="row">{{ forloop.counter }}</th>
+                        <td>
+                            <a href="{% url 'details' pk=obj.id %}"
+                               style="position: absolute; width: 100%; left: 0px; height: 1.5em;"></a>
+                            {{ obj.task_number }}</td>
+                        <td>
+                            {{ obj.text_task|truncatechars:100 }}
+                        </td>
+                        <td>{{ obj.author }}</td>
 
                         </tr>
                     {% endfor %}
@@ -66,9 +59,10 @@
             </div>
         </div>
 
-        <!-- Вкладка "мои задания" -->
-        <div class="tab-pane fade" id="my_tasks" role="tabpanel" aria-labelledby="profile-tab">
-            <table id="my_tasks_table" class="table table-hover">
+        <!-- Вкладка Задания на подписи -->
+        <div class="tab-pane fade" id="tasks_to_sign" role="tabpanel" aria-labelledby="profile-tab">
+            <br>
+            <table id="to_sign_tasks_table" class="table table-hover">
                 <thead>
                 <tr>
                     <th scope="col">#</th>
@@ -79,13 +73,13 @@
                 </thead>
 
                 <tbody>
-                {% for obj in data_user %}
+                {% for obj in data_to_sign %}
                     <tr href="{% url 'details' pk=obj.id %}">
                         <th scope="row">{{ forloop.counter }}</th>
                         <td><a href="{% url 'details' pk=obj.id %}"
                                style="position: absolute; width: 100%; left: 0px; height: 1.5em;"></a>
                             {{ obj.task_number }}</td>
-                        <td>{{ obj.text_task }}</td>
+                        <td>{{ obj.text_task|truncatechars:100 }}</td>
                         <td>
                             {% if obj.first_sign_status == 1 and obj.second_sign_status == 1 and obj.cpe_sign_status == 1 %}
                                 <img src="{% static 'todo_tasks/icons/check2-all.svg' %}">
@@ -93,7 +87,7 @@
                                 <img src="{% static 'todo_tasks/icons/check2.svg' %}">
                                 <img src="{% static 'todo_tasks/icons/check2.svg' %}">
                             {% elif obj.first_sign_status == 1 %}
-                                <img src="{% static 'todo_tasks/icons/check2-all.svg' %}">
+                                <img src="{% static 'todo_tasks/icons/check2.svg' %}">
                             {% elif obj.back_to_change == 1 %}
                                 <img src="{% static 'todo_tasks/icons/x-lg.svg' %}">
                             {% endif %}
@@ -144,11 +138,11 @@
             table.buttons().container()
                 .appendTo($('.col-sm-6:eq(0)', table.table().container()));
         });
-    </script>
-    <!-- JS для работы таблицы c заданиями пользователя -->
-    <script>
+
+        <!-- JS для работы таблицы c заданиями пользователя -->
+
         $(document).ready(function () {
-            $('#my_tasks_table').DataTable({
+            $('#to_sign_tasks_table').DataTable({
                     dom:
                         "<'row'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-6'f>>" +
                         "<'row'<'col-sm-12'tr>>" +
@@ -165,20 +159,20 @@
                     },
 
 
-
                     "aLengthMenu": [[1, 3, 5, 10, 25, -1], [1, 3, 5, 10, 25, "All"]],
                     "iDisplayLength": 10,
                     buttons: ['pdf', 'excel']
                 }
             );
         });
+
     </script>
 
-<script>
-// после загрузки страницы
-$(function(){
-    // инициализации подсказок для всех элементов на странице, имеющих атрибут data-toggle="tooltip"
-    $('[data-toggle="tooltip"]').tooltip();
-});
-</script>
+    <script>
+        // после загрузки страницы
+        $(function () {
+            // инициализации подсказок для всех элементов на странице, имеющих атрибут data-toggle="tooltip"
+            $('[data-toggle="tooltip"]').tooltip();
+        });
+    </script>
 {% endblock %}

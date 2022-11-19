@@ -1,4 +1,4 @@
-from .models import TaskModel, ObjectModel, ContractModel, StageModel, OrdersModel, Employee
+from .models import TaskModel, ObjectModel, ContractModel, StageModel, OrdersModel, Employee, CanAcceptModel
 from django.forms import ModelForm, TextInput, Textarea, CheckboxInput, Select, modelformset_factory, ChoiceField
 
 from django.views import View
@@ -22,7 +22,10 @@ class TaskForm(ModelForm):
             "cpe_sign_date",
             "task_status",
             "task_last_edit",
-            "cpe_comment"
+            "cpe_comment",
+            "incoming_date",
+            "incoming_dep",
+            "task_workers"
         ]
         widgets = {"task_order": Select(attrs={"class": "form-select",
                                                "aria-label": "Номер заказа"}),
@@ -42,6 +45,10 @@ class TaskForm(ModelForm):
                                                      "aria-label": "Второй руководитель"}),
                    "cpe_sign_user": Select(attrs={"class": "form-select",
                                                   "aria-label": "ГИП"}),
+                   "incoming_dep": Select(attrs={"class": "form-select",
+                                               "aria-label": "Отдел принимающий задание"}),
+                   "incoming_employee": Select(attrs={"class": "form-select",
+                                                  "aria-label": "Кому"}),
                    }
 
     def __init__(self, *args, **kwargs):
@@ -49,8 +56,10 @@ class TaskForm(ModelForm):
         super().__init__(*args, **kwargs)
         self.fields['task_contract'].queryset = ContractModel.objects  # подгрузка значений
         self.fields['task_stage'].queryset = StageModel.objects  # подгрузка значений
+        # self.fields['incoming_employee'].queryset = CanAcceptModel.objects  # подгрузка значений
         self.fields['task_contract'].choices = [(0, '---------')]  # исходное отображение
         self.fields['task_stage'].choices = [(0, '---------')]  # исходное отображение
+        # self.fields['incoming_employee'].choices = [(0, '---------')]
         # self.fields['first_sign_user'].queryset = Employee.objects.filter(department=department_id).filter(right_to_sign=True)
         # load_department_signature(self.data)
 

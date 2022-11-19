@@ -18,6 +18,7 @@ class JobTitleModel(models.Model):
     def __str__(self):
         return f'{self.job_title}'
 
+
 class CommandNumberModel(models.Model):
     """Номера отделов"""
     command_number = models.CharField("Номер отдела/Сокращение", max_length=15)
@@ -29,6 +30,7 @@ class CommandNumberModel(models.Model):
     class Meta:
         verbose_name = _("номер отдела")
         verbose_name_plural = _("номера отделов")
+
 
 class Employee(models.Model):
     """
@@ -134,8 +136,6 @@ class CpeModel(models.Model):
         return f'{self.cpe_user}, {self.cpe_object}'
 
 
-
-
 class TaskModel(models.Model):
     """    Таблица заданий    """
 
@@ -155,7 +155,8 @@ class TaskModel(models.Model):
     author = models.ForeignKey(Employee, on_delete=models.PROTECT, verbose_name="Автор задания")
     text_task = models.TextField("Текст задания", max_length=5000)
     task_number = models.CharField("Номер задания", max_length=10)
-    department_number = models.ForeignKey(CommandNumberModel, verbose_name="Номер отдела", on_delete=models.PROTECT, null=True)
+    department_number = models.ForeignKey(CommandNumberModel, verbose_name="Номер отдела", on_delete=models.PROTECT,
+                                          null=True)
     task_type_work = models.IntegerField("Вид документации:", choices=TypeWorkTask.choices, default=0)
     task_order = models.ForeignKey(OrdersModel, on_delete=models.PROTECT, verbose_name="Номер заказа")
     task_object = models.ForeignKey(ObjectModel, on_delete=models.PROTECT, verbose_name="Наименование объекта")
@@ -178,13 +179,18 @@ class TaskModel(models.Model):
     cpe_sign_status = models.BooleanField("Подпись ГИП-а", default=False)
     cpe_comment = models.TextField("Текст задания", max_length=5000, null=True, default=None)
     back_to_change = models.BooleanField("Возвращено на доработку", default=False)
-    task_status = models.IntegerField("Статус задания", choices=StatusTaskChoice.choices, default=StatusTaskChoice.ON_SIGN)
+    task_status = models.IntegerField("Статус задания", choices=StatusTaskChoice.choices,
+                                      default=StatusTaskChoice.ON_SIGN)
     task_create_date = models.DateTimeField("Дата создания", auto_now_add=True, null=True)
     task_last_edit = models.DateTimeField("Дата последнего изменения", null=True)
-    incoming_employee = models.ForeignKey(CanAcceptModel, verbose_name="Кто может принимает задание", on_delete=models.SET_NULL, null=True)
+    incoming_dep = models.ForeignKey(CommandNumberModel, on_delete=models.SET_NULL, null=True,
+                                     verbose_name="Отдел принимающий задание", related_name="incoming_dep_id")
+    incoming_employee = models.ForeignKey(CanAcceptModel, verbose_name="Кто может принимает задание",
+                                          on_delete=models.SET_NULL, null=True)
     incoming_status = models.BooleanField("Принимающий принял задание", default=False)
     incoming_date = models.DateTimeField("Дата и время подписи первого подписанта", default=None,
-                                            null=True)
+                                         null=True)
+    task_workers = models.BooleanField("Наличие исполнителей", default=False)
 
     def __str__(self):
         return f'{self.task_number}, {self.author}'
@@ -192,7 +198,6 @@ class TaskModel(models.Model):
     class Meta:
         verbose_name = _("задание")
         verbose_name_plural = _("задания")
-
 
 
 class TaskNumbersModel(models.Model):
@@ -208,3 +213,11 @@ class TaskNumbersModel(models.Model):
     class Meta:
         verbose_name = _("счетчик заданий")
         verbose_name_plural = _("счетчики заданий")
+
+
+class WorkerModel(models.Model):
+    """Таблица назначенных исполнителей"""
+
+    worker_user = models.ForeignKey(Employee, on_delete=models.SET_NULL, verbose_name="Сотрудник", null=True)
+    task = models.ForeignKey(TaskModel, on_delete=models.CASCADE, verbose_name="Задание", null=True)
+    read_status = models.BooleanField("Статус прочтения", default=False)
