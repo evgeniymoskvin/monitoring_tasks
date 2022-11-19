@@ -12,24 +12,13 @@
           data-stages-url="{% url 'ajax_load_stages' %}">
         <div class="container">
 
-            <div class="row">
-                <div class="col">
+            <div class="row justify-content-center">
+                <div class="col-5">
                     {% csrf_token %}
 
-                    Объект:
-                    {{ form.task_object }}
-                    Номер договора:
-                    {{ form.task_contract }}
-                    Этап:
-                    {{ form.task_stage }}
-                    Номер заказа:
-                    {{ form.task_order }}
-                    Вид документации:
-                    {{ form.task_type_work }}
                     <br>
 
-                </div>
-                <div class="col">
+
                     Текст задания:
                     {{ form.text_task }}
                     <br>
@@ -73,9 +62,21 @@
                 </div>
             </div>
             <br>
+
+                        <div class="row justify-content-center">
+                <div class="col-2">
+                    Принимает:
+                </div>
+                <div class="col-3">
+                    {{ form.incoming_employee }}
+                </div>
+            </div>
+            <br>
+
             <div class="row justify-content-center">
                 <div class="col">
                     <figure class="text-center">
+                        <input type="submit" class="btn btn-danger" name="delete_number" value="Удалить">
                         <a href="{% url "details" pk=obj.id %}" class="btn btn-secondary">Отмена</a>
                         <button type="submit" class="btn btn-success" href="{% url 'change' pk=obj.id%}">Сохранить
                         </button>

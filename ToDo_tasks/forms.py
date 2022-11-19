@@ -56,21 +56,9 @@ class TaskForm(ModelForm):
         super().__init__(*args, **kwargs)
         self.fields['task_contract'].queryset = ContractModel.objects  # подгрузка значений
         self.fields['task_stage'].queryset = StageModel.objects  # подгрузка значений
-        # self.fields['incoming_employee'].queryset = CanAcceptModel.objects  # подгрузка значений
         self.fields['task_contract'].choices = [(0, '---------')]  # исходное отображение
         self.fields['task_stage'].choices = [(0, '---------')]  # исходное отображение
-        # self.fields['incoming_employee'].choices = [(0, '---------')]
-        # self.fields['first_sign_user'].queryset = Employee.objects.filter(department=department_id).filter(right_to_sign=True)
-        # load_department_signature(self.data)
 
-        # if 'task_object' in self.data:
-        #     try:
-        #         object_id = int(self.data.get('task_object'))
-        #         self.fields['task_contract'].queryset = ContractModel.objects.filter(contract_object=object_id)
-        #     except (ValueError, TypeError):
-        #         pass  # invalid input from the client; ignore and fallback to empty City queryset
-
-        # print(self.data)
 
 
 class TaskCheckForm(ModelForm):
@@ -96,4 +84,57 @@ class TaskCheckForm(ModelForm):
                                                 "readonly": True}),
                    "incoming_employee": TextInput(attrs={"class": "form-control",
                                               "readonly": True})
+                   }
+
+
+class TaskEditForm(ModelForm):
+    class Meta:
+        model = TaskModel
+        # fields = '__all__'
+        exclude = [
+            "author",
+            'department_number',
+            'task_number',
+            'task_change_number',
+            "first_sign_status",
+            "second_sign_status",
+            "cpe_sign_status",
+            "back_to_change",
+            "first_sign_date",
+            "second_sign_date",
+            "cpe_sign_date",
+            "task_status",
+            "task_last_edit",
+            "cpe_comment",
+            "incoming_date",
+            "incoming_dep",
+            "task_workers",
+            'task_order',
+            'task_object',
+            'task_contract',
+            'task_stage',
+            'task_type_work',
+        ]
+        widgets = {"task_order": Select(attrs={"class": "form-select",
+                                               "aria-label": "Номер заказа"}),
+                   "task_object": Select(attrs={"class": "form-select",
+                                                "aria-label": "Наименование объекта"}),
+                   "task_contract": Select(attrs={"class": "form-select",
+                                                  "aria-label": "Номер контракта"}),
+                   "task_stage": Select(attrs={"class": "form-select",
+                                               "aria-label": "Этап договора"}),
+                   "text_task": Textarea(attrs={"placeholder": "Введите текст задания",
+                                                "class": "form-control"}),
+                   "task_type_work": Select(attrs={"class": "form-select",
+                                                   "aria-label": "Вид документации"}),
+                   "first_sign_user": Select(attrs={"class": "form-select",
+                                                    "aria-label": "Первый руководитель"}),
+                   "second_sign_user": Select(attrs={"class": "form-select",
+                                                     "aria-label": "Второй руководитель"}),
+                   "cpe_sign_user": Select(attrs={"class": "form-select",
+                                                  "aria-label": "ГИП"}),
+                   "incoming_dep": Select(attrs={"class": "form-select",
+                                               "aria-label": "Отдел принимающий задание"}),
+                   "incoming_employee": Select(attrs={"class": "form-select",
+                                                  "aria-label": "Кому"}),
                    }

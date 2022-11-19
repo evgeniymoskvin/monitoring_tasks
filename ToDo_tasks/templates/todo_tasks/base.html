@@ -41,9 +41,7 @@
             </li>
 
             </li>
-            {#            <li class="nav-item"><a href="{% url 'add_task' %}" class="nav-link link-dark px-2">Добавить запись</a></li>#}
-            {#            <li class="nav-item"><a href="{% url 'about' %}" class="nav-link link-dark px-2">About</a></li>#}
-            {#            <li class="nav-item"><a href="{% url 'api' %}" class="nav-link link-dark px-2">API</a></li>#}
+
         </ul>
         <ul class="nav">
             <li class="nav-item"><a class="nav-link link-dark px-2 active">{{ user }}</a></li>
@@ -58,8 +56,9 @@
                         <li><a class="dropdown-item" href="{% url 'incoming_to_sign' %}">Требующие
                             подписи {{ count_task_to_sign }}</a>
                         </li>
+                         <li><a class="dropdown-item" href="{% url 'incoming_to_workers' %}">Требующие назначить исполнителей {{ count_task_to_workers }}</a></li>
                     {% endif %}
-                <li><a class="dropdown-item" href="{% url 'incoming_to_workers' %}">Требующие назначить исполнителей {{ count_task_to_workers }}</a></li>
+
 
                     <li><a class="dropdown-item" href="{% url 'my_tasks' %}">Мои задания</a></li>
                     <li>

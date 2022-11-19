@@ -221,3 +221,9 @@ class WorkerModel(models.Model):
     worker_user = models.ForeignKey(Employee, on_delete=models.SET_NULL, verbose_name="Сотрудник", null=True)
     task = models.ForeignKey(TaskModel, on_delete=models.CASCADE, verbose_name="Задание", null=True)
     read_status = models.BooleanField("Статус прочтения", default=False)
+
+
+class BackCommentModel(models.Model):
+    """Таблица заданий возвраты"""
+    task = models.ForeignKey(TaskModel, on_delete=models.CASCADE, verbose_name="Задание", null=True)
+    bad_comment = models.TextField("Текст задания", max_length=5000, null=True, default=None)

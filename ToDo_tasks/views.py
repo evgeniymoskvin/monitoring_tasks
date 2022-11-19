@@ -5,8 +5,8 @@ from django.utils import timezone
 from django.views import View
 
 from .models import Employee, TaskModel, ContractModel, ObjectModel, StageModel, TaskNumbersModel, CommandNumberModel, \
-    CpeModel, CanAcceptModel
-from .forms import TaskForm, TaskCheckForm
+    CpeModel, CanAcceptModel, BackCommentModel
+from .forms import TaskForm, TaskCheckForm, TaskEditForm
 from .functions import get_signature_info, get_data_for_form, get_data_for_detail, get_list_to_sign
 
 
@@ -28,8 +28,10 @@ class IndexView(View):
             # Получаем список заданий на подписи отдела пользователя
             data_to_sign = TaskModel.objects.get_queryset().filter(department_number=user.department).filter(
                 task_status=1)
-            data_to_workers = TaskModel.objects.get_queryset().filter(task_status=2).filter(incoming_dep=user.department).filter(task_workers=False)
+            data_to_workers = TaskModel.objects.get_queryset().filter(task_status=2).filter(
+                incoming_dep=user.department).filter(task_workers=False)
             count_task_to_sign = 0
+            count_task_to_workers = 0
             if user.right_to_sign == True:
                 count_task_to_sign = len(get_list_to_sign(user))  # Получение количества заданий ожидающих подписи
                 count_task_to_workers = data_to_workers.count()
@@ -141,13 +143,20 @@ class EditTaskView(View):
     def get(self, request, pk):
         """Получаем номер редактируемого задания из query params (pk) и заполняем форму с данными из бд"""
         obj = TaskModel.objects.get(pk=pk)
-        form = TaskForm(instance=obj)
+
+        form = TaskEditForm(instance=obj)
 
         department_user = Employee.objects.get(user=request.user).department
         form.fields['first_sign_user'].queryset = Employee.objects.filter(department=department_user).filter(
             right_to_sign=True)  # получаем в 1ое поле список пользователей по двум фильтрам
         form.fields['second_sign_user'].queryset = Employee.objects.filter(department=department_user).filter(
             right_to_sign=True)  # получаем во 2ое поле список пользователей по двум фильтрам
+        test_test = CpeModel.objects.get_queryset()
+        list_cpe = []
+        for objects in test_test:
+            list_cpe.append(objects.cpe_user.id)
+        form.fields["cpe_sign_user"].queryset = Employee.objects.get_queryset().filter(id__in=list_cpe)
+            # Employee.objects.filter(department=department_user)
 
         context = {
             'form': form,
@@ -158,33 +167,31 @@ class EditTaskView(View):
 
     def post(self, request, pk):
         """Обновляем данные базы данных"""
-        form = TaskForm(request.POST)
-
-        # if form.is_valid():
-        obj = TaskModel.objects.get(pk=pk)  # Получаем объект из бд
-        # Присваиваем вручную новые данные из формы, почему только так работает, сказать не могу
-        # Номер задания и автор остаются исходными
-        obj.task_object.id = form.data['task_object']
-        obj.task_contract.id = form.data['task_contract']
-        obj.task_stage.id = form.data['task_stage']
-        obj.task_order.id = form.data['task_stage']
-        obj.task_type_work = form.data['task_type_work']
-        obj.text_task = form.data['text_task']
-        print(form.data['first_sign_user'])
-        obj.first_sign_user_id = form.data['first_sign_user']
-        obj.second_sign_user_id = form.data['second_sign_user']
-        obj.cpe_sign_user_id = form.data['cpe_sign_user']
-        # На случай, если задание было возвращено, обнуляем значения подписей и флаг back_to_change
-        obj.first_sign_status = 0
-        obj.second_sign_status = 0
-        obj.cpe_sign_status = 0
-        obj.back_to_change = 0
-        obj.task_last_edit = timezone.now()
-        # Сохраняем новые данные в базу данных
-        obj.save()
-
-        print(f"сработал пост{pk}")
-        return redirect(f'/details/{pk}')
+        if 'delete_number' in request.POST:
+            print(pk, ' delete')
+            return redirect(f'index')
+        else:
+            form = TaskEditForm(request.POST)
+            # if form.is_valid():
+            obj = TaskModel.objects.get(pk=pk)  # Получаем объект из бд
+            # Присваиваем вручную новые данные из формы, почему только так работает, сказать не могу
+            # Номер задания и автор остаются исходными
+            obj.text_task = form.data['text_task']
+            print(form.data['first_sign_user'])
+            obj.first_sign_user_id = form.data['first_sign_user']
+            obj.second_sign_user_id = form.data['second_sign_user']
+            obj.cpe_sign_user_id = form.data['cpe_sign_user']
+            obj.incoming_employee_id = form.data['incoming_employee']
+            # На случай, если задание было возвращено, обнуляем значения подписей и флаг back_to_change
+            obj.first_sign_status = 0
+            obj.second_sign_status = 0
+            obj.cpe_sign_status = 0
+            obj.back_to_change = 0
+            obj.task_last_edit = timezone.now()  # обновляем дату последнего изменения
+            # Сохраняем новые данные в базу данных
+            obj.save()
+            print(f"сработал пост{pk}")
+            return redirect(f'/details/{pk}')
 
 
 class ToSignListView(View):
@@ -205,7 +212,8 @@ class ToWorkerListView(View):
     def get(self, request):
         sign_user = Employee.objects.get(user=request.user)  # получаем пользователя
         user_dep = sign_user.department_id
-        data_without_workers = TaskModel.objects.get_queryset().filter(incoming_dep=user_dep).filter(task_status=2).filter(task_workers=False)  # получаем список заданий
+        data_without_workers = TaskModel.objects.get_queryset().filter(incoming_dep=user_dep).filter(
+            task_status=2).filter(task_workers=False)  # получаем список заданий
         print(data_without_workers)
         content = {
             'data_without_workers': data_without_workers,
@@ -220,7 +228,7 @@ class ToSignDetailView(View):
         content = get_data_for_detail(request, pk)
         return render(request, 'todo_tasks/details_to_sign.html', content)
 
- # Отработка кнопок подписи задания
+    # Отработка кнопок подписи задания
     def post(self, request, pk):
         obj = TaskModel.objects.get(pk=pk)
         if 'sign1' in request.POST:
@@ -262,10 +270,12 @@ class ToSignDetailView(View):
             return redirect('incoming_to_sign')
         elif 'back_modal_button' in request.POST:
             print(request.POST.get('back_modal_text'))
+            # obj =
         elif 'comment_modal_button' in request.POST:
             obj.cpe_sign_status = True
             obj.cpe_sign_date = timezone.now()
             obj.task_status = 2
+            obj.cpe_comment = request.POST.get('comment_modal_text')
             obj.save()
             print(pk, request.POST.get('comment_modal_text'))
         return redirect(request.META['HTTP_REFERER'])
@@ -275,8 +285,8 @@ class ToAddWorkersDetailView(View):
     """Страница добавления ответственных"""
 
     def get(self, request, pk):
-            content = get_data_for_detail(request, pk)
-            return render(request, 'todo_tasks/details_to_add_workers.html', content)
+        content = get_data_for_detail(request, pk)
+        return render(request, 'todo_tasks/details_to_add_workers.html', content)
 
     def post(self, request, pk):
         obj = TaskModel.objects.get(pk=pk)
@@ -286,7 +296,6 @@ class ToAddWorkersDetailView(View):
             # obj.first_sign_date = timezone.now()
             obj.save()
         return redirect(request.META['HTTP_REFERER'])
-
 
 
 class IndexTestView(View):
@@ -317,4 +326,5 @@ def load_incoming_employee(request):
     department_id = request.GET.get("departament")
     incoming_employee = CanAcceptModel.objects.filter(user_accept__department_id=department_id)
     print(incoming_employee)
-    return render(request, 'todo_tasks/dropdown_update/incoming_dropdown_list_update.html', {'incoming_employee': incoming_employee})
+    return render(request, 'todo_tasks/dropdown_update/incoming_dropdown_list_update.html',
+                  {'incoming_employee': incoming_employee})
