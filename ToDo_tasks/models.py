@@ -52,6 +52,8 @@ class Employee(models.Model):
     department_group = models.IntegerField(verbose_name="Управление", default=None, choices=GroupDepartment.choices)
     right_to_sign = models.BooleanField(verbose_name="Право подписывать", default=False)
     check_edit = models.BooleanField("Возможность редактирования", default=False)
+    can_make_task = models.BooleanField("Возможность выдавать задания", default=True)
+    cpe_flag = models.BooleanField("Флаг ГИП (техническая метка)", default=False)
 
     def __str__(self):
         return f'{self.last_name} {self.first_name} {self.middle_name}'

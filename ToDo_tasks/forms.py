@@ -1,5 +1,5 @@
 from .models import TaskModel, ObjectModel, ContractModel, StageModel, OrdersModel, Employee, CanAcceptModel
-from django.forms import ModelForm, TextInput, Textarea, CheckboxInput, Select, modelformset_factory, ChoiceField
+from django.forms import ModelForm, TextInput, Textarea, CheckboxInput, Select, modelformset_factory, ChoiceField, Form, CharField, ModelChoiceField
 
 from django.views import View
 
@@ -52,7 +52,6 @@ class TaskForm(ModelForm):
                    }
 
     def __init__(self, *args, **kwargs):
-        department_id = kwargs.pop('department_user', None)
         super().__init__(*args, **kwargs)
         self.fields['task_contract'].queryset = ContractModel.objects  # подгрузка значений
         self.fields['task_stage'].queryset = StageModel.objects  # подгрузка значений
@@ -88,6 +87,7 @@ class TaskCheckForm(ModelForm):
 
 
 class TaskEditForm(ModelForm):
+    """Форма для внесения изменений в задание"""
     class Meta:
         model = TaskModel
         # fields = '__all__'
@@ -115,26 +115,38 @@ class TaskEditForm(ModelForm):
             'task_stage',
             'task_type_work',
         ]
-        widgets = {"task_order": Select(attrs={"class": "form-select",
-                                               "aria-label": "Номер заказа"}),
-                   "task_object": Select(attrs={"class": "form-select",
-                                                "aria-label": "Наименование объекта"}),
-                   "task_contract": Select(attrs={"class": "form-select",
-                                                  "aria-label": "Номер контракта"}),
-                   "task_stage": Select(attrs={"class": "form-select",
-                                               "aria-label": "Этап договора"}),
-                   "text_task": Textarea(attrs={"placeholder": "Введите текст задания",
+        widgets = {"text_task": Textarea(attrs={"placeholder": "Введите текст задания",
                                                 "class": "form-control"}),
-                   "task_type_work": Select(attrs={"class": "form-select",
-                                                   "aria-label": "Вид документации"}),
                    "first_sign_user": Select(attrs={"class": "form-select",
                                                     "aria-label": "Первый руководитель"}),
                    "second_sign_user": Select(attrs={"class": "form-select",
                                                      "aria-label": "Второй руководитель"}),
                    "cpe_sign_user": Select(attrs={"class": "form-select",
                                                   "aria-label": "ГИП"}),
-                   "incoming_dep": Select(attrs={"class": "form-select",
-                                               "aria-label": "Отдел принимающий задание"}),
                    "incoming_employee": Select(attrs={"class": "form-select",
                                                   "aria-label": "Кому"}),
                    }
+
+
+class SearchForm(Form):
+
+    task_order = ModelChoiceField(widget=Select(attrs={"class": "form-select",
+                                               "aria-label": "Номер заказа"}),
+                                  queryset=OrdersModel.objects,
+                                  empty_label="Не выбрано",
+                                  required=False)
+    task_object = ModelChoiceField(widget=Select(attrs={"class": "form-select"}),
+                                   queryset=ObjectModel.objects,
+                                   empty_label="Не выбрано",
+                                  required=False)
+    task_contract = ModelChoiceField(widget=Select(attrs={"class": "form-select"}),
+                                     queryset=ContractModel.objects,
+                                     empty_label="Не выбрано",
+                                     required=False)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['task_contract'].queryset = ContractModel.objects  # подгрузка значений
+        self.fields['task_contract'].choices = [(0, '---------')]
+
+

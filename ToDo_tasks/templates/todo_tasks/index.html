@@ -1,173 +1,35 @@
 {% extends "todo_tasks/base.html" %}
 {% load static %}
-{#{% block title %}#}
-{#    Главная страница#}
-{#{% endblock %}#}
+{% block title %}
+    Главная страница
+{% endblock %}
 
 {% block content %}
-    <br>
-    <h3 class="text-center">Исходящие задания отдела {{ user.department.command_number }}</h3>
-    <!-- Подключение вкладок -->
-    <ul class="nav nav-tabs" id="myTab" role="tablist">
-        <!-- Первая вкладка -->
-        <li class="nav-item" role="presentation">
-            <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#all_tasks" type="button"
-                    role="tab" aria-controls="home" aria-selected="true">Все выданные задания
-            </button>
-        </li>
-        <!-- Вторая вкладка -->
-        <li class="nav-item" role="presentation">
-            <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#tasks_to_sign" type="button"
-                    role="tab" aria-controls="profile" aria-selected="false">Задания на подписи
-            </button>
-        </li>
-    </ul>
-
-    <!-- Содержимое вкладок -->
-
-    <!-- Вкладка со всеми заданиями -->
-    <div class="tab-content" id="myTabContent">
-        <div class="tab-pane fade show active" id="all_tasks" role="tabpanel" aria-labelledby="home-tab">
-            <div>
-                <br>
-                <table id="all_tasks_table" class="table table-hover" style="width: 100%">
-                    <thead>
-                    <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">Номер задания</th>
-                        <th scope="col">Текст задания</th>
-                        <th scope="col">Автор задания</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {% for obj in data_all %}
-                        <tr">
-                        <th scope="row">{{ forloop.counter }}</th>
-                        <td>
-                            <a href="{% url 'details' pk=obj.id %}"
-                               style="position: absolute; width: 100%; left: 0px; height: 1.5em;"></a>
-                            {{ obj.task_number }}</td>
-                        <td>
-                            {{ obj.text_task|truncatechars:100 }}
-                        </td>
-                        <td>{{ obj.author }}</td>
-
-                        </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
+    <form method="POST">
+        <div class="container vh-100 d-flex justify-content-center align-items-center">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-5">
+                    <span data-toggle="tooltip" title="Привет">
+                        <h1 class="display-6" >{{ user }}, давайте что-нибудь поищем</h1></span>
+                </div>
+                <div class="col-7 justify-content-center align-self-center">
+                    <span data-toggle="tooltip" title="Чувствителен к регистру">
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control" placeholder="Пишите вот сюда" name="search_field">
+                        <input type="submit" class="btn btn-secondary" name="search_button" value="Найти">
+                    </div>
+                    </span>
+                </div>
             </div>
+
         </div>
-
-        <!-- Вкладка Задания на подписи -->
-        <div class="tab-pane fade" id="tasks_to_sign" role="tabpanel" aria-labelledby="profile-tab">
-            <br>
-            <table id="to_sign_tasks_table" class="table table-hover">
-                <thead>
-                <tr>
-                    <th scope="col">#</th>
-                    <th scope="col">Номер задания</th>
-                    <th scope="col">Текст задания</th>
-                    <th scope="col">Подпись</th>
-                </tr>
-                </thead>
-
-                <tbody>
-                {% for obj in data_to_sign %}
-                    <tr href="{% url 'details' pk=obj.id %}">
-                        <th scope="row">{{ forloop.counter }}</th>
-                        <td><a href="{% url 'details' pk=obj.id %}"
-                               style="position: absolute; width: 100%; left: 0px; height: 1.5em;"></a>
-                            {{ obj.task_number }}</td>
-                        <td>{{ obj.text_task|truncatechars:100 }}</td>
-                        <td>
-                            {% if obj.first_sign_status == 1 and obj.second_sign_status == 1 and obj.cpe_sign_status == 1 %}
-                                <img src="{% static 'todo_tasks/icons/check2-all.svg' %}">
-                            {% elif obj.first_sign_status == 1 and obj.second_sign_status %}
-                                <img src="{% static 'todo_tasks/icons/check2.svg' %}">
-                                <img src="{% static 'todo_tasks/icons/check2.svg' %}">
-                            {% elif obj.first_sign_status == 1 %}
-                                <img src="{% static 'todo_tasks/icons/check2.svg' %}">
-                            {% elif obj.back_to_change == 1 %}
-                                <img src="{% static 'todo_tasks/icons/x-lg.svg' %}">
-                            {% endif %}
-                        </td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-        </div>
-        {#        <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">...</div>#}
-
-        <!-- Вкладка "Входящие задания" -->
-        <div class="tab-pane fade" id="incoming_tasks" role="tabpanel" aria-labelledby="profile-tab-2">
-            <p>Здесь все входящие задания в отдел</p>
-        </div>
-    </div>
-
-
-
+    </form>
 
 {% endblock %}
 
 {% block js_stuff %}
     <!-- JS для работы таблицы со всеми заданиями -->
-    <script>
-        $(document).ready(function () {
-            var table = $('#all_tasks_table').DataTable({
-                    {#order: [[1, 'asc']],#}
-                    dom:
-                        "<'row'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-6'f>>" +
-                        "<'row'<'col-sm-12'tr>>" +
-                        "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>" + "<'row justify-content-md-center'<'col-sm-2 col-md-2 col-xxl-2'B>>",
-                    "language": {
-                        "lengthMenu": "Показать _MENU_",
-                        "zeroRecords": "Записи не найдены",
-                        "info": "Показано с _START_ по _END_ из _TOTAL_ записей",
-                        "search": "Поиск:",
-                        "paginate": {
-                            "next": "Следующая",
-                            "previous": "Предыдущая"
-                        }
-                    },
-                    "aLengthMenu": [[1, 3, 5, 10, 25, -1], [1, 3, 5, 10, 25, "All"]],
-                    "iDisplayLength": 10,
-                    buttons: ['pdf', 'excel']
-                }
-            );
-            table.buttons().container()
-                .appendTo($('.col-sm-6:eq(0)', table.table().container()));
-        });
-
-        <!-- JS для работы таблицы c заданиями пользователя -->
-
-        $(document).ready(function () {
-            $('#to_sign_tasks_table').DataTable({
-                    dom:
-                        "<'row'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-6'f>>" +
-                        "<'row'<'col-sm-12'tr>>" +
-                        "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>" + "<'row justify-content-md-center'<'col-sm-2 col-md-2 col-xxl-2'B>>",
-                    "language": {
-                        "lengthMenu": "Показать _MENU_",
-                        "zeroRecords": "Записи не найдены",
-                        "info": "Показано с _START_ по _END_ из _TOTAL_ записей",
-                        "search": "Поиск:",
-                        "paginate": {
-                            "next": "Следующая",
-                            "previous": "Предыдущая"
-                        }
-                    },
-
-
-                    "aLengthMenu": [[1, 3, 5, 10, 25, -1], [1, 3, 5, 10, 25, "All"]],
-                    "iDisplayLength": 10,
-                    buttons: ['pdf', 'excel']
-                }
-            );
-        });
-
-    </script>
-
     <script>
         // после загрузки страницы
         $(function () {

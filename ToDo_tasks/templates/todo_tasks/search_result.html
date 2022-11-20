@@ -1,12 +1,12 @@
 {% extends "todo_tasks/base.html" %}
 
 {% block title %}
-    Входящие задания
+    Результаты поиска
 {% endblock %}
 
 {% block content %}
     <br>
-    <h3 class="text-center display-6">Входящие задания в отдел {{ user.department.command_number }}</h3>
+    <h3 class="text-center display-6">Результаты поиска "{{ search_word }}"</h3>
 <table id="incoming_table_dep" class="table table-hover" style="width: 100%">
                     <thead>
                     <tr>
@@ -14,12 +14,11 @@
                         <th scope="col">Номер задания</th>
                         <th scope="col">Текст задания</th>
                         <th scope="col">Автор задания</th>
-                        <th scope="col">Исполнители</th>
                     </tr>
                     </thead>
                     <tbody>
 
-                    {% for obj in data_have_workers %}
+                    {% for obj in search_result %}
                         <tr data-href="{% url 'details' pk=obj.id %}">
                             <th scope="row">{{ forloop.counter }}</th>
                             <td>
@@ -28,12 +27,6 @@
                                 {{ obj.task_number }}</td>
                             <td>{{ obj.text_task|truncatechars:100 }}</td>
                             <td>{{ obj.author }}</td>
-                            <td>
-                                {% if obj.task_workers %}
-                                    Назначены
-                                {% else %}
-                                    Не назначены
-                                {% endif %}
                             </td>
                         </tr>
                     {% endfor %}

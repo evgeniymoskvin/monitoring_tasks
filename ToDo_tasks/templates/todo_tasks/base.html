@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html class="h-100" lang="ru">
 <head>
     {% load static %}
     <meta charset="UTF-8">
@@ -24,64 +24,64 @@
 <nav class="py-2 bg-light border-bottom">
     <div class="container d-flex flex-wrap">
         <ul class="nav me-auto">
-            <li class="nav-item"><a href="{% url 'index' %}" class="nav-link link-dark px-2 active" aria-current="page">Главная</a>
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
-                   aria-expanded="false">
-                    Задания отдела
-                </a>
-                <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" href=" {% url 'index' %}">Исходящие</a></li>
-                    <li><a class="dropdown-item" href="{% url 'incoming_to_dep' %}">Входящие</a></li>
-                    <li>
-                        <hr class="dropdown-divider">
-                    </li>
-                    <li><a class="dropdown-item" href="#">Something else here</a></li>
-                </ul>
+            <li class="nav-item">
+                <a href="{% url 'index' %}" class="nav-link link-dark px-2 active" aria-current="page">Главная</a>
             </li>
-
-            </li>
-
         </ul>
+
         <ul class="nav">
-            <li class="nav-item"><a class="nav-link link-dark px-2 active">{{ user }}</a></li>
+            <li class="nav-item dropdown text-light">
+                <a class="nav-link text-black navbar-text">{{ user }}</a>
+            </li>
+
+
             <div class="dropdown">
-                <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton1"
-                        data-bs-toggle="dropdown" aria-expanded="false">
-                    Меню
-                </button>
-                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                    <li><a class="dropdown-item" href="{% url 'add_task' %}">Добавить задание</a></li>
-                    {% if user.right_to_sign == True %}
-                        <li><a class="dropdown-item" href="{% url 'incoming_to_sign' %}">Требующие
-                            подписи {{ count_task_to_sign }}</a>
-                        </li>
-                         <li><a class="dropdown-item" href="{% url 'incoming_to_workers' %}">Требующие назначить исполнителей {{ count_task_to_workers }}</a></li>
-                    {% endif %}
-
-
-                    <li><a class="dropdown-item" href="{% url 'my_tasks' %}">Мои задания</a></li>
-                    <li>
-                        <hr class="dropdown-divider">
-                    </li>
-                    <li><a class="dropdown-item" href="{% url 'change_password' %}">Сменить пароль</a></li>
-                    <li><a class="dropdown-item" href="{% url 'logout' %}">Выйти</a></li>
-                </ul>
+                <a class="nav-link text-black" type="button" data-bs-toggle="offcanvas"
+                   data-bs-target="#offcanvasScrolling"
+                   aria-controls="offcanvasScrolling"> Меню <img src="{% static 'todo_tasks/icons/list.svg' %}"
+                                                                 alt="Меню"></a>
             </div>
             </li>
         </ul>
+        <!--Боковое меню-->
+        <div class="offcanvas offcanvas-end bg-light" data-bs-scroll="true" data-bs-backdrop="false" tabindex="-1"
+             id="offcanvasScrolling" aria-labelledby="offcanvasScrollingLabel">
+            <div class="offcanvas-header">
+                <h5 class="offcanvas-title" id="offcanvasScrollingLabel">Меню</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Закрыть"></button>
+            </div>
+            <div class="offcanvas-body">
+                <a class="dropdown-item" href="{% url 'index' %}">Главная страница</a>
+                <!-- Для руководителей-->
+                {% if user.right_to_sign == True and user.can_make_task == True %}
+                    {% include "todo_tasks/offcanvas/offcanvas_can_sign.html" %}
+                {% elif user.cpe_flag == True %}
+                    {% include "todo_tasks/offcanvas/offcanvas_cpe.html" %}
+                {% else %}
+                    {% include "todo_tasks/offcanvas/offcanvas_worker.html" %}
+                {% endif %}
+                <hr class="dropdown-divider">
+                <a class="dropdown-item" href="{% url 'change_password' %}">Сменить пароль</a>
+                <a class="dropdown-item" href="{% url 'logout' %}">Выйти</a>
+
+
+
+            </div>
+        </div>
     </div>
 </nav>
 
-
 <div class="container">
-
 
     {% block content %}
     {% endblock %}
 </div>
 
-
+<script>
+    $('tr[data-href]').on("click", function () {
+        document.location = $(this).data('href');
+    });
+</script>
 
 
 {% block js_stuff %}

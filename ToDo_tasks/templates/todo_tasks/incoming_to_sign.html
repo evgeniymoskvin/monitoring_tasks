@@ -6,7 +6,7 @@
 
 {% block content %}
     <br>
-    <h3 class="text-center">{{ user }}, эти задания ожидают Вашей подписи</h3>
+    <h3 class="text-center display-6">{{ user }}, эти задания ожидают Вашей подписи</h3>
 <table id="incoming_table" class="table table-hover" style="width: 100%">
                     <thead>
                     <tr>
@@ -19,11 +19,11 @@
                     <tbody>
 
                     {% for obj in sign_list %}
-                        <tr>
+                        <tr data-href="{% url 'details' pk=obj.id %}">
                             <th scope="row">{{ forloop.counter }}</th>
                             <td>
-                                <a href="{% url 'details_to_sign' pk=obj.id %}"
-                                   style="position: absolute; width: 100%; left: 0px; height: 1.5em;"></a>
+{#                                <a href="{% url 'details_to_sign' pk=obj.id %}"#}
+{#                                   style="position: absolute; width: 100%; left: 0px; height: 1.5em;"></a>#}
                                 {{ obj.task_number }}</td>
                             <td>{{ obj.text_task|truncatechars:100 }}</td>
                             <td>{{ obj.author }}</td>

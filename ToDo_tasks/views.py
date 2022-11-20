@@ -3,12 +3,18 @@ import datetime
 from django.shortcuts import render, redirect
 from django.utils import timezone
 from django.views import View
+from django.db.models import Q
+
 
 from .models import Employee, TaskModel, ContractModel, ObjectModel, StageModel, TaskNumbersModel, CommandNumberModel, \
     CpeModel, CanAcceptModel, BackCommentModel
-from .forms import TaskForm, TaskCheckForm, TaskEditForm
+from .forms import TaskForm, TaskCheckForm, TaskEditForm, SearchForm
 from .functions import get_signature_info, get_data_for_form, get_data_for_detail, get_list_to_sign
 
+
+def check_user_status(request):
+    user = Employee.objects.get(user=request.user)
+    return user
 
 class IndexView(View):
     """Главная страница"""
@@ -18,34 +24,56 @@ class IndexView(View):
         Проверяет авторизацию пользователя и выводит данные на странице,
         либо redirect на страницу авторизации
         """
-        if request.user.is_authenticated:
-            if request.user.id == 1:
-                return redirect('admin/')
-            # Получаем информацию о пользователе из таблицы Employee на основании request
-            user = Employee.objects.get(user=request.user)
-            # Получаем список активных заданий отдела пользователя
-            data_all = TaskModel.objects.get_queryset().filter(department_number=user.department).filter(task_status=2)
-            # Получаем список заданий на подписи отдела пользователя
-            data_to_sign = TaskModel.objects.get_queryset().filter(department_number=user.department).filter(
-                task_status=1)
-            data_to_workers = TaskModel.objects.get_queryset().filter(task_status=2).filter(
-                incoming_dep=user.department).filter(task_workers=False)
-            count_task_to_sign = 0
-            count_task_to_workers = 0
-            if user.right_to_sign == True:
-                count_task_to_sign = len(get_list_to_sign(user))  # Получение количества заданий ожидающих подписи
-                count_task_to_workers = data_to_workers.count()
-
-            print(request.user)  # login
-            print(user)  # Фамилия Имя
-            content = {'data_all': data_all,
-                       'data_to_sign': data_to_sign,
-                       'user': user,
-                       "count_task_to_sign": f'({count_task_to_sign})',
-                       "count_task_to_workers": f'{count_task_to_workers}'}
-            return render(request, 'todo_tasks/index.html', content)
-        else:
+        # Что бы не падало в ошибку, проверяем авторизацию пользователя
+        if request.user.is_anonymous:
             return redirect('login/')
+        elif request.user.is_superuser:
+            return redirect('admin/')
+
+        # Получаем информацию о пользователе из таблицы Employee на основании request
+        user = Employee.objects.get(user=request.user)
+
+        count_task_to_sign = 0
+        count_task_to_workers = 0
+        if user.right_to_sign == True:
+            count_task_to_sign = len(get_list_to_sign(user))  # Получение количества заданий ожидающих подписи
+            count_task_to_workers = TaskModel.objects.get_queryset().filter(task_status=2).filter(
+            incoming_dep=user.department).filter(task_workers=False).count()
+
+        print(request.user)  # login
+        print(user)  # Фамилия Имя
+        content = {'user': user,
+                   "count_task_to_sign": f'({count_task_to_sign})',
+                   "count_task_to_workers": f'({count_task_to_workers})'}
+        return render(request, 'todo_tasks/index.html', content)
+
+    def post(self, request):
+        if request.POST.get('search_field') == '':
+            return redirect(request.META['HTTP_REFERER'])
+        else:
+            return redirect(f'search_result', request.POST.get('search_field'))
+
+
+class IssuedTasksView(View):
+    """Страница выданных заданий, уже всеми подписаны"""
+
+    def get(self, request):
+        user = Employee.objects.get(user=request.user)
+        data_all = TaskModel.objects.get_queryset().filter(department_number=user.department).filter(task_status=2)
+        content = {'data_all': data_all,
+                   'user': user}
+        return render(request, 'todo_tasks/issued_tasks.html', content)
+
+
+class OutgoingTasksView(View):
+    """Страница исходящих заданий, которые еще на подписи"""
+
+    def get(self, request):
+        user = Employee.objects.get(user=request.user)
+        data_to_sign = TaskModel.objects.get_queryset().filter(department_number=user.department).filter(task_status=1)
+        content = {'data_to_sign': data_to_sign,
+                   'user': user}
+        return render(request, 'todo_tasks/outgoing_tasks.html', content)
 
 
 class IncomingDepView(View):
@@ -54,18 +82,26 @@ class IncomingDepView(View):
     def get(self, request):
         user = Employee.objects.get(user=request.user)  # Получаем пользователя из запроса
         user_dep = user.department_id  # получаем id номер отдела
-        # Получаем список заданий предназначенных для отдела со статусом Актуально
         data_have_workers = TaskModel.objects.get_queryset().filter(incoming_dep=user_dep).filter(task_status=2)
-        # data_without_workers = TaskModel.objects.get_queryset().filter(incoming_dep=user_dep).filter(task_status=2).filter(task_workers=False)
         content = {'data_have_workers': data_have_workers,
-                   # 'data_without_workers': data_without_workers,
                    'user': user}
         return render(request, 'todo_tasks/incoming_to_dep.html', content)
 
 
 class UserTaskView(View):
+    """Просмотр выданных заданий """
     def get(self, request):
-        data_user = TaskModel.objects.get_queryset().filter(author__user=request.user)
+        data_user = TaskModel.objects.get_queryset().filter(author__user=request.user).filter(task_status=2)
+        user = Employee.objects.get(user=request.user)
+        content = {'data_user': data_user,
+                   'user': user}
+        return render(request, 'todo_tasks/my_tasks.html', content)
+
+
+class UserTaskOnSignView(View):
+    """Получение списка для страницы исходящих заданий"""
+    def get(self, request):
+        data_user = TaskModel.objects.get_queryset().filter(author__user=request.user).filter(task_status=1)
         user = Employee.objects.get(user=request.user)
         content = {'data_user': data_user,
                    'user': user}
@@ -156,7 +192,7 @@ class EditTaskView(View):
         for objects in test_test:
             list_cpe.append(objects.cpe_user.id)
         form.fields["cpe_sign_user"].queryset = Employee.objects.get_queryset().filter(id__in=list_cpe)
-            # Employee.objects.filter(department=department_user)
+        # Employee.objects.filter(department=department_user)
 
         context = {
             'form': form,
@@ -298,10 +334,33 @@ class ToAddWorkersDetailView(View):
         return redirect(request.META['HTTP_REFERER'])
 
 
-class IndexTestView(View):
-    def get(self, request):
-        return render(request, 'todo_tasks/index_test.html')
+class SearchView(View):
+    """Отображение результатов поиска c главной страницы"""
+    def get(self, request, pk):
+        print(pk)
+        """С главной страницы получаем ключ pk для поиска"""
+        user = Employee.objects.get(user=request.user)
+        search_result = TaskModel.objects.filter(Q(text_task__icontains=pk) | Q(task_number__icontains=pk) | Q(author__last_name__icontains=pk))
+        content = {"search_result": search_result,
+                   "search_word": pk,
+                   "user": user}
+        return render(request, 'todo_tasks/search_result.html', content)
 
+
+class AdvancedSearchView(View):
+    def get(self, request):
+        user = Employee.objects.get(user=request.user)
+        form = SearchForm()
+        content = {"user": user,
+                   "form": form}
+        return render(request, 'todo_tasks/advanced_search.html', content)
+
+    def post(self, request):
+        form = SearchForm(request.POST)
+        print(form.data)
+        return redirect(request.META['HTTP_REFERER'])
+
+# Функции AJAX
 
 def load_contracts(request):
     """Функция для получения списка контрактов"""
@@ -310,7 +369,6 @@ def load_contracts(request):
     contracts = ContractModel.objects.filter(
         contract_object=int(object_id))  # получаем все контракты для данного объекта
     return render(request, 'todo_tasks/dropdown_update/contracts_dropdown_list_update.html', {'contracts': contracts})
-
 
 def load_stages(request):
     """Функция для получения списка этапов"""
@@ -328,3 +386,5 @@ def load_incoming_employee(request):
     print(incoming_employee)
     return render(request, 'todo_tasks/dropdown_update/incoming_dropdown_list_update.html',
                   {'incoming_employee': incoming_employee})
+
+
