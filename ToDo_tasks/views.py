@@ -93,8 +93,10 @@ class UserTaskView(View):
     def get(self, request):
         data_user = TaskModel.objects.get_queryset().filter(author__user=request.user).filter(task_status=2)
         user = Employee.objects.get(user=request.user)
+        text_status = f"выданные"
         content = {'data_user': data_user,
-                   'user': user}
+                   'user': user,
+                   "text_status": text_status}
         return render(request, 'todo_tasks/my_tasks.html', content)
 
 
@@ -103,8 +105,10 @@ class UserTaskOnSignView(View):
     def get(self, request):
         data_user = TaskModel.objects.get_queryset().filter(author__user=request.user).filter(task_status=1)
         user = Employee.objects.get(user=request.user)
+        text_status = f"исходящие"
         content = {'data_user': data_user,
-                   'user': user}
+                   'user': user,
+                   "text_status": text_status}
         return render(request, 'todo_tasks/my_tasks.html', content)
 
 
