@@ -164,6 +164,7 @@ class TaskModel(models.Model):
     task_object = models.ForeignKey(ObjectModel, on_delete=models.PROTECT, verbose_name="Наименование объекта")
     task_contract = models.ForeignKey(ContractModel, on_delete=models.PROTECT, verbose_name="Номер контракта")
     task_stage = models.ForeignKey(StageModel, on_delete=models.PROTECT, verbose_name="Этап договора")
+    task_building = models.CharField("Здание", max_length=150, null=True)
     task_change_number = models.IntegerField("Номер изменения", default=0, null=True)
     first_sign_user = models.ForeignKey(Employee, on_delete=models.PROTECT, null=True,
                                         verbose_name="Первый руководитель", related_name="first_sign_user_employee")
@@ -193,6 +194,7 @@ class TaskModel(models.Model):
     incoming_date = models.DateTimeField("Дата и время подписи первого подписанта", default=None,
                                          null=True)
     task_workers = models.BooleanField("Наличие исполнителей", default=False)
+
 
     def __str__(self):
         return f'{self.task_number}, {self.author}'

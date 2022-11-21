@@ -1,5 +1,5 @@
-from .models import Employee, TaskModel, ContractModel, ObjectModel, StageModel
-from .forms import TaskForm, TaskCheckForm
+from .models import Employee, TaskModel, CpeModel, ContractModel, ObjectModel, StageModel
+from .forms import TaskForm, TaskCheckForm, TaskEditForm
 
 
 def get_signature_info(obj) -> dict:
@@ -80,7 +80,19 @@ def get_list_to_sign(sign_user) -> list:
     for obj in to_sign_objects_cpe:
         if obj not in sign_list:
             sign_list.append(obj)
-
-
-
     return sign_list
+
+
+def get_task_edit_form(request, obj):
+    form = TaskEditForm(instance=obj)
+    department_user = Employee.objects.get(user=request.user).department
+    form.fields['first_sign_user'].queryset = Employee.objects.filter(department=department_user).filter(
+        right_to_sign=True)  # получаем в 1ое поле список пользователей по двум фильтрам
+    form.fields['second_sign_user'].queryset = Employee.objects.filter(department=department_user).filter(
+        right_to_sign=True)  # получаем во 2ое поле список пользователей по двум фильтрам
+    test_test = CpeModel.objects.get_queryset()
+    list_cpe = []
+    for objects in test_test:
+        list_cpe.append(objects.cpe_user.id)
+    form.fields["cpe_sign_user"].queryset = Employee.objects.get_queryset().filter(id__in=list_cpe)
+    return form

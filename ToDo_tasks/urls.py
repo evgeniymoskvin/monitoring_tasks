@@ -8,6 +8,7 @@ urlpatterns = [
     path('my_tasks_on_sign/', views.UserTaskOnSignView.as_view(), name='my_tasks_on_sign'),
     path('add_task/', views.AddTaskView.as_view(), name='add_task'),
     path('add_task/<int:pk>', views.AddTaskView.as_view(), name='add_task'),  # просмотр добавленного задания
+    path('add_task_change/<int:pk>', views.AddChangeTaskView.as_view(), name='add_task_change'),
     path('issued_tasks/', views.IssuedTasksView.as_view(), name="issued_tasks"),
     path('outgoing_tasks/', views.OutgoingTasksView.as_view(), name="outgoing_tasks"),
     path('details/<int:pk>', views.DetailView.as_view(), name='details'),

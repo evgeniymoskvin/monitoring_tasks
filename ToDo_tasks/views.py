@@ -5,16 +5,16 @@ from django.utils import timezone
 from django.views import View
 from django.db.models import Q
 
-
 from .models import Employee, TaskModel, ContractModel, ObjectModel, StageModel, TaskNumbersModel, CommandNumberModel, \
     CpeModel, CanAcceptModel, BackCommentModel
 from .forms import TaskForm, TaskCheckForm, TaskEditForm, SearchForm
-from .functions import get_signature_info, get_data_for_form, get_data_for_detail, get_list_to_sign
+from .functions import get_signature_info, get_data_for_form, get_data_for_detail, get_list_to_sign, get_task_edit_form
 
 
 def check_user_status(request):
     user = Employee.objects.get(user=request.user)
     return user
+
 
 class IndexView(View):
     """Главная страница"""
@@ -38,7 +38,7 @@ class IndexView(View):
         if user.right_to_sign == True:
             count_task_to_sign = len(get_list_to_sign(user))  # Получение количества заданий ожидающих подписи
             count_task_to_workers = TaskModel.objects.get_queryset().filter(task_status=2).filter(
-            incoming_dep=user.department).filter(task_workers=False).count()
+                incoming_dep=user.department).filter(task_workers=False).count()
 
         print(request.user)  # login
         print(user)  # Фамилия Имя
@@ -90,6 +90,7 @@ class IncomingDepView(View):
 
 class UserTaskView(View):
     """Просмотр выданных заданий """
+
     def get(self, request):
         data_user = TaskModel.objects.get_queryset().filter(author__user=request.user).filter(task_status=2)
         user = Employee.objects.get(user=request.user)
@@ -102,6 +103,7 @@ class UserTaskView(View):
 
 class UserTaskOnSignView(View):
     """Получение списка для страницы исходящих заданий"""
+
     def get(self, request):
         data_user = TaskModel.objects.get_queryset().filter(author__user=request.user).filter(task_status=1)
         user = Employee.objects.get(user=request.user)
@@ -183,20 +185,7 @@ class EditTaskView(View):
     def get(self, request, pk):
         """Получаем номер редактируемого задания из query params (pk) и заполняем форму с данными из бд"""
         obj = TaskModel.objects.get(pk=pk)
-
-        form = TaskEditForm(instance=obj)
-
-        department_user = Employee.objects.get(user=request.user).department
-        form.fields['first_sign_user'].queryset = Employee.objects.filter(department=department_user).filter(
-            right_to_sign=True)  # получаем в 1ое поле список пользователей по двум фильтрам
-        form.fields['second_sign_user'].queryset = Employee.objects.filter(department=department_user).filter(
-            right_to_sign=True)  # получаем во 2ое поле список пользователей по двум фильтрам
-        test_test = CpeModel.objects.get_queryset()
-        list_cpe = []
-        for objects in test_test:
-            list_cpe.append(objects.cpe_user.id)
-        form.fields["cpe_sign_user"].queryset = Employee.objects.get_queryset().filter(id__in=list_cpe)
-        # Employee.objects.filter(department=department_user)
+        form = get_task_edit_form(request, obj)
 
         context = {
             'form': form,
@@ -232,6 +221,51 @@ class EditTaskView(View):
             obj.save()
             print(f"сработал пост{pk}")
             return redirect(f'/details/{pk}')
+
+
+class AddChangeTaskView(View):
+    """Выдать изменение к заданию"""
+
+    def get(self, request, pk):
+        obj = TaskModel.objects.get(pk=pk)
+        if obj.task_status == 1:
+            return redirect('index')
+        # заполняем форму данными из существующего задания
+        form = get_task_edit_form(request, obj)
+
+        context = {
+            'form': form,
+            'user': Employee.objects.get(user=request.user),
+            'obj': obj}
+
+        return render(request, 'todo_tasks/add_task_change.html', context)
+
+    def post(self, request, pk):
+        """Выдача изменения"""
+        form = TaskEditForm(request.POST)
+        changing_task = TaskModel.objects.get(pk=pk)  # Получаем данные существующего задания
+        new_task_with_change = TaskModel(
+            author=Employee.objects.get(user=request.user))  # Новое задание, автор пользователь из запроса
+        # Берем старое изменение и увеличиваем
+        new_task_with_change.task_change_number = changing_task.task_change_number + 1
+        # Копируем данные со старого задания
+        new_task_with_change.task_order = changing_task.task_order
+        new_task_with_change.task_object = changing_task.task_object
+        new_task_with_change.task_contract = changing_task.task_contract
+        new_task_with_change.task_stage = changing_task.task_stage
+        # Присваиваем номер задания с изменением
+        new_task_with_change.task_number = f'{changing_task.task_number}/И{new_task_with_change.task_change_number}'
+        # Присваиваем данные из формы
+        new_task_with_change.text_task = form.data['text_task']
+        new_task_with_change.first_sign_user_id = form.data['first_sign_user']
+        new_task_with_change.second_sign_user_id = form.data['second_sign_user']
+        new_task_with_change.cpe_sign_user_id = form.data['cpe_sign_user']
+        new_task_with_change.incoming_employee_id = form.data['incoming_employee']
+        new_task_with_change.task_last_edit = timezone.now()
+        new_task_with_change.save()
+        # Получаем id выданного задания, для формирования ссылки
+        number_id_for_redirect = TaskModel.objects.get(task_number=new_task_with_change.task_number).id
+        return redirect(f'/details/{number_id_for_redirect}')
 
 
 class ToSignListView(View):
@@ -340,11 +374,14 @@ class ToAddWorkersDetailView(View):
 
 class SearchView(View):
     """Отображение результатов поиска c главной страницы"""
+
     def get(self, request, pk):
         print(pk)
         """С главной страницы получаем ключ pk для поиска"""
         user = Employee.objects.get(user=request.user)
-        search_result = TaskModel.objects.filter(Q(text_task__icontains=pk) | Q(task_number__icontains=pk) | Q(author__last_name__icontains=pk))
+        search_result = TaskModel.objects.filter(
+            Q(text_task__icontains=pk) | Q(task_number__icontains=pk) | Q(author__last_name__icontains=pk) | Q(
+                task_building__icontains=pk))
         content = {"search_result": search_result,
                    "search_word": pk,
                    "user": user}
@@ -364,6 +401,7 @@ class AdvancedSearchView(View):
         print(form.data)
         return redirect(request.META['HTTP_REFERER'])
 
+
 # Функции AJAX
 
 def load_contracts(request):
@@ -373,6 +411,7 @@ def load_contracts(request):
     contracts = ContractModel.objects.filter(
         contract_object=int(object_id))  # получаем все контракты для данного объекта
     return render(request, 'todo_tasks/dropdown_update/contracts_dropdown_list_update.html', {'contracts': contracts})
+
 
 def load_stages(request):
     """Функция для получения списка этапов"""
@@ -390,5 +429,3 @@ def load_incoming_employee(request):
     print(incoming_employee)
     return render(request, 'todo_tasks/dropdown_update/incoming_dropdown_list_update.html',
                   {'incoming_employee': incoming_employee})
-
-
