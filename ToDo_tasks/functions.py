@@ -28,14 +28,17 @@ def get_signature_info(obj) -> dict:
 
 
 def get_data_for_form(obj) -> dict:
-    author = Employee.objects.get(id=obj.author_id)
-    data = {"text_task": obj.text_task,
-            "author": f'{obj.author}',
-            "task_object": str(obj.task_object),
-            "task_order": obj.task_order,
-            "task_contract": str(obj.task_contract.contract_name),
-            "task_stage": str(obj.task_stage.stage_name),
-            "incoming_employee": str(obj.incoming_employee)}
+    data = {
+        "text_task": obj.text_task,
+        "author": f'{obj.author}',
+        "task_object": str(obj.task_object),
+        "task_order": obj.task_order,
+        "task_contract": str(obj.task_contract.contract_name),
+        "task_stage": str(obj.task_stage.stage_name),
+        "incoming_employee": str(obj.incoming_employee),
+        "task_building": str(obj.task_building),
+        "task_type_work": str(obj.get_task_type_work_display()),
+    }
     return data
 
 
@@ -44,7 +47,6 @@ def get_data_for_detail(request, pk) -> dict:
     obj = TaskModel.objects.get(pk=pk)
     signature_info = get_signature_info(obj)  # получаем информацию о подписях
     task_status = obj.get_task_status_display
-
 
     data = get_data_for_form(obj)  # получаем данные для подгрузки в форму
     form = TaskCheckForm(initial=data)
@@ -55,7 +57,7 @@ def get_data_for_detail(request, pk) -> dict:
         'form': form,
         "sign_info": signature_info,
         "task_status": task_status,
-        }
+    }
 
 
 def get_list_to_sign(sign_user) -> list:
@@ -68,7 +70,8 @@ def get_list_to_sign(sign_user) -> list:
     to_sign_objects_second = TaskModel.objects.get_queryset().filter(second_sign_user=sign_user.id).filter(
         second_sign_status=False).filter(back_to_change=False)
     to_sign_objects_cpe = TaskModel.objects.get_queryset().filter(cpe_sign_user=sign_user.id).filter(
-        cpe_sign_status=False).filter(first_sign_status=True).filter(second_sign_status=True).filter(back_to_change=False)
+        cpe_sign_status=False).filter(first_sign_status=True).filter(second_sign_status=True).filter(
+        back_to_change=False)
     # Формируем перебором список заданий
     sign_list = []
     for obj in to_sign_objects_first:

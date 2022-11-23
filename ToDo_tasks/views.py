@@ -11,11 +11,6 @@ from .forms import TaskForm, TaskCheckForm, TaskEditForm, SearchForm, WorkerForm
 from .functions import get_signature_info, get_data_for_form, get_data_for_detail, get_list_to_sign, get_task_edit_form
 
 
-def check_user_status(request):
-    user = Employee.objects.get(user=request.user)
-    return user
-
-
 class IndexView(View):
     """Главная страница"""
 
@@ -120,6 +115,7 @@ class DetailView(View):
     def get(self, request, pk):
         """Получаем номер задания из ссылки и формируем страницу подробностей"""
         content = get_data_for_detail(request, pk)
+        content['flag'] = True
         return render(request, 'todo_tasks/details.html', content)
 
     def post(self, request, pk):
@@ -271,6 +267,8 @@ class AddChangeTaskView(View):
         new_task_with_change.task_object = changing_task.task_object
         new_task_with_change.task_contract = changing_task.task_contract
         new_task_with_change.task_stage = changing_task.task_stage
+        new_task_with_change.department_number = changing_task.department_number
+        new_task_with_change.task_type_work = changing_task.task_type_work
         # Присваиваем номер задания с изменением
         new_task_with_change.task_number = f'{changing_task.task_number}/И{new_task_with_change.task_change_number}'
         # Присваиваем данные из формы
@@ -280,6 +278,7 @@ class AddChangeTaskView(View):
         new_task_with_change.cpe_sign_user_id = form.data['cpe_sign_user']
         new_task_with_change.incoming_employee_id = form.data['incoming_employee']
         new_task_with_change.task_last_edit = timezone.now()
+
         new_task_with_change.save()
         # Получаем id выданного задания, для формирования ссылки
         number_id_for_redirect = TaskModel.objects.get(task_number=new_task_with_change.task_number).id

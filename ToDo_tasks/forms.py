@@ -81,14 +81,14 @@ class TaskCheckForm(ModelForm):
                                                   "disabled": True}),
                    "text_task": Textarea(attrs={"class": "form-control",
                                                 "type": "text",
-                                                "value": "Disabled readonly input",
-                                                "aria-label": "Disabled input example",
                                                 "readonly": True}),
                    "incoming_employee": TextInput(attrs={"class": "form-control",
                                                          "readonly": True}),
                    "task_building": TextInput(attrs={"class": "form-control",
                                                      "aria-label": "Здание",
-                                                     "readonly": True})
+                                                     "readonly": True}),
+                   "task_type_work": TextInput(attrs={"class": "form-select",
+                                               "disabled": True}),
                    }
 
 class TaskEditForm(ModelForm):
