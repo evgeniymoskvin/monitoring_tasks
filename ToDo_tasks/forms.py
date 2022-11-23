@@ -1,3 +1,4 @@
+
 from .models import TaskModel, ObjectModel, ContractModel, StageModel, OrdersModel, Employee, CanAcceptModel
 from django.forms import ModelForm, TextInput, Textarea, CheckboxInput, Select, modelformset_factory, ChoiceField, Form, CharField, ModelChoiceField
 
@@ -144,9 +145,8 @@ class SearchForm(Form):
                                      empty_label="Не выбрано",
                                      required=False)
 
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['task_contract'].queryset = ContractModel.objects  # подгрузка значений
         self.fields['task_contract'].choices = [(0, '---------')]
-
-

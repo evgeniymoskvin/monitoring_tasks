@@ -13,7 +13,8 @@
                         <th scope="col">#</th>
                         <th scope="col">Номер задания</th>
                         <th scope="col">Текст задания</th>
-                        <th scope="col">Автор задания</th>
+{#                        <th scope="col">Автор задания</th>#}
+                        <th scope="col">Статус</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -22,12 +23,10 @@
                         <tr data-href="{% url 'details' pk=obj.id %}">
                             <th scope="row">{{ forloop.counter }}</th>
                             <td>
-{#                                <a href="{% url 'details' pk=obj.id %}"#}
-{#                                   style="position: absolute; width: 100%; left: 0px; height: 1.5em;"></a>#}
                                 {{ obj.task_number }}</td>
                             <td>{{ obj.text_task|truncatechars:100 }}</td>
-                            <td>{{ obj.author }}</td>
-                            </td>
+{#                            <td>{{ obj.author }}</td>#}
+                            <td>{{ obj.get_task_status_display }}</td>
                         </tr>
                     {% endfor %}
 

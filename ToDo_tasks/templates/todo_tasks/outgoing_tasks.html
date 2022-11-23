@@ -1,12 +1,11 @@
 {% extends "todo_tasks/base.html" %}
 {% load static %}
-{#{% block title %}#}
-{#    Главная страница#}
-{#{% endblock %}#}
+
+{% block title %}
+    Исходящие задания отдела {{ user.department.command_number }}
+{% endblock %}
 
 {% block content %}
-
-
         <br>
         <h3 class="text-center display-6">Исходящие задания отдела {{ user.department.command_number }}</h3>
 
@@ -24,10 +23,7 @@
                     {% for obj in data_to_sign %}
                         <tr data-href="{% url 'details' pk=obj.id %}">
                             <th scope="row">{{ forloop.counter }}</th>
-                            <td>
-                                <a href="{% url 'details' pk=obj.id %}"
-                                   style="position: absolute; width: 100%; left: 0px; height: 1.5em;"></a>
-                                {{ obj.task_number }}</td>
+                            <td>{{ obj.task_number }}</td>
                             <td>{{ obj.text_task|truncatechars:100 }}</td>
                             <td>
                                 {% if obj.first_sign_status == 1 and obj.second_sign_status == 1 and obj.cpe_sign_status == 1 %}

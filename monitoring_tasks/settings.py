@@ -40,7 +40,6 @@ INSTALLED_APPS = [
     'rest_framework',
     'ToDo_tasks',
     'login',
-    'django_tables2',
 
 ]
 

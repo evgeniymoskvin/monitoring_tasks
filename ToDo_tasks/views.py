@@ -59,7 +59,7 @@ class IssuedTasksView(View):
 
     def get(self, request):
         user = Employee.objects.get(user=request.user)
-        data_all = TaskModel.objects.get_queryset().filter(department_number=user.department).filter(task_status=2)
+        data_all = TaskModel.objects.get_queryset().filter(department_number=user.department).filter(~Q(task_status=1))
         content = {'data_all': data_all,
                    'user': user}
         return render(request, 'todo_tasks/issued_tasks.html', content)
@@ -121,6 +121,24 @@ class DetailView(View):
         """Получаем номер задания из ссылки и формируем страницу подробностей"""
         content = get_data_for_detail(request, pk)
         return render(request, 'todo_tasks/details.html', content)
+
+    def post(self, request, pk):
+        if 'cancel_modal_button' in request.POST:
+            obj = TaskModel.objects.get(pk=pk)
+            print(pk, ' cancel task')
+            obj.task_status = 0
+            print(obj)
+            obj.save()
+        if 'correction_modal_button' in request.POST:
+            obj = TaskModel.objects.get(pk=pk)
+            print(pk, ' correction task')
+            obj.task_status = 3
+            print(obj)
+            obj.save()
+
+        return redirect(request.META['HTTP_REFERER'])
+
+
 
 
 class AddTaskView(View):
@@ -244,6 +262,8 @@ class AddChangeTaskView(View):
         """Выдача изменения"""
         form = TaskEditForm(request.POST)
         changing_task = TaskModel.objects.get(pk=pk)  # Получаем данные существующего задания
+        changing_task.task_status = 0 # аннулируем задание на которое выдается изменение
+        changing_task.save()
         new_task_with_change = TaskModel(
             author=Employee.objects.get(user=request.user))  # Новое задание, автор пользователь из запроса
         # Берем старое изменение и увеличиваем
@@ -429,3 +449,5 @@ def load_incoming_employee(request):
     print(incoming_employee)
     return render(request, 'todo_tasks/dropdown_update/incoming_dropdown_list_update.html',
                   {'incoming_employee': incoming_employee})
+
+

@@ -25,16 +25,8 @@
                     {#                    Здесь должно быть поле для загрузки файла#}
                 </div>
             </div>
-
-
             <br>
-            {#        <h2 class="m-3, text-center">Выдать задание</h2>#}
-
-            {#        {% csrf_token %}#}
-            {#        {{ form.as_table }}#}
             <br>
-
-
             <div class="row justify-content-center">
                 <div class="col-2">
                     Первый руководитель:
@@ -76,6 +68,7 @@
             <div class="row justify-content-center">
                 <div class="col">
                     <figure class="text-center">
+                        <p> Задание {{ obj.task_number }} аннулируется автоматически </p>
                         <a href="{% url "details" pk=obj.id %}" class="btn btn-secondary">Отмена</a>
                         <button type="submit" class="btn btn-success" href="{% url 'change' pk=obj.id%}">Выдать задание
                         </button>

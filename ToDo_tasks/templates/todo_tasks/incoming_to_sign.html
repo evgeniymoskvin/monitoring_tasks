@@ -19,11 +19,9 @@
                     <tbody>
 
                     {% for obj in sign_list %}
-                        <tr data-href="{% url 'details' pk=obj.id %}">
+                        <tr data-href="{% url 'details_to_sign' pk=obj.id %}">
                             <th scope="row">{{ forloop.counter }}</th>
                             <td>
-{#                                <a href="{% url 'details_to_sign' pk=obj.id %}"#}
-{#                                   style="position: absolute; width: 100%; left: 0px; height: 1.5em;"></a>#}
                                 {{ obj.task_number }}</td>
                             <td>{{ obj.text_task|truncatechars:100 }}</td>
                             <td>{{ obj.author }}</td>
