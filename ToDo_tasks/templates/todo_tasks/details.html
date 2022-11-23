@@ -122,40 +122,40 @@
         </div>
         {% block buttons %}
         {% endblock %}
-
-        {% if obj.author.user == request.user and obj.first_sign_status == 0 and obj.second_sign_status == 0 or obj.back_to_change == True %}
-            <br>
-            <div class="row justify-content-center">
-                <div class="col">
-                    <figure class="text-center">
-                        <a href="{% url "change" pk=obj.id %}" class="btn btn-primary">Редактировать</a>
-                    </figure>
+        {% if obj.department_number.id == user.department.id %}
+            {% if obj.author.user == request.user and obj.first_sign_status == 0 and obj.second_sign_status == 0 or obj.back_to_change == True %}
+                <br>
+                <div class="row justify-content-center">
+                    <div class="col">
+                        <figure class="text-center">
+                            <a href="{% url "change" pk=obj.id %}" class="btn btn-primary">Редактировать</a>
+                        </figure>
+                    </div>
                 </div>
-            </div>
-        {% elif obj.task_status == 2 or obj.task_status == 3  and obj.department_number.id == user.department.id %}
-            <br>
-            <div class="row justify-content-center">
-                <div class="col">
-                    <figure class="text-center">
-                        <button type="button" class="btn btn-danger" data-bs-toggle="modal"
-                                data-bs-target="#cancel_task"
-                                data-toggle="tooltip" title="Аннулировать задание">
-                            Аннулировать
-                        </button>
-                        {% if obj.task_status == 2 %}
-                            <button type="button" class="btn btn-warning" data-bs-toggle="modal"
-                                    data-bs-target="#correction_task"
-                                    data-toggle="tooltip" title="Сообщить о планируемой корректировке задания">
-                                Сообщить о корректировке
+            {% elif obj.task_status == 2 or obj.task_status == 3  and obj.department_number.id == user.department.id %}
+                <br>
+                <div class="row justify-content-center">
+                    <div class="col">
+                        <figure class="text-center">
+                            <button type="button" class="btn btn-danger" data-bs-toggle="modal"
+                                    data-bs-target="#cancel_task"
+                                    data-toggle="tooltip" title="Аннулировать задание">
+                                Аннулировать
                             </button>
-                        {% endif %}
-                        <a href="{% url "add_task_change" pk=obj.id %}" class="btn btn-primary">Выдать изменение</a>
-                    </figure>
+                            {% if obj.task_status == 2 %}
+                                <button type="button" class="btn btn-warning" data-bs-toggle="modal"
+                                        data-bs-target="#correction_task"
+                                        data-toggle="tooltip" title="Сообщить о планируемой корректировке задания">
+                                    Сообщить о корректировке
+                                </button>
+                            {% endif %}
+                            <a href="{% url "add_task_change" pk=obj.id %}" class="btn btn-primary">Выдать изменение</a>
+                        </figure>
+                    </div>
                 </div>
+            {% endif %}
             </div>
         {% endif %}
-    </div>
-
 
     {% if obj.task_status == 2 or obj.task_status == 3  and obj.department_number.id == user.department.id %}
         <!-- Модальное окно -->

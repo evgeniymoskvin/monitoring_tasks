@@ -6,8 +6,8 @@ from django.views import View
 from django.db.models import Q
 
 from .models import Employee, TaskModel, ContractModel, ObjectModel, StageModel, TaskNumbersModel, CommandNumberModel, \
-    CpeModel, CanAcceptModel, BackCommentModel
-from .forms import TaskForm, TaskCheckForm, TaskEditForm, SearchForm
+    CpeModel, CanAcceptModel, BackCommentModel, WorkerModel
+from .forms import TaskForm, TaskCheckForm, TaskEditForm, SearchForm, WorkerFormSet
 from .functions import get_signature_info, get_data_for_form, get_data_for_detail, get_list_to_sign, get_task_edit_form
 
 
@@ -139,8 +139,6 @@ class DetailView(View):
         return redirect(request.META['HTTP_REFERER'])
 
 
-
-
 class AddTaskView(View):
     """Добавление нового задания"""
 
@@ -262,7 +260,7 @@ class AddChangeTaskView(View):
         """Выдача изменения"""
         form = TaskEditForm(request.POST)
         changing_task = TaskModel.objects.get(pk=pk)  # Получаем данные существующего задания
-        changing_task.task_status = 0 # аннулируем задание на которое выдается изменение
+        changing_task.task_status = 0  # аннулируем задание на которое выдается изменение
         changing_task.save()
         new_task_with_change = TaskModel(
             author=Employee.objects.get(user=request.user))  # Новое задание, автор пользователь из запроса
@@ -380,15 +378,21 @@ class ToAddWorkersDetailView(View):
 
     def get(self, request, pk):
         content = get_data_for_detail(request, pk)
+        formset = WorkerFormSet(queryset=Employee.objects.none())
+        content["formset"] = formset
         return render(request, 'todo_tasks/details_to_add_workers.html', content)
 
     def post(self, request, pk):
         obj = TaskModel.objects.get(pk=pk)
-        if 'workers_ok' in request.POST:
-            print(pk, ' workers ok add')
-            obj.task_workers = True
-            # obj.first_sign_date = timezone.now()
-            obj.save()
+        formset = WorkerFormSet(data=self.request.POST)
+        if formset.is_valid():
+            for f in formset:
+                print(f.data)
+                cd = f.cleaned_data
+                hg = cd.get('worker_user').id
+                print(cd)
+                print(cd.get('worker_user'))
+                print(hg)
         return redirect(request.META['HTTP_REFERER'])
 
 
@@ -422,6 +426,25 @@ class AdvancedSearchView(View):
         return redirect(request.META['HTTP_REFERER'])
 
 
+class AddWorkerView(View):
+    def get(self, request):
+        formset = WorkerFormSet(queryset=Employee.objects.none())
+        content = {"formset": formset}
+        return render(request, 'todo_tasks/test_cancel.html', content)
+
+    def post(self, request):
+        formset = WorkerFormSet(data=self.request.POST)
+        if formset.is_valid():
+            for f in formset:
+                print(f.data)
+                cd = f.cleaned_data
+                hg = cd.get('worker_user').id
+                print(cd)
+                print(cd.get('worker_user'))
+                print(hg)
+        return redirect(request.META['HTTP_REFERER'])
+
+
 # Функции AJAX
 
 def load_contracts(request):
@@ -449,5 +472,3 @@ def load_incoming_employee(request):
     print(incoming_employee)
     return render(request, 'todo_tasks/dropdown_update/incoming_dropdown_list_update.html',
                   {'incoming_employee': incoming_employee})
-
-

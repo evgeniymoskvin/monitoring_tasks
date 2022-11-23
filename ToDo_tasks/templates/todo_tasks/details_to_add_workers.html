@@ -6,17 +6,40 @@
 {#{% endblock %}#}
 {% block buttons %}
     <br>
-    <form method="POST">
 
-        {% csrf_token %}
-        <div class="row justify-content-center">
-            <div class="col">
-                <figure class="text-center">
-                    <input type="submit" class="btn btn-success" name="workers_ok" value="Отметим как будто назначили">
-                </figure>
-            </div>
+    <div class="row justify-content-center">
+        <div class="col">
+            <figure class="text-center">
+                <div class="accordion accordion-flush" id="accordionFlushExample">
+                    <div class="accordion-item">
+                        <p id="flush-headingOne">
+                            <button class="btn btn-secondary" data-bs-toggle="collapse"
+                                    data-bs-target="#flush-collapseOne"
+                                    aria-expanded="false" aria-controls="flush-collapseOne">
+                                Элемент аккордеона #1
+                            </button>
+                        </p>
+                        <div id="flush-collapseOne" class="accordion-collapse collapse"
+                             aria-labelledby="flush-headingOne"
+                             data-bs-parent="#accordionFlushExample">
+                            <div class="accordion-body">
+                                <form id="form-container" method="post">
+                                    {% csrf_token %}
+                                    {{ formset.management_form }}
+                                    {% for form in formset.forms %}
+                                        <div class="worker_form">
+                                            {{ form.as_p }}
+                                        </div>
+                                    {% endfor %}
+                                    <button type="submit">OK</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </figure>
         </div>
-    </form>
+    </div>
 
     <script>
         // после загрузки страницы

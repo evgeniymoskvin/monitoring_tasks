@@ -1,6 +1,7 @@
-
-from .models import TaskModel, ObjectModel, ContractModel, StageModel, OrdersModel, Employee, CanAcceptModel
-from django.forms import ModelForm, TextInput, Textarea, CheckboxInput, Select, modelformset_factory, ChoiceField, Form, CharField, ModelChoiceField
+from .models import TaskModel, ObjectModel, ContractModel, StageModel, OrdersModel, Employee, CanAcceptModel, \
+    WorkerModel
+from django.forms import ModelForm, TextInput, Textarea, CheckboxInput, Select, ChoiceField, Form, \
+    CharField, ModelChoiceField, modelformset_factory
 
 from django.views import View
 
@@ -47,9 +48,11 @@ class TaskForm(ModelForm):
                    "cpe_sign_user": Select(attrs={"class": "form-select",
                                                   "aria-label": "ГИП"}),
                    "incoming_dep": Select(attrs={"class": "form-select",
-                                               "aria-label": "Отдел принимающий задание"}),
+                                                 "aria-label": "Отдел принимающий задание"}),
                    "incoming_employee": Select(attrs={"class": "form-select",
-                                                  "aria-label": "Кому"}),
+                                                      "aria-label": "Кому"}),
+                   "task_building": TextInput(attrs={"class": "form-control",
+                                                     "aria-label": "Здание"})
                    }
 
     def __init__(self, *args, **kwargs):
@@ -58,7 +61,6 @@ class TaskForm(ModelForm):
         self.fields['task_stage'].queryset = StageModel.objects  # подгрузка значений
         self.fields['task_contract'].choices = [(0, '---------')]  # исходное отображение
         self.fields['task_stage'].choices = [(0, '---------')]  # исходное отображение
-
 
 
 class TaskCheckForm(ModelForm):
@@ -83,12 +85,15 @@ class TaskCheckForm(ModelForm):
                                                 "aria-label": "Disabled input example",
                                                 "readonly": True}),
                    "incoming_employee": TextInput(attrs={"class": "form-control",
-                                              "readonly": True})
+                                                         "readonly": True}),
+                   "task_building": TextInput(attrs={"class": "form-control",
+                                                     "aria-label": "Здание",
+                                                     "readonly": True})
                    }
-
 
 class TaskEditForm(ModelForm):
     """Форма для внесения изменений в задание"""
+
     class Meta:
         model = TaskModel
         # fields = '__all__'
@@ -115,6 +120,7 @@ class TaskEditForm(ModelForm):
             'task_contract',
             'task_stage',
             'task_type_work',
+            "task_building",
         ]
         widgets = {"text_task": Textarea(attrs={"placeholder": "Введите текст задания",
                                                 "class": "form-control"}),
@@ -125,28 +131,27 @@ class TaskEditForm(ModelForm):
                    "cpe_sign_user": Select(attrs={"class": "form-select",
                                                   "aria-label": "ГИП"}),
                    "incoming_employee": Select(attrs={"class": "form-select",
-                                                  "aria-label": "Кому"}),
+                                                      "aria-label": "Кому"}),
                    }
 
-
 class SearchForm(Form):
-
     task_order = ModelChoiceField(widget=Select(attrs={"class": "form-select",
-                                               "aria-label": "Номер заказа"}),
+                                                       "aria-label": "Номер заказа"}),
                                   queryset=OrdersModel.objects,
                                   empty_label="Не выбрано",
                                   required=False)
     task_object = ModelChoiceField(widget=Select(attrs={"class": "form-select"}),
                                    queryset=ObjectModel.objects,
                                    empty_label="Не выбрано",
-                                  required=False)
+                                   required=False)
     task_contract = ModelChoiceField(widget=Select(attrs={"class": "form-select"}),
                                      queryset=ContractModel.objects,
                                      empty_label="Не выбрано",
                                      required=False)
 
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['task_contract'].queryset = ContractModel.objects  # подгрузка значений
         self.fields['task_contract'].choices = [(0, '---------')]
+
+WorkerFormSet = modelformset_factory(WorkerModel, fields=("worker_user",), extra=2, can_delete=False, )

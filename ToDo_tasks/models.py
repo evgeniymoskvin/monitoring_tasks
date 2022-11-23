@@ -156,7 +156,7 @@ class TaskModel(models.Model):
 
     author = models.ForeignKey(Employee, on_delete=models.PROTECT, verbose_name="Автор задания")
     text_task = models.TextField("Текст задания", max_length=5000)
-    task_number = models.CharField("Номер задания", max_length=10)
+    task_number = models.CharField("Номер задания", max_length=15)
     department_number = models.ForeignKey(CommandNumberModel, verbose_name="Номер отдела", on_delete=models.PROTECT,
                                           null=True)
     task_type_work = models.IntegerField("Вид документации:", choices=TypeWorkTask.choices, default=0)

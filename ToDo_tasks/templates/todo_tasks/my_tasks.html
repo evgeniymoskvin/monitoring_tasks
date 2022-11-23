@@ -33,7 +33,7 @@
                         <img src="{% static 'todo_tasks/icons/check2.svg' %}" alt="Подписал первый">
                         <img src="{% static 'todo_tasks/icons/check2.svg' %}" alt="Подписал второй">
                     {% elif obj.first_sign_status == 1 %}
-                        <img src="{% static 'todo_tasks/icons/check2-all.svg' %}">
+                        <img src="{% static 'todo_tasks/icons/check2.svg' %}">
                     {% elif obj.back_to_change == 1 %}
                         <img src="{% static 'todo_tasks/icons/x-lg.svg' %}">
                     {% endif %}
