@@ -3,6 +3,7 @@ import datetime
 from django.shortcuts import render, redirect
 from django.utils import timezone
 from django.views import View
+from django.views.generic.list import ListView
 from django.db.models import Q
 
 from .models import Employee, TaskModel, ContractModel, ObjectModel, StageModel, TaskNumbersModel, CommandNumberModel, \
@@ -147,7 +148,7 @@ class AddTaskView(View):
         form.fields['second_sign_user'].queryset = Employee.objects.filter(department=department_user).filter(
             right_to_sign=True)  # получаем во 2ое поле список пользователей по двум фильтрам
         form.fields[
-            'cpe_sign_user'].queryset = CpeModel.objects.get_queryset().all()  # получаем во 2ое поле список пользователей по двум фильтрам
+            'cpe_sign_user'].queryset = Employee.objects.filter(cpe_flag=True)  # получаем во 2ое поле список пользователей по двум фильтрам
         form.fields['incoming_employee'].quryset = CanAcceptModel.objects.get_queryset().all()
         objects = ObjectModel.objects.all()
         context = {'form': form,
@@ -428,20 +429,23 @@ class AdvancedSearchView(View):
 class AddWorkerView(View):
     def get(self, request):
         formset = WorkerFormSet(queryset=Employee.objects.none())
-        content = {"formset": formset}
+        data_all = WorkerModel.objects.get_queryset()
+        content = {"formset": formset,
+                   "data_all": data_all}
+
         return render(request, 'todo_tasks/test_cancel.html', content)
 
     def post(self, request):
-        formset = WorkerFormSet(data=self.request.POST)
-        if formset.is_valid():
-            for f in formset:
-                print(f.data)
-                cd = f.cleaned_data
-                hg = cd.get('worker_user').id
-                print(cd)
-                print(cd.get('worker_user'))
-                print(hg)
-        return redirect(request.META['HTTP_REFERER'])
+        worker_user = request.POST.get("form-0-worker_user")
+        obj = WorkerModel()
+        obj.task_id = 28
+        obj.read_status = False
+        obj.worker_user_id = request.POST.get("form-0-worker_user")
+        # obj.save()
+        print(worker_user)
+        data_all = WorkerModel.objects.get_queryset()
+        content = {"data_all": data_all}
+        return render(request, 'todo_tasks/htmx/workers.html', content)
 
 
 # Функции AJAX
@@ -471,3 +475,25 @@ def load_incoming_employee(request):
     print(incoming_employee)
     return render(request, 'todo_tasks/dropdown_update/incoming_dropdown_list_update.html',
                   {'incoming_employee': incoming_employee})
+
+
+def add_worker(request):
+    worker_user = request.POST.get("form-0-worker_user")
+    obj = WorkerModel()
+    obj.task_id = 28
+    obj.read_status = False
+    obj.worker_user_id = request.POST.get("form-0-worker_user")
+    # obj.save()
+    print(worker_user)
+    data_all = WorkerModel.objects.get_queryset()
+    print(data_all)
+    for data in data_all:
+        print(data.worker_user)
+    content = {"data_all": data_all}
+    return render(request, 'todo_tasks/htmx/workers.html', content)
+
+
+class WorkerList(ListView):
+    template_name = 'todo_tasks/htmx/workers.html'
+    model = WorkerModel
+    context_object_name = 'worker_user'

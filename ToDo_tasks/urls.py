@@ -26,6 +26,8 @@ urlpatterns = [
     path('incoming_to_workers/', views.ToWorkerListView.as_view(), name='incoming_to_workers'),
     path('search_result/<str:pk>', views.SearchView.as_view(), name='search_result'),
     path('advanced_search/', views.AdvancedSearchView.as_view(), name='advanced_search'),
-    path('add_workers/', views.AddWorkerView.as_view(), name='add_workers')
+    path('add_workers/', views.AddWorkerView.as_view(), name='add_workers'),
+    path('htmx/add_workers/', views.add_worker, name="htmx_add_workers"),
+    path('workers/', views.WorkerList.as_view(), name='workers_list')
 
 ]

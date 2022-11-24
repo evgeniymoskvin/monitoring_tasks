@@ -154,4 +154,4 @@ class SearchForm(Form):
         self.fields['task_contract'].queryset = ContractModel.objects  # подгрузка значений
         self.fields['task_contract'].choices = [(0, '---------')]
 
-WorkerFormSet = modelformset_factory(WorkerModel, fields=("worker_user",), extra=2, can_delete=False, )
+WorkerFormSet = modelformset_factory(WorkerModel, fields=("worker_user",), extra=1, can_delete=False, )
