@@ -123,7 +123,7 @@ class DetailView(View):
     def get(self, request, pk):
         """Получаем номер задания из ссылки и формируем страницу подробностей"""
         content = get_data_for_detail(request, pk)
-        content['flag'] = True
+        content['flag'] = True  # Для того, что бы шестеренка была доступна только на странице деталей, и ни на каких других дочерних
         return render(request, 'todo_tasks/details.html', content)
 
     def post(self, request, pk):
@@ -297,7 +297,7 @@ class AddChangeTaskView(View):
 
 
 class ToSignListView(View):
-    """Страница со списком заданий ожидающих подписи"""
+    """Страница со списком заданий ожидающих подписи для выдачи в другой отдел (исходящих)"""
 
     def get(self, request):
         sign_user = Employee.objects.get(user=request.user)  # получаем пользователя
@@ -414,6 +414,7 @@ class IncomingListView(View):
 
 
 class IncomingSignDetails(View):
+    """Просмотр деталей при подписании задания получающим"""
     def get(self, request, pk):
         content = get_data_for_detail(request, pk)
         sign_user = Employee.objects.get(user=request.user)
