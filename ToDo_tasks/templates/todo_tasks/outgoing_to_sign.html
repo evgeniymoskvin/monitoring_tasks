@@ -18,8 +18,8 @@
                     </thead>
                     <tbody>
 
-                    {% for obj in tasks %}
-                        <tr data-href="{% url 'incoming_to_sign_details' pk=obj.id %}">
+                    {% for obj in sign_list %}
+                        <tr data-href="{% url 'details_to_sign' pk=obj.id %}">
                             <th scope="row">{{ forloop.counter }}</th>
                             <td>
                                 {{ obj.task_number }}</td>

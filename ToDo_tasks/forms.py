@@ -82,13 +82,14 @@ class TaskCheckForm(ModelForm):
                                                 "type": "text",
                                                 "readonly": True}),
                    "incoming_dep": TextInput(attrs={"class": "form-control",
-                                                         "readonly": True}),
+                                                    "readonly": True}),
                    "task_building": TextInput(attrs={"class": "form-control",
                                                      "aria-label": "Здание",
                                                      "readonly": True}),
                    "task_type_work": TextInput(attrs={"class": "form-select",
-                                               "disabled": True}),
+                                                      "disabled": True}),
                    }
+
 
 class TaskEditForm(ModelForm):
     """Форма для внесения изменений в задание"""
@@ -130,8 +131,9 @@ class TaskEditForm(ModelForm):
                    "cpe_sign_user": Select(attrs={"class": "form-select",
                                                   "aria-label": "ГИП"}),
                    "incoming_dep": Select(attrs={"class": "form-select",
-                                                      "aria-label": "Кому"}),
+                                                 "aria-label": "Кому"}),
                    }
+
 
 class SearchForm(Form):
     task_order = ModelChoiceField(widget=Select(attrs={"class": "form-select",
@@ -153,4 +155,18 @@ class SearchForm(Form):
         self.fields['task_contract'].queryset = ContractModel.objects  # подгрузка значений
         self.fields['task_contract'].choices = [(0, '---------')]
 
-WorkerFormSet = modelformset_factory(WorkerModel, fields=("worker_user",), extra=1, can_delete=False, )
+
+class WorkerForm(ModelForm):
+    class Meta:
+        model = WorkerModel
+        exclude = ['task',
+                   'read_status'
+                   ]
+        widgets = {
+            "worker_user": Select(attrs={"class": "form-select",
+                                         "aria-label": "Первый руководитель"}),
+        }
+
+
+# WorkerFormSet = modelformset_factory(WorkerModel, fields=("worker_user",), extra=1, can_delete=False)
+WorkerFormSet = modelformset_factory(WorkerModel, form=WorkerForm)

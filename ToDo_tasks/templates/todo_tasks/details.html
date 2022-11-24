@@ -118,6 +118,29 @@
                         </div>
                     {% endif %}
                 </div>
+
+                <!-- Формируем строку с принимающим -->
+
+                <div class="row">
+                    <div class="col">
+                        {{ sign_info.incom_job_title }}:
+                    </div>
+                    <div class="col">
+                        <span data-toggle="tooltip"
+                              title="{{ obj.incoming_employee.user_accept }} (тел. {{ obj.incoming_employee.user_accept.user_phone }})">{{ sign_info.incom_sign_name }}</span>
+                    </div>
+                    {% if obj.incoming_status %}
+                        <div class="col bg-success text-white text-right">
+                            <span data-toggle="tooltip" title="{{ obj.incoming_date }}">Подписано</span>
+                        </div>
+                    {% else %}
+                        <div class="col bg-light text-right ">
+                            Не подписано
+                        </div>
+                    {% endif %}
+                </div>
+
+
                 <div class="row">
                     <div class="col">
                         {% if obj.cpe_comment %}

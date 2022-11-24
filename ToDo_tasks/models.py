@@ -65,10 +65,11 @@ class Employee(models.Model):
 
 class CanAcceptModel(models.Model):
     """Таблица тех, кому могут назначаться задания"""
+    dep_accept = models.ForeignKey(CommandNumberModel, on_delete=models.PROTECT, verbose_name="Отдел за который можно подписаться", null=True)
     user_accept = models.ForeignKey(Employee, on_delete=models.PROTECT, verbose_name="Сотрудник", null=True)
 
     def __str__(self):
-        return f'{self.user_accept.department.command_number}, {self.user_accept} ({self.user_accept.job_title.job_title})'
+        return f'{self.dep_accept.command_number}, {self.user_accept} ({self.user_accept.job_title.job_title})'
 
     class Meta:
         verbose_name = _("принимающий задания")
@@ -188,10 +189,10 @@ class TaskModel(models.Model):
     task_last_edit = models.DateTimeField("Дата последнего изменения", null=True)
     incoming_dep = models.ForeignKey(CommandNumberModel, on_delete=models.SET_NULL, null=True,
                                      verbose_name="Отдел принимающий задание", related_name="incoming_dep_id")
-    incoming_employee = models.ForeignKey(CanAcceptModel, verbose_name="Кто может принимает задание",
-                                          on_delete=models.SET_NULL, null=True)
+    incoming_employee = models.ForeignKey(Employee, verbose_name="Кто принял",
+                                          on_delete=models.SET_NULL, null=True, related_name="incoming_emp_id")
     incoming_status = models.BooleanField("Принимающий принял задание", default=False)
-    incoming_date = models.DateTimeField("Дата и время подписи первого подписанта", default=None,
+    incoming_date = models.DateTimeField("Дата и время подписи принявшего", default=None,
                                          null=True)
     task_workers = models.BooleanField("Наличие исполнителей", default=False)
 

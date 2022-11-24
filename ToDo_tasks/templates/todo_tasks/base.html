@@ -53,7 +53,7 @@
             <div class="offcanvas-body">
                 <a class="dropdown-item" href="{% url 'index' %}">Главная страница</a>
                 <!-- Для руководителей-->
-                {% if user.right_to_sign == True and user.can_make_task == True %}
+                {% if user.right_to_sign == True and user.cpe_flag == False %}
                     {% include "todo_tasks/offcanvas/offcanvas_can_sign.html" %}
                 {% elif user.cpe_flag == True %}
                     {% include "todo_tasks/offcanvas/offcanvas_cpe.html" %}

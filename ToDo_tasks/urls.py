@@ -21,13 +21,14 @@ urlpatterns = [
     path('details/<int:pk>/change', views.EditTaskView.as_view(), name='change'),
     path('details_to_sign/<int:pk>', views.ToSignDetailView.as_view(), name='details_to_sign'),
     path('details_to_add_workers/<int:pk>', views.ToAddWorkersDetailView.as_view(), name='details_to_add_workers'),
-    path('incoming_to_sign/', views.ToSignListView.as_view(), name='incoming_to_sign'),
+    path('outgoing_to_sign/', views.ToSignListView.as_view(), name='outgoing_to_sign'),
     path("incoming_to_dep/", views.IncomingDepView.as_view(), name='incoming_to_dep'),
+    path("incoming_to_sign/", views.IncomingListView.as_view(), name='incoming_to_sign'),
+    path("incoming_to_sign_details/<int:pk>", views.IncomingSignDetails.as_view(), name='incoming_to_sign_details'),
     path('incoming_to_workers/', views.ToWorkerListView.as_view(), name='incoming_to_workers'),
     path('search_result/<str:pk>', views.SearchView.as_view(), name='search_result'),
     path('advanced_search/', views.AdvancedSearchView.as_view(), name='advanced_search'),
     path('add_workers/', views.AddWorkerView.as_view(), name='add_workers'),
-    path('htmx/add_workers/', views.add_worker, name="htmx_add_workers"),
-    path('workers/', views.WorkerList.as_view(), name='workers_list')
+
 
 ]

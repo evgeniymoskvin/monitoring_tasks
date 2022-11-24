@@ -1,4 +1,4 @@
-from .models import Employee, TaskModel, CpeModel, ContractModel, ObjectModel, StageModel
+from .models import Employee, TaskModel, CpeModel, ContractModel, ObjectModel, StageModel, CanAcceptModel
 from .forms import TaskForm, TaskCheckForm, TaskEditForm
 
 
@@ -22,6 +22,12 @@ def get_signature_info(obj) -> dict:
     else:
         signature_info['cpe_sign_name'] = 'Не определен'
         signature_info['cpe_sign_job_title'] = 'ГИП'
+    if obj.incoming_employee:
+        signature_info['incom_sign_name'] = f'{obj.incoming_employee.first_name[:1]}. {obj.incoming_employee.middle_name[:1]}. {obj.incoming_employee.last_name}'
+        signature_info['incom_job_title'] = 'Принимающий'
+    else:
+        signature_info['incom_sign_name'] = 'Не определен'
+        signature_info['incom_job_title'] = 'Принимающий'
 
     return signature_info
 
@@ -107,3 +113,11 @@ def get_task_edit_form(request, obj):
         list_cpe.append(objects.cpe_user.id)
     form.fields["cpe_sign_user"].queryset = Employee.objects.get_queryset().filter(id__in=list_cpe)
     return form
+
+def get_list_incoming_tasks_to_sign(sign_user):
+    queryset = CanAcceptModel.objects.get_queryset().filter(user_accept=sign_user)
+    list_departments = []
+    for dep in queryset:
+        list_departments.append(dep.dep_accept_id)
+    return TaskModel.objects.get_queryset().filter(incoming_dep_id__in=list_departments).filter(
+        cpe_sign_status=True).filter(incoming_status=False)

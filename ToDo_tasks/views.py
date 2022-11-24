@@ -10,7 +10,7 @@ from .models import Employee, TaskModel, ContractModel, ObjectModel, StageModel,
     CpeModel, CanAcceptModel, BackCommentModel, WorkerModel
 from .forms import TaskForm, TaskCheckForm, TaskEditForm, SearchForm, WorkerFormSet
 from .functions import get_signature_info, get_data_for_form, get_data_for_detail, get_list_to_sign, get_task_edit_form, \
-    get_list_to_sign_cpe
+    get_list_to_sign_cpe, get_list_incoming_tasks_to_sign
 
 
 class IndexView(View):
@@ -30,17 +30,21 @@ class IndexView(View):
         # Получаем информацию о пользователе из таблицы Employee на основании request
         user = Employee.objects.get(user=request.user)
 
-        count_task_to_sign = 0
-        count_task_to_workers = 0
-        if user.right_to_sign == True:
+        count_task_to_sign = ''
+        count_task_to_workers = ''
+        count_task_incoming_to_sign = ''
+        if user.right_to_sign is True and user.cpe_flag is False:
             count_task_to_sign = len(get_list_to_sign(user))  # Получение количества заданий ожидающих подписи
             count_task_to_workers = TaskModel.objects.get_queryset().filter(task_status=2).filter(
                 incoming_dep=user.department).filter(task_workers=False).count()
-        if user.cpe_flag == True:
-            count_task_to_sign = get_list_to_sign_cpe(user).count()
-        content = {'user': user,
-                   "count_task_to_sign": f'({count_task_to_sign})',
-                   "count_task_to_workers": f'({count_task_to_workers})'}
+            count_task_incoming_to_sign = get_list_incoming_tasks_to_sign(user).count()
+        if user.cpe_flag is True:
+            count_task_to_sign = f'({get_list_to_sign_cpe(user).count()})'
+        content = {
+            'user': user,
+            "count_task_to_sign": f'({count_task_to_sign})',
+            "count_task_to_workers": f'({count_task_to_workers})',
+            "count_task_incoming_to_sign": f'({count_task_incoming_to_sign})'}
         return render(request, 'todo_tasks/index.html', content)
 
     def post(self, request):
@@ -81,7 +85,7 @@ class IncomingDepView(View):
         data_have_workers = TaskModel.objects.get_queryset().filter(incoming_dep=user_dep).filter(task_status=2)
         content = {'data_have_workers': data_have_workers,
                    'user': user}
-        return render(request, 'todo_tasks/incoming_to_dep.html', content)
+        return render(request, 'todo_tasks/outgoing_from_dep.html', content)
 
 
 class UserTaskView(View):
@@ -302,7 +306,7 @@ class ToSignListView(View):
         content = {
             'sign_list': sign_list,
             'user': sign_user}
-        return render(request, 'todo_tasks/incoming_to_sign.html', content)
+        return render(request, 'todo_tasks/outgoing_to_sign.html', content)
 
 
 class ToWorkerListView(View):
@@ -353,7 +357,6 @@ class ToSignDetailView(View):
             obj.cpe_sign_status = True
             obj.cpe_sign_date = timezone.now()
             obj.cpe_sign_user = Employee.objects.get(user=request.user)
-            # obj.task_status = 2
             obj.save()
             print(pk, ' sign')
         elif 'cancel1' in request.POST:
@@ -390,27 +393,73 @@ class ToSignDetailView(View):
         return redirect(request.META['HTTP_REFERER'])
 
 
+class IncomingListView(View):
+    """Получение заданий на подпись согласно таблице CanAccept"""
+
+    def get(self, request):
+        sign_user = Employee.objects.get(user=request.user)  # получаем пользователя
+        tasks = get_list_incoming_tasks_to_sign(sign_user)
+        # получаем список входящих заданий
+        if sign_user.cpe_flag == True:
+            sign_list = get_list_to_sign_cpe(sign_user)
+        else:
+            sign_list = get_list_to_sign(sign_user)
+        content = {
+            'tasks': tasks,
+            'user': sign_user}
+        return render(request, 'todo_tasks/incoming_to_sign.html', content)
+
+
+class IncomingSignDetails(View):
+    def get(self, request, pk):
+        content = get_data_for_detail(request, pk)
+        sign_user = Employee.objects.get(user=request.user)
+        queryset = CanAcceptModel.objects.get_queryset().filter(user_accept=sign_user)
+        list_departments = []
+        for dep in queryset:
+            list_departments.append(dep.dep_accept_id)
+        if sign_user.department_id in list_departments:
+            content['can_sign'] = True
+        else:
+            content['cpe_flag'] = False
+        return render(request, 'todo_tasks/details_to_incoming_sign.html', content)
+
+    def post(self, request, pk):
+        obj = TaskModel.objects.get(pk=pk)
+        if 'sign_incoming' in request.POST:
+            print(pk, ' sign_incoming')
+            user = Employee.objects.get(user=request.user)
+            obj.incoming_employee = user
+            obj.incoming_date = timezone.now()
+            obj.incoming_status = True
+            obj.task_status = 2
+            print(obj)
+            obj.save()
+        return redirect(request.META['HTTP_REFERER'])
+
+
 class ToAddWorkersDetailView(View):
     """Страница добавления ответственных"""
 
     def get(self, request, pk):
         content = get_data_for_detail(request, pk)
         formset = WorkerFormSet(queryset=Employee.objects.none())
+        content['data_all'] = WorkerModel.objects.get_queryset()
         content["formset"] = formset
         return render(request, 'todo_tasks/details_to_add_workers.html', content)
 
-    def post(self, request, pk):
-        obj = TaskModel.objects.get(pk=pk)
-        formset = WorkerFormSet(data=self.request.POST)
-        if formset.is_valid():
-            for f in formset:
-                print(f.data)
-                cd = f.cleaned_data
-                hg = cd.get('worker_user').id
-                print(cd)
-                print(cd.get('worker_user'))
-                print(hg)
-        return redirect(request.META['HTTP_REFERER'])
+
+    def post(self, request):
+        worker_user = request.POST.get("form-0-worker_user")
+        obj = WorkerModel()
+        obj.task_id = 28
+        obj.read_status = False
+        obj.worker_user_id = request.POST.get("form-0-worker_user")
+        obj.save()
+        print(worker_user)
+        data_all = WorkerModel.objects.get_queryset()
+        content = {"data_all": data_all}
+        return render(request, 'todo_tasks/htmx/workers.html', content)
 
 
 class SearchView(View):
@@ -458,11 +507,18 @@ class AddWorkerView(View):
         obj.task_id = 28
         obj.read_status = False
         obj.worker_user_id = request.POST.get("form-0-worker_user")
-        # obj.save()
+        obj.save()
         print(worker_user)
         data_all = WorkerModel.objects.get_queryset()
         content = {"data_all": data_all}
         return render(request, 'todo_tasks/htmx/workers.html', content)
+
+
+class ObjectTasksListView(View):
+    "Получение списка по объектам ГИП-а"
+
+    def get(self, request):
+        pass
 
 
 # Функции AJAX
@@ -492,25 +548,3 @@ def load_incoming_employee(request):
     print(incoming_employee)
     return render(request, 'todo_tasks/dropdown_update/incoming_dropdown_list_update.html',
                   {'incoming_employee': incoming_employee})
-
-
-def add_worker(request):
-    worker_user = request.POST.get("form-0-worker_user")
-    obj = WorkerModel()
-    obj.task_id = 28
-    obj.read_status = False
-    obj.worker_user_id = request.POST.get("form-0-worker_user")
-    # obj.save()
-    print(worker_user)
-    data_all = WorkerModel.objects.get_queryset()
-    print(data_all)
-    for data in data_all:
-        print(data.worker_user)
-    content = {"data_all": data_all}
-    return render(request, 'todo_tasks/htmx/workers.html', content)
-
-
-class WorkerList(ListView):
-    template_name = 'todo_tasks/htmx/workers.html'
-    model = WorkerModel
-    context_object_name = 'worker_user'
