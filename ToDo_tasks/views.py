@@ -30,6 +30,8 @@ class IndexView(View):
         # Получаем информацию о пользователе из таблицы Employee на основании request
         user = Employee.objects.get(user=request.user)
 
+        # Формируем количество сообщений для меню
+        # todo надо переделать
         count_task_to_sign = ''
         count_task_to_workers = ''
         count_task_incoming_to_sign = ''
@@ -48,6 +50,7 @@ class IndexView(View):
         return render(request, 'todo_tasks/index.html', content)
 
     def post(self, request):
+        """post запрос со страницы поиска"""
         if request.POST.get('search_field') == '':
             return redirect(request.META['HTTP_REFERER'])
         else:
@@ -55,11 +58,11 @@ class IndexView(View):
 
 
 class IssuedTasksView(View):
-    """Страница выданных заданий, уже всеми подписаны"""
+    """Страница выданных заданий отдела, уже всеми подписаны, принятых принимающим"""
 
     def get(self, request):
         user = Employee.objects.get(user=request.user)
-        data_all = TaskModel.objects.get_queryset().filter(department_number=user.department).filter(~Q(task_status=1))
+        data_all = TaskModel.objects.get_queryset().filter(department_number=user.department).filter(~Q(task_status=1)).filter(incoming_status=True)
         content = {'data_all': data_all,
                    'user': user}
         return render(request, 'todo_tasks/issued_tasks.html', content)
@@ -89,7 +92,7 @@ class IncomingDepView(View):
 
 
 class UserTaskView(View):
-    """Просмотр выданных заданий """
+    """Просмотр "мои выданные" заданий """
 
     def get(self, request):
         data_user = TaskModel.objects.get_queryset().filter(author__user=request.user).filter(task_status=2)
@@ -447,7 +450,6 @@ class ToAddWorkersDetailView(View):
         content['data_all'] = WorkerModel.objects.get_queryset()
         content["formset"] = formset
         return render(request, 'todo_tasks/details_to_add_workers.html', content)
-
 
     def post(self, request):
         worker_user = request.POST.get("form-0-worker_user")
