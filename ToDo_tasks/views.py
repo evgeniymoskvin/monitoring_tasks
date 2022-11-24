@@ -9,7 +9,8 @@ from django.db.models import Q
 from .models import Employee, TaskModel, ContractModel, ObjectModel, StageModel, TaskNumbersModel, CommandNumberModel, \
     CpeModel, CanAcceptModel, BackCommentModel, WorkerModel
 from .forms import TaskForm, TaskCheckForm, TaskEditForm, SearchForm, WorkerFormSet
-from .functions import get_signature_info, get_data_for_form, get_data_for_detail, get_list_to_sign, get_task_edit_form
+from .functions import get_signature_info, get_data_for_form, get_data_for_detail, get_list_to_sign, get_task_edit_form, \
+    get_list_to_sign_cpe
 
 
 class IndexView(View):
@@ -35,9 +36,8 @@ class IndexView(View):
             count_task_to_sign = len(get_list_to_sign(user))  # Получение количества заданий ожидающих подписи
             count_task_to_workers = TaskModel.objects.get_queryset().filter(task_status=2).filter(
                 incoming_dep=user.department).filter(task_workers=False).count()
-
-        print(request.user)  # login
-        print(user)  # Фамилия Имя
+        if user.cpe_flag == True:
+            count_task_to_sign = get_list_to_sign_cpe(user).count()
         content = {'user': user,
                    "count_task_to_sign": f'({count_task_to_sign})',
                    "count_task_to_workers": f'({count_task_to_workers})'}
@@ -152,8 +152,8 @@ class AddTaskView(View):
         list_cpe = []
         for objects in cpe_cpe:
             list_cpe.append(objects.cpe_user.id)
-        form.fields["cpe_sign_user"].queryset = Employee.objects.get_queryset().filter(id__in=list_cpe)
-        form.fields['incoming_employee'].quryset = CanAcceptModel.objects.get_queryset().all()
+        # form.fields["cpe_sign_user"].queryset = Employee.objects.get_queryset().filter(id__in=list_cpe)
+        # form.fields['incoming_employee'].quryset = CanAcceptModel.objects.get_queryset().all()
         objects = ObjectModel.objects.all()
         context = {'form': form,
                    'user': Employee.objects.get(user=request.user),
@@ -169,8 +169,6 @@ class AddTaskView(View):
             new_post.department_number = new_post.author.department  # добавляем номер отдела пользователя, пока не знаю зачем
             # Получаем номер последнего задания из таблицы TaskNumbers
             last_number = TaskNumbersModel.objects.get(command_number=new_post.department_number)
-            print(last_number.count_of_task)
-            print(last_number.year_of_task)
             today_year = datetime.datetime.today().year  # выносим в отдельную переменную, что бы каждый раз не вызывалась функция
             # Проверяем год. Если отличается от нынешнего, обнуляем счетчик заданий
             if last_number.year_of_task == today_year:
@@ -185,6 +183,7 @@ class AddTaskView(View):
             new_post.task_number = f'ЗД-{new_post.department_number.command_number}-{last_number.count_of_task}-{str(today_year)[2:4]}'
             new_post.task_change_number = 0  # номер изменения присваиваем 0
             print(new_post.task_number)
+            print(form.data)
             form.save()  # сохраняем форму в бд
             # После сохранения получаем id записи в бд, для формирования ссылки
             number_id_for_redirect = TaskModel.objects.get(task_number=new_post.task_number).id
@@ -295,7 +294,11 @@ class ToSignListView(View):
 
     def get(self, request):
         sign_user = Employee.objects.get(user=request.user)  # получаем пользователя
-        sign_list = get_list_to_sign(sign_user)  # получаем список заданий
+        # получаем список заданий
+        if sign_user.cpe_flag == True:
+            sign_list = get_list_to_sign_cpe(sign_user)
+        else:
+            sign_list = get_list_to_sign(sign_user)
         content = {
             'sign_list': sign_list,
             'user': sign_user}
@@ -322,6 +325,15 @@ class ToSignDetailView(View):
 
     def get(self, request, pk):
         content = get_data_for_detail(request, pk)
+        user = Employee.objects.get(user=request.user)
+        if user.cpe_flag == True:
+            list_objects = []
+            for object in CpeModel.objects.get_queryset().filter(cpe_user=user):
+                list_objects.append(object.cpe_object_id)
+            if content['obj'].task_order.id in list_objects:
+                content['cpe_flag'] = True
+        else:
+            content['cpe_flag'] = False
         return render(request, 'todo_tasks/details_to_sign.html', content)
 
     # Отработка кнопок подписи задания
@@ -340,7 +352,8 @@ class ToSignDetailView(View):
         elif 'sign3' in request.POST:
             obj.cpe_sign_status = True
             obj.cpe_sign_date = timezone.now()
-            obj.task_status = 2
+            obj.cpe_sign_user = Employee.objects.get(user=request.user)
+            # obj.task_status = 2
             obj.save()
             print(pk, ' sign')
         elif 'cancel1' in request.POST:

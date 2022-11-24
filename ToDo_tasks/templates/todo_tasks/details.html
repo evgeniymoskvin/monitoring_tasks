@@ -24,9 +24,8 @@
                 Автор задания:
                 <span data-toggle="tooltip"
                       title="{{ obj.author.job_title }} тел. ({{ obj.author.user_phone }}), {{ obj.author.department.command_name }}">{{ form.author }}</span>
-                Кому
-                <span data-toggle="tooltip"
-                      title="(тел. {{ obj.incoming_employee.user_accept.user_phone }})">{{ form.incoming_employee }}</span>
+                Принимающий отдел:
+                {{ form.incoming_dep }}
                 Объект:
                 {{ form.task_object }}
 

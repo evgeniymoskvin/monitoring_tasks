@@ -26,8 +26,9 @@ class TaskForm(ModelForm):
             "task_last_edit",
             "cpe_comment",
             "incoming_date",
-            "incoming_dep",
-            "task_workers"
+            "incoming_employee",
+            "task_workers",
+            "cpe_sign_user"
         ]
         widgets = {"task_order": Select(attrs={"class": "form-select",
                                                "aria-label": "Номер заказа"}),
@@ -45,12 +46,10 @@ class TaskForm(ModelForm):
                                                     "aria-label": "Первый руководитель"}),
                    "second_sign_user": Select(attrs={"class": "form-select",
                                                      "aria-label": "Второй руководитель"}),
-                   "cpe_sign_user": Select(attrs={"class": "form-select",
-                                                  "aria-label": "ГИП"}),
+                   # "cpe_sign_user": Select(attrs={"class": "form-select",
+                   #                                "aria-label": "ГИП"}),
                    "incoming_dep": Select(attrs={"class": "form-select",
                                                  "aria-label": "Отдел принимающий задание"}),
-                   "incoming_employee": Select(attrs={"class": "form-select",
-                                                      "aria-label": "Кому"}),
                    "task_building": TextInput(attrs={"class": "form-control",
                                                      "aria-label": "Здание"})
                    }
@@ -68,7 +67,7 @@ class TaskCheckForm(ModelForm):
     class Meta:
         model = TaskModel
         exclude = ['department_number', 'task_number', 'task_change_number', "first_sign_status",
-                   "second_sign_status", "cpe_sign_status", "back_to_change"]
+                   "second_sign_status", "cpe_sign_status", "back_to_change", 'incoming_employee']
         widgets = {"task_order": Select(attrs={"class": "form-select",
                                                "disabled": True}),
                    "author": TextInput(attrs={"class": "form-control",
@@ -82,7 +81,7 @@ class TaskCheckForm(ModelForm):
                    "text_task": Textarea(attrs={"class": "form-control",
                                                 "type": "text",
                                                 "readonly": True}),
-                   "incoming_employee": TextInput(attrs={"class": "form-control",
+                   "incoming_dep": TextInput(attrs={"class": "form-control",
                                                          "readonly": True}),
                    "task_building": TextInput(attrs={"class": "form-control",
                                                      "aria-label": "Здание",
@@ -113,7 +112,6 @@ class TaskEditForm(ModelForm):
             "task_last_edit",
             "cpe_comment",
             "incoming_date",
-            "incoming_dep",
             "task_workers",
             'task_order',
             'task_object',
@@ -121,6 +119,7 @@ class TaskEditForm(ModelForm):
             'task_stage',
             'task_type_work',
             "task_building",
+            'incoming_employee'
         ]
         widgets = {"text_task": Textarea(attrs={"placeholder": "Введите текст задания",
                                                 "class": "form-control"}),
@@ -130,7 +129,7 @@ class TaskEditForm(ModelForm):
                                                      "aria-label": "Второй руководитель"}),
                    "cpe_sign_user": Select(attrs={"class": "form-select",
                                                   "aria-label": "ГИП"}),
-                   "incoming_employee": Select(attrs={"class": "form-select",
+                   "incoming_dep": Select(attrs={"class": "form-select",
                                                       "aria-label": "Кому"}),
                    }
 

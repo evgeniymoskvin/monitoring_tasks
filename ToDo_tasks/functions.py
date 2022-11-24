@@ -9,21 +9,20 @@ def get_signature_info(obj) -> dict:
     :param obj: Queryset
     :return: словарь со значениями
     """
-    try:
-        signature_info = {
-            "first_sign_name": f'{obj.first_sign_user.first_name[:1]}. {obj.first_sign_user.middle_name[:1]}. {obj.first_sign_user.last_name}',
-            "first_sign_job_title": obj.first_sign_user.job_title.job_title,
-            "second_sign_name": f'{obj.second_sign_user.first_name[:1]}. {obj.second_sign_user.middle_name[:1]}. {obj.second_sign_user.last_name}',
-            "second_sign_job_title": obj.second_sign_user.job_title.job_title,
-            "cpe_sign_name": f'{obj.cpe_sign_user.first_name[:1]}. {obj.cpe_sign_user.middle_name[:1]}. {obj.cpe_sign_user.last_name}',
-            "cpe_sign_job_title": obj.cpe_sign_user.job_title.job_title}
-    except AttributeError:
-        signature_info = {"first_sign_name": f'None',
-                          "first_sign_job_title": f'None',
-                          "second_sign_name": f'None',
-                          "second_sign_job_title": f'None',
-                          "cpe_sign_name": f'None',
-                          "cpe_sign_job_title": f'None'}
+    signature_info = {}
+    if obj.first_sign_user:
+        signature_info['first_sign_name'] = f'{obj.first_sign_user.first_name[:1]}. {obj.first_sign_user.middle_name[:1]}. {obj.first_sign_user.last_name}'
+        signature_info['first_sign_job_title'] = obj.first_sign_user.job_title.job_title
+    if obj.second_sign_user:
+        signature_info['second_sign_name'] = f'{obj.second_sign_user.first_name[:1]}. {obj.second_sign_user.middle_name[:1]}. {obj.second_sign_user.last_name}'
+        signature_info['second_sign_job_title'] = obj.second_sign_user.job_title.job_title
+    if obj.cpe_sign_user:
+        signature_info['cpe_sign_name'] = f'{obj.cpe_sign_user.first_name[:1]}. {obj.cpe_sign_user.middle_name[:1]}. {obj.cpe_sign_user.last_name}'
+        signature_info['cpe_sign_job_title'] = obj.cpe_sign_user.job_title.job_title
+    else:
+        signature_info['cpe_sign_name'] = 'Не определен'
+        signature_info['cpe_sign_job_title'] = 'ГИП'
+
     return signature_info
 
 
@@ -35,7 +34,7 @@ def get_data_for_form(obj) -> dict:
         "task_order": obj.task_order,
         "task_contract": str(obj.task_contract.contract_name),
         "task_stage": str(obj.task_stage.stage_name),
-        "incoming_employee": str(obj.incoming_employee),
+        "incoming_dep": str(obj.incoming_dep),
         "task_building": str(obj.task_building),
         "task_type_work": str(obj.get_task_type_work_display()),
     }
@@ -85,6 +84,15 @@ def get_list_to_sign(sign_user) -> list:
             sign_list.append(obj)
     return sign_list
 
+
+def get_list_to_sign_cpe(sign_user):
+    objects_queryset = CpeModel.objects.get_queryset().filter(cpe_user=sign_user)
+    list_objects = []
+    for object in objects_queryset:
+        list_objects.append(object.cpe_object_id)
+    to_sign_objects_cpe = TaskModel.objects.get_queryset().filter(task_object__in=list_objects).filter(
+        cpe_sign_status=False).filter(first_sign_status=True).filter(second_sign_status=True).filter(back_to_change=False)
+    return to_sign_objects_cpe
 
 def get_task_edit_form(request, obj):
     form = TaskEditForm(instance=obj)
