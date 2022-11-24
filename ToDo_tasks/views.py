@@ -147,8 +147,12 @@ class AddTaskView(View):
             right_to_sign=True)  # получаем в 1ое поле список пользователей по двум фильтрам
         form.fields['second_sign_user'].queryset = Employee.objects.filter(department=department_user).filter(
             right_to_sign=True)  # получаем во 2ое поле список пользователей по двум фильтрам
-        form.fields[
-            'cpe_sign_user'].queryset = Employee.objects.filter(cpe_flag=True)  # получаем во 2ое поле список пользователей по двум фильтрам
+        # Получаем список ГИП-ов из таблицы CpeModel
+        cpe_cpe = CpeModel.objects.get_queryset()
+        list_cpe = []
+        for objects in cpe_cpe:
+            list_cpe.append(objects.cpe_user.id)
+        form.fields["cpe_sign_user"].queryset = Employee.objects.get_queryset().filter(id__in=list_cpe)
         form.fields['incoming_employee'].quryset = CanAcceptModel.objects.get_queryset().all()
         objects = ObjectModel.objects.all()
         context = {'form': form,
