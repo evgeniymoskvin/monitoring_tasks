@@ -1,0 +1,45 @@
+{% extends 'todo_tasks/base.html' %}
+
+
+{% block content %}
+    <script type="text/javascript" src="https://unpkg.com/htmx.org@1.3.3"></script>
+
+    {#    <!-- have a button POST a click via AJAX -->#}
+    {#    {{ formset.management_form }}#}
+    {#    {% for form in formset.forms %}#}
+    {#        {{ form.as_p }}#}
+    {#        <figure class="text-center">#}
+    {#        <button type="submit" class="btn btn-success" hx-post={% url 'htmx_add_workers' %}>Добавить задание#}
+    {#        </button>#}
+    {#    {% endfor %}#}
+    {#    <button hx-post={% url 'htmx_add_workers' %} hx-swap="outerHTML">#}
+    {#        Click Me#}
+    {#    </button>#}
+    <form id="form-container" method="POST" hx-post={% url 'add_workers' %} hx-target="#worker_list">
+        {% csrf_token %}
+        {{ formset.management_form }}
+        {% for form in formset.forms %}
+            <div class="worker_form">
+                {{ form }}
+            </div>
+        {% endfor %}
+        <button type="submit" hx-target="worker_list">OK</button>
+    </form>
+    <div id="worker_list">
+        {% include 'todo_tasks/htmx/workers.html' %}
+    </div>
+
+
+
+
+
+    <script>
+        document.body.addEventListener('htmx:configRequest', (event) => {
+            event.detail.headers['X-CSRFToken'] = '{{ csrf_token }}'; //insert csrf token when performing AJAX request
+        })
+    </script>
+
+
+
+
+{% endblock %}
