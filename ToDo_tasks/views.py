@@ -335,9 +335,10 @@ class ToSignDetailView(View):
         user = Employee.objects.get(user=request.user)
         if user.cpe_flag == True:
             list_objects = []
-            for object in CpeModel.objects.get_queryset().filter(cpe_user=user):
-                list_objects.append(object.cpe_object_id)
-            if content['obj'].task_order.id in list_objects:
+            for obj in CpeModel.objects.get_queryset().filter(cpe_user=user):
+                list_objects.append(obj.cpe_object_id)
+            print(list_objects)
+            if content['obj'].task_object.id in list_objects:
                 content['cpe_flag'] = True
         else:
             content['cpe_flag'] = False

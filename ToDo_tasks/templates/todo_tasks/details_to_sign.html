@@ -28,8 +28,8 @@
                             <input type="submit" class="btn btn-secondary" name="cancel2" value="Отменить подпись">
                         {% endif %}
                     {% endif %}
-
                     {% if cpe_flag == True %}
+
                         {% if obj.cpe_sign_status == False %}
                             <button type="button" class="btn btn-primary" data-bs-toggle="modal"
                                     data-bs-target="#comment_modal"
