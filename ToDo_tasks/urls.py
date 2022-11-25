@@ -4,7 +4,8 @@ from django.contrib.auth.views import PasswordChangeView
 
 urlpatterns = [
     path('', views.IndexView.as_view(), name='index'),
-    path('my_tasks/', views.UserTaskView.as_view(), name='my_tasks'),
+    path('my_outgoing_tasks/', views.UserTaskView.as_view(), name='my_tasks'),
+    path('inbox', views.MyInboxListView.as_view(), name='inbox'),
     path('my_tasks_on_sign/', views.UserTaskOnSignView.as_view(), name='my_tasks_on_sign'),
     path('add_task/', views.AddTaskView.as_view(), name='add_task'),
     # path('add_task/<int:pk>', views.AddTaskView.as_view(), name='add_task'),  # просмотр добавленного задания
@@ -28,7 +29,7 @@ urlpatterns = [
     path('incoming_to_workers/', views.ToWorkerListView.as_view(), name='incoming_to_workers'),
     path('search_result/<str:pk>', views.SearchView.as_view(), name='search_result'),
     path('advanced_search/', views.AdvancedSearchView.as_view(), name='advanced_search'),
-    path('add_workers/', views.AddWorkerView.as_view(), name='add_workers'),
+    # path('add_workers/', views.AddWorkerView.as_view(), name='add_workers'),
 
 
 ]

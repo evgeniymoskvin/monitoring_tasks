@@ -10,7 +10,7 @@ from .models import Employee, TaskModel, ContractModel, ObjectModel, StageModel,
     CpeModel, CanAcceptModel, BackCommentModel, WorkerModel
 from .forms import TaskForm, TaskCheckForm, TaskEditForm, SearchForm, WorkerFormSet
 from .functions import get_signature_info, get_data_for_form, get_data_for_detail, get_list_to_sign, get_task_edit_form, \
-    get_list_to_sign_cpe, get_list_incoming_tasks_to_sign
+    get_list_to_sign_cpe, get_list_incoming_tasks_to_sign, get_list_incoming_tasks_to_workers
 
 
 class IndexView(View):
@@ -62,7 +62,8 @@ class IssuedTasksView(View):
 
     def get(self, request):
         user = Employee.objects.get(user=request.user)
-        data_all = TaskModel.objects.get_queryset().filter(department_number=user.department).filter(~Q(task_status=1)).filter(incoming_status=True)
+        data_all = TaskModel.objects.get_queryset().filter(department_number=user.department).filter(
+            ~Q(task_status=1)).filter(incoming_status=True)
         content = {'data_all': data_all,
                    'user': user}
         return render(request, 'todo_tasks/issued_tasks.html', content)
@@ -101,7 +102,7 @@ class UserTaskView(View):
         content = {'data_user': data_user,
                    'user': user,
                    "text_status": text_status}
-        return render(request, 'todo_tasks/my_tasks.html', content)
+        return render(request, 'todo_tasks/my_outgoing_tasks.html', content)
 
 
 class UserTaskOnSignView(View):
@@ -114,7 +115,7 @@ class UserTaskOnSignView(View):
         content = {'data_user': data_user,
                    'user': user,
                    "text_status": text_status}
-        return render(request, 'todo_tasks/my_tasks.html', content)
+        return render(request, 'todo_tasks/my_outgoing_tasks.html', content)
 
 
 class DetailView(View):
@@ -123,7 +124,8 @@ class DetailView(View):
     def get(self, request, pk):
         """Получаем номер задания из ссылки и формируем страницу подробностей"""
         content = get_data_for_detail(request, pk)
-        content['flag'] = True  # Для того, что бы шестеренка была доступна только на странице деталей, и ни на каких других дочерних
+        content[
+            'flag'] = True  # Для того, что бы шестеренка была доступна только на странице деталей, и ни на каких других дочерних
         return render(request, 'todo_tasks/details.html', content)
 
     def post(self, request, pk):
@@ -295,6 +297,27 @@ class AddChangeTaskView(View):
         number_id_for_redirect = TaskModel.objects.get(task_number=new_task_with_change.task_number).id
         return redirect(f'/details/{number_id_for_redirect}')
 
+class MyInboxListView(View):
+    """Получение моих входящих, где назначен исполнителем"""
+    def get(self, request):
+        user = Employee.objects.get(user=request.user)
+        tasks_id_unread = WorkerModel.objects.get_queryset().filter(worker_user=user).filter(read_status=False)
+        tasks_id_read = WorkerModel.objects.get_queryset().filter(worker_user=user).filter(read_status=True)
+        task_list_unread = []
+        for task in tasks_id_unread:
+            task_list_unread.append(task.task_id)
+        data_all_unread = TaskModel.objects.get_queryset().filter(id__in=task_list_unread)
+        task_list_read = []
+        for task in tasks_id_read:
+            task_list_unread.append(task.task_id)
+        data_all_read = TaskModel.objects.get_queryset().filter(id__in=task_list_read)
+        content = {
+            'user': user,
+            'data_all_unread': data_all_unread,
+            'data_all_read': data_all_read
+        }
+        return render(request, 'todo_tasks/my_inbox_tasks.html', content)
+
 
 class ToSignListView(View):
     """Страница со списком заданий ожидающих подписи для выдачи в другой отдел (исходящих)"""
@@ -310,21 +333,6 @@ class ToSignListView(View):
             'sign_list': sign_list,
             'user': sign_user}
         return render(request, 'todo_tasks/outgoing_to_sign.html', content)
-
-
-class ToWorkerListView(View):
-    """Страница со списком заданий ожидающих назначить исполнителей"""
-
-    def get(self, request):
-        sign_user = Employee.objects.get(user=request.user)  # получаем пользователя
-        user_dep = sign_user.department_id
-        data_without_workers = TaskModel.objects.get_queryset().filter(incoming_dep=user_dep).filter(
-            task_status=2).filter(task_workers=False)  # получаем список заданий
-        print(data_without_workers)
-        content = {
-            'data_without_workers': data_without_workers,
-            'user': sign_user}
-        return render(request, 'todo_tasks/incoming_to_workers.html', content)
 
 
 class ToSignDetailView(View):
@@ -416,6 +424,7 @@ class IncomingListView(View):
 
 class IncomingSignDetails(View):
     """Просмотр деталей при подписании задания получающим"""
+
     def get(self, request, pk):
         content = get_data_for_detail(request, pk)
         sign_user = Employee.objects.get(user=request.user)
@@ -430,6 +439,7 @@ class IncomingSignDetails(View):
         return render(request, 'todo_tasks/details_to_incoming_sign.html', content)
 
     def post(self, request, pk):
+        print(request)
         obj = TaskModel.objects.get(pk=pk)
         if 'sign_incoming' in request.POST:
             print(pk, ' sign_incoming')
@@ -443,6 +453,19 @@ class IncomingSignDetails(View):
         return redirect(request.META['HTTP_REFERER'])
 
 
+class ToWorkerListView(View):
+    """Страница со списком заданий ожидающих назначить исполнителей"""
+
+    def get(self, request):
+        sign_user = Employee.objects.get(user=request.user)  # получаем пользователя
+        tasks = get_list_incoming_tasks_to_workers(sign_user)
+        print(tasks)
+        content = {
+            'data_without_workers': tasks,
+            'user': sign_user}
+        return render(request, 'todo_tasks/incoming_to_workers.html', content)
+
+
 class ToAddWorkersDetailView(View):
     """Страница добавления ответственных"""
 
@@ -453,15 +476,22 @@ class ToAddWorkersDetailView(View):
         content["formset"] = formset
         return render(request, 'todo_tasks/details_to_add_workers.html', content)
 
-    def post(self, request):
+    def post(self, request, pk):
+        print(pk)
         worker_user = request.POST.get("form-0-worker_user")
+        print(worker_user)
+        # При каждом новом добавлении пользователя обновляем статус задания (назначены исполнители)
+        task = TaskModel.objects.get(id=pk)
+        task.task_workers = True
+        task.save()
+        # Создаем объект таблицы Исполнители
         obj = WorkerModel()
-        obj.task_id = 28
-        obj.read_status = False
+        obj.task_id = pk
+        obj.read_status = False  # Присваиваем флаг о не прочтении сообщения
         obj.worker_user_id = request.POST.get("form-0-worker_user")
         obj.save()
-        print(worker_user)
-        data_all = WorkerModel.objects.get_queryset()
+        # Обновляем список исполнителей к данному заданию
+        data_all = WorkerModel.objects.get_queryset().filter(task_id=pk)
         content = {"data_all": data_all}
         return render(request, 'todo_tasks/htmx/workers.html', content)
 
@@ -496,26 +526,26 @@ class AdvancedSearchView(View):
         return redirect(request.META['HTTP_REFERER'])
 
 
-class AddWorkerView(View):
-    def get(self, request):
-        formset = WorkerFormSet(queryset=Employee.objects.none())
-        data_all = WorkerModel.objects.get_queryset()
-        content = {"formset": formset,
-                   "data_all": data_all}
-
-        return render(request, 'todo_tasks/test_cancel.html', content)
-
-    def post(self, request):
-        worker_user = request.POST.get("form-0-worker_user")
-        obj = WorkerModel()
-        obj.task_id = 28
-        obj.read_status = False
-        obj.worker_user_id = request.POST.get("form-0-worker_user")
-        obj.save()
-        print(worker_user)
-        data_all = WorkerModel.objects.get_queryset()
-        content = {"data_all": data_all}
-        return render(request, 'todo_tasks/htmx/workers.html', content)
+# class AddWorkerView(View):
+#     def get(self, request):
+#         formset = WorkerFormSet(queryset=Employee.objects.none())
+#         data_all = WorkerModel.objects.get_queryset()
+#         content = {"formset": formset,
+#                    "data_all": data_all}
+#
+#         return render(request, 'todo_tasks/test_cancel.html', content)
+#
+#     def post(self, request):
+#         worker_user = request.POST.get("form-0-worker_user")
+#         obj = WorkerModel()
+#         obj.task_id = 28
+#         obj.read_status = False
+#         obj.worker_user_id = request.POST.get("form-0-worker_user")
+#         obj.save()
+#         print(worker_user)
+#         data_all = WorkerModel.objects.get_queryset()
+#         content = {"data_all": data_all}
+#         return render(request, 'todo_tasks/htmx/workers.html', content)
 
 
 class ObjectTasksListView(View):

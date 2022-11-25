@@ -225,7 +225,9 @@ class WorkerModel(models.Model):
 
     worker_user = models.ForeignKey(Employee, on_delete=models.SET_NULL, verbose_name="Сотрудник", null=True)
     task = models.ForeignKey(TaskModel, on_delete=models.CASCADE, verbose_name="Задание", null=True)
+    # comment = models.CharField("Комментарий", max_length=200, null=True)
     read_status = models.BooleanField("Статус прочтения", default=False)
+
 
 
 class BackCommentModel(models.Model):

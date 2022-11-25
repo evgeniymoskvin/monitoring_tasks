@@ -1,5 +1,5 @@
 from .models import Employee, TaskModel, CpeModel, ContractModel, ObjectModel, StageModel, CanAcceptModel
-from .forms import TaskForm, TaskCheckForm, TaskEditForm
+from .forms import TaskForm, TaskCheckForm, TaskEditForm, WorkerModel
 
 
 def get_signature_info(obj) -> dict:
@@ -56,12 +56,18 @@ def get_data_for_detail(request, pk) -> dict:
     data = get_data_for_form(obj)  # получаем данные для подгрузки в форму
     form = TaskCheckForm(initial=data)
     user = Employee.objects.get(user=request.user)
+
+    try:
+        workers = WorkerModel.objects.get_queryset().filter(task_id=pk)
+    except:
+        workers = False
     return {
         'obj': obj,
         'user': user,
         'form': form,
         "sign_info": signature_info,
         "task_status": task_status,
+        "workers": workers
     }
 
 
@@ -121,3 +127,11 @@ def get_list_incoming_tasks_to_sign(sign_user):
         list_departments.append(dep.dep_accept_id)
     return TaskModel.objects.get_queryset().filter(incoming_dep_id__in=list_departments).filter(
         cpe_sign_status=True).filter(incoming_status=False)
+
+
+def get_list_incoming_tasks_to_workers(sign_user):
+    queryset = CanAcceptModel.objects.get_queryset().filter(user_accept=sign_user)
+    list_departments = []
+    for dep in queryset:
+        list_departments.append(dep.dep_accept_id)
+    return TaskModel.objects.get_queryset().filter(incoming_dep_id__in=list_departments).filter(incoming_status=True).filter(task_workers=False)

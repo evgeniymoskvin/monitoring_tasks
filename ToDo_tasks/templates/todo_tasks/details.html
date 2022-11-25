@@ -6,23 +6,25 @@
 {% block content %}
     <br>
 
+
     <div class="container">
         <div class="row">
             <div class="col-10">
                 <div class="d-flex justify-content-start">
-                    <h3 class="display-6">Детали задания {{ obj.task_number }} ({{ task_status }})</h3>
+                    <h4>Детали задания {{ obj.task_number }} <small class="text-muted">({{ task_status }})</small></h4>
                 </div>
             </div>
             <div class="col">
                 <div class="d-flex justify-content-end">
                     {% if flag == True %}
-                        <h3 class="display-6">
-                        <a href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
-                           aria-expanded="false">
-                            <img src="{% static 'todo_tasks/icons/list.svg' %}" data-toggle="tooltip" title="Действия">
-                            {% include 'todo_tasks/detail_buttons/buttons_gear_for_details.html' %}
-                        </a>
-                        </h3>
+                        <h4>
+                            <a href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
+                               aria-expanded="false">
+                                <img src="{% static 'todo_tasks/icons/list.svg' %}" data-toggle="tooltip"
+                                     title="Действия">
+                                {% include 'todo_tasks/detail_buttons/buttons_gear_for_details.html' %}
+                            </a>
+                        </h4>
                     {% endif %}
                 </div>
             </div>
@@ -142,7 +144,7 @@
                     </div>
                     <div class="col">
                         <span data-toggle="tooltip"
-                              title="{{ obj.incoming_employee.user_accept }} (тел. {{ obj.incoming_employee.user_accept.user_phone }})">{{ sign_info.incom_sign_name }}</span>
+                              title="{{ obj.incoming_employee }} (тел. {{ obj.incoming_employee.user_phone }})">{{ sign_info.incom_sign_name }}</span>
                     </div>
                     {% if obj.incoming_status %}
                         <div class="col bg-success text-white text-right">
@@ -171,6 +173,20 @@
         </div>
         {% block buttons %}
         {% endblock %}
+
+        <!-- Формируем список исполнителей, если они имеются-->
+        {% if workers %}
+
+            <br>
+            <h5>Назначены исполнители</h5>
+            <ul class="list-group">
+                {% for worker in workers %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        {{ worker.worker_user }} <small class="text-muted"> ({{ worker.worker_user.job_title}}, {{ worker.worker_user.department }})</small>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
         {#        {% if obj.department_number.id == user.department.id %}#}
         {#            {% if obj.author.user == request.user and obj.first_sign_status == 0 and obj.second_sign_status == 0 or obj.back_to_change == True %}#}
         {#                <br>#}
