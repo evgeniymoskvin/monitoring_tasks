@@ -6,15 +6,30 @@
 {% block content %}
     <br>
 
-    <h3 class="text-center display-6">Детали задания {{ obj.task_number }} ({{ task_status }})
-        {% if flag == True %}
-            <a href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
-               aria-expanded="false">
-                <img src="{% static 'todo_tasks/icons/gear.svg' %}" data-toggle="tooltip" title="Действия">
-                {% include 'todo_tasks/detail_buttons/buttons_gear_for_details.html' %}
-            </a>
-        {% endif %}
-    </h3>
+    <div class="container">
+        <div class="row">
+            <div class="col-10">
+                <div class="d-flex justify-content-start">
+                    <h3 class="display-6">Детали задания {{ obj.task_number }} ({{ task_status }})</h3>
+                </div>
+            </div>
+            <div class="col">
+                <div class="d-flex justify-content-end">
+                    {% if flag == True %}
+                        <h3 class="display-6">
+                        <a href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
+                           aria-expanded="false">
+                            <img src="{% static 'todo_tasks/icons/list.svg' %}" data-toggle="tooltip" title="Действия">
+                            {% include 'todo_tasks/detail_buttons/buttons_gear_for_details.html' %}
+                        </a>
+                        </h3>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+
     <br>
 
 

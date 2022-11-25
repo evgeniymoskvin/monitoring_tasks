@@ -1,8 +1,9 @@
 <ul class="dropdown-menu dropdown-menu-start" aria-labelledby="navbarDropdown">
     {% if obj.department_number.id == user.department.id %}
-        {% if obj.author.user == request.user or obj.back_to_change == True %}
+        {% if obj.author.user == request.user and obj.task_status == 1 or obj.back_to_change == True  %}
             <li><a class="dropdown-item" href="{% url "change" pk=obj.id %}">Редактировать</a></li>
-        {% elif obj.task_status == 2 or obj.task_status == 3  and obj.department_number.id == user.department.id %}
+        {% endif %}
+        {% if obj.task_status == 2 or obj.task_status == 3  and obj.department_number.id == user.department.id %}
             <li><a class="dropdown-item" data-bs-toggle="modal"
                    data-bs-target="#cancel_task">Аннулировать задание</a></li>
             <li><a class="dropdown-item" data-bs-toggle="modal"
