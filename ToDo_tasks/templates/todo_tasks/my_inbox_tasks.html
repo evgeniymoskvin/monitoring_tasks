@@ -6,25 +6,27 @@
 
 {% block content %}
     <br>
-    <h3 class="text-center display-6">Входящие задания для</h3>
+    <h3 class="text-center display-6">Входящие задания</h3>
 <table id="incoming_table_dep" class="table table-hover" style="width: 100%">
                     <thead>
                     <tr>
                         <th scope="col">#</th>
                         <th scope="col">Номер задания</th>
+                        <th scope="col">Объект</th>
+                        <th scope="col">Здание</th>
                         <th scope="col">Текст задания</th>
-{#                        <th scope="col">Автор задания</th>#}
                         <th scope="col">Статус</th>
                     </tr>
                     </thead>
                     <tbody>
                     {% for obj in data_all_unread %}
-                        <tr data-href="{% url 'details' pk=obj.id %}">
+                        <tr data-href="{% url 'read_task' pk=obj.id %}">
                             <th scope="row">{{ forloop.counter }}</th>
                             <td>
-                                <strong>{{ obj.task_number }}</strong></td>
+                                <strong>{{ obj.task_number|truncatechars:15 }}</strong></td>
+                            <td><strong>{{ obj.task_object }}</strong></td>
+                            <td><strong>{{ obj.task_building }}</strong></td>
                             <td><strong>{{ obj.text_task|truncatechars:100 }}</strong></td>
-{#                            <td>{{ obj.author }}</td>#}
                             <td><strong>{{ obj.get_task_status_display }}</strong></td>
                         </tr>
                     {% endfor %}
@@ -32,9 +34,10 @@
                         <tr data-href="{% url 'details' pk=obj.id %}">
                             <th scope="row">{{ forloop.counter }}</th>
                             <td>
-                                {{ obj.task_number }}</td>
+                                {{ obj.task_number|truncatechars:15 }}</td>
+                            <td>{{ obj.task_object }}</td>
+                            <td>{{ obj.task_building }}</td>
                             <td>{{ obj.text_task|truncatechars:100 }}</td>
-{#                            <td>{{ obj.author }}</td>#}
                             <td>{{ obj.get_task_status_display }}</td>
                         </tr>
                     {% endfor %}

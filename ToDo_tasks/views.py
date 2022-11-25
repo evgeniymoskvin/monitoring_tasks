@@ -301,15 +301,17 @@ class MyInboxListView(View):
     """Получение моих входящих, где назначен исполнителем"""
     def get(self, request):
         user = Employee.objects.get(user=request.user)
+        # Формируем 2 списка прочтенных и не прочтенных заданий
         tasks_id_unread = WorkerModel.objects.get_queryset().filter(worker_user=user).filter(read_status=False)
         tasks_id_read = WorkerModel.objects.get_queryset().filter(worker_user=user).filter(read_status=True)
+        # Переводим в список
         task_list_unread = []
         for task in tasks_id_unread:
             task_list_unread.append(task.task_id)
         data_all_unread = TaskModel.objects.get_queryset().filter(id__in=task_list_unread)
         task_list_read = []
         for task in tasks_id_read:
-            task_list_unread.append(task.task_id)
+            task_list_read.append(task.task_id)
         data_all_read = TaskModel.objects.get_queryset().filter(id__in=task_list_read)
         content = {
             'user': user,
@@ -317,6 +319,16 @@ class MyInboxListView(View):
             'data_all_read': data_all_read
         }
         return render(request, 'todo_tasks/my_inbox_tasks.html', content)
+
+
+class MyInboxReadTask(View):
+    """Отметка задания как прочтенное"""
+    def get(self, request, pk):
+        user = Employee.objects.get(user=request.user)
+        task = WorkerModel.objects.get(worker_user=user.id, task_id=pk)
+        task.read_status = True
+        task.save()
+        return redirect(f'/details/{pk}')
 
 
 class ToSignListView(View):
