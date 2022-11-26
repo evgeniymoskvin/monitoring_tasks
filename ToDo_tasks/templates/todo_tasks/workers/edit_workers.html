@@ -1,12 +1,33 @@
 {% extends "todo_tasks/base.html" %}
 {% load static %}
 {% block title %}
-    Главная страница
+    Назначение ответственных исполнителей
 {% endblock %}
 {% block content %}
-    <form method="POST">
-        {{ form }}
-    </form>
+    <script type="text/javascript" src="{% static 'todo_tasks/htmx/htmx.min.js' %}"></script>
+    <br>
+    <h4>Корректировка ответственных исполнителей</h4>
+    <p>Выберете задание, для которого необходимо откорректировать ответственных исполнителей</p>
+        <div class="row">
+            <form method="POST" hx-post={% url 'edit_workers' %} hx-target="#worker_list">
+                <div class="col-6">
+                    {% csrf_token %}
+                    {{ form.task }}
+                </div>
+                <div class="col-2">
+                    <br>
+{#                    <figure class="text-center">#}
+                        <button class="btn btn-success" type="submit" hx-target="worker_list">Получить данные</button>
+{#                    </figure>#}
+
+                </div>
+            </form>
+        </div>
+
+        <div id="worker_list">
+            {% include 'todo_tasks/htmx/edit_workers.html' %}
+        </div>
+
 
 {% endblock %}
 

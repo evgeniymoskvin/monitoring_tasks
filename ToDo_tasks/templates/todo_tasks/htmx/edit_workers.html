@@ -1,0 +1,52 @@
+{#{% csrf_token %}#}
+{% load static %}
+<br>
+{% if task %}
+
+    <div class="col-6">
+        <form id="form-container" method="POST"
+              hx-post={% url 'edit_workers_add' task %} hx-target="#worker_list">
+            {% csrf_token %}
+            <br>
+            <h6>Назначить ответственного исполнителя:</h6>
+            {{ formset.worker_user }}
+            <br>
+            <button class="btn btn-success" type="submit" hx-target="worker_list">Подкинуть работенку</button>
+
+        </form>
+    </div>
+{% endif %}
+
+
+
+{% if data_all %}
+    <br>
+    <h6>Исполнители, которые уже назначены:</h6>
+    <ul class="list-group">
+        <div id="test">
+            {% for data in data_all %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    {{ data.worker_user }}
+                    {% if data.read_status %}
+                        (Прочитал)
+                    {% else %}
+                        (Не прочитал)
+                    {% endif %}
+                    {% csrf_token %}
+                    <form id="form-2" data-method="delete" hx-delete={% url 'delete_worker' data.id %} hx-target="#test"
+                          hx-swap="innerHTML">
+                        <button class="btn btn-outline-danger btn-sm" hx-target="test" type="submit">Больше не
+                            ответственный
+                        </button>
+                    </form>
+                </li>
+            {% endfor %}
+        </div>
+    </ul>
+
+
+{% endif %}
+
+
+
+

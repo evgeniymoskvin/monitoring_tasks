@@ -3,6 +3,7 @@
 <a class="dropdown-item" href="{% url 'incoming_to_sign' %}">Подписать входящие {{ count_task_incoming_to_sign }}</a>
 <a class="dropdown-item" href="{% url 'incoming_to_workers' %}">Назначить
         исполнителей {{ count_task_to_workers }}</a>
+<a class="dropdown-item" href="{% url 'edit_workers' %}">Переназначить ответственных</a>
 <hr>
 <a class="dropdown-item" href="{% url 'add_task' %}">Выдать задание</a>
 <a class="dropdown-item" href="{% url 'my_tasks' %}">Мои выданные задания</a>

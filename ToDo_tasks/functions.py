@@ -11,19 +11,23 @@ def get_signature_info(obj) -> dict:
     """
     signature_info = {}
     if obj.first_sign_user:
-        signature_info['first_sign_name'] = f'{obj.first_sign_user.first_name[:1]}. {obj.first_sign_user.middle_name[:1]}. {obj.first_sign_user.last_name}'
+        signature_info[
+            'first_sign_name'] = f'{obj.first_sign_user.first_name[:1]}. {obj.first_sign_user.middle_name[:1]}. {obj.first_sign_user.last_name}'
         signature_info['first_sign_job_title'] = obj.first_sign_user.job_title.job_title
     if obj.second_sign_user:
-        signature_info['second_sign_name'] = f'{obj.second_sign_user.first_name[:1]}. {obj.second_sign_user.middle_name[:1]}. {obj.second_sign_user.last_name}'
+        signature_info[
+            'second_sign_name'] = f'{obj.second_sign_user.first_name[:1]}. {obj.second_sign_user.middle_name[:1]}. {obj.second_sign_user.last_name}'
         signature_info['second_sign_job_title'] = obj.second_sign_user.job_title.job_title
     if obj.cpe_sign_user:
-        signature_info['cpe_sign_name'] = f'{obj.cpe_sign_user.first_name[:1]}. {obj.cpe_sign_user.middle_name[:1]}. {obj.cpe_sign_user.last_name}'
+        signature_info[
+            'cpe_sign_name'] = f'{obj.cpe_sign_user.first_name[:1]}. {obj.cpe_sign_user.middle_name[:1]}. {obj.cpe_sign_user.last_name}'
         signature_info['cpe_sign_job_title'] = obj.cpe_sign_user.job_title.job_title
     else:
         signature_info['cpe_sign_name'] = 'Не определен'
         signature_info['cpe_sign_job_title'] = 'ГИП'
     if obj.incoming_employee:
-        signature_info['incom_sign_name'] = f'{obj.incoming_employee.first_name[:1]}. {obj.incoming_employee.middle_name[:1]}. {obj.incoming_employee.last_name}'
+        signature_info[
+            'incom_sign_name'] = f'{obj.incoming_employee.first_name[:1]}. {obj.incoming_employee.middle_name[:1]}. {obj.incoming_employee.last_name}'
         signature_info['incom_job_title'] = 'Принимающий'
     else:
         signature_info['incom_sign_name'] = 'Не определен'
@@ -103,8 +107,10 @@ def get_list_to_sign_cpe(sign_user):
     for object in objects_queryset:
         list_objects.append(object.cpe_object_id)
     to_sign_objects_cpe = TaskModel.objects.get_queryset().filter(task_object__in=list_objects).filter(
-        cpe_sign_status=False).filter(first_sign_status=True).filter(second_sign_status=True).filter(back_to_change=False)
+        cpe_sign_status=False).filter(first_sign_status=True).filter(second_sign_status=True).filter(
+        back_to_change=False)
     return to_sign_objects_cpe
+
 
 def get_task_edit_form(request, obj):
     form = TaskEditForm(instance=obj)
@@ -120,6 +126,7 @@ def get_task_edit_form(request, obj):
     form.fields["cpe_sign_user"].queryset = Employee.objects.get_queryset().filter(id__in=list_cpe)
     return form
 
+
 def get_list_incoming_tasks_to_sign(sign_user):
     queryset = CanAcceptModel.objects.get_queryset().filter(user_accept=sign_user)
     list_departments = []
@@ -134,4 +141,26 @@ def get_list_incoming_tasks_to_workers(sign_user):
     list_departments = []
     for dep in queryset:
         list_departments.append(dep.dep_accept_id)
-    return TaskModel.objects.get_queryset().filter(incoming_dep_id__in=list_departments).filter(incoming_status=True).filter(task_workers=False)
+    return TaskModel.objects.get_queryset().filter(incoming_dep_id__in=list_departments).filter(
+        incoming_status=True).filter(task_workers=False)
+
+
+def get_list_to_change_workers(sign_user):
+    queryset = CanAcceptModel.objects.get_queryset().filter(user_accept=sign_user)
+    list_departments = []
+    for dep in queryset:
+        list_departments.append(dep.dep_accept_id)
+    return TaskModel.objects.get_queryset().filter(incoming_dep_id__in=list_departments).filter(
+        incoming_status=True)
+
+
+def save_to_worker_list(request, pk):
+    task = TaskModel.objects.get(id=pk)
+    task.task_workers = True
+    task.save()
+    # Создаем объект таблицы Исполнители
+    obj = WorkerModel()
+    obj.task_id = pk
+    obj.read_status = False  # Присваиваем флаг о не прочтении сообщения
+    obj.worker_user_id = request.POST.get("worker_user")
+    obj.save()

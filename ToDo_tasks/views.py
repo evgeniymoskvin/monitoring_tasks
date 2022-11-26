@@ -8,9 +8,11 @@ from django.db.models import Q
 
 from .models import Employee, TaskModel, ContractModel, ObjectModel, StageModel, TaskNumbersModel, CommandNumberModel, \
     CpeModel, CanAcceptModel, BackCommentModel, WorkerModel
-from .forms import TaskForm, TaskCheckForm, TaskEditForm, SearchForm, WorkerFormSet, WorkerForm, WorkersEditForm, TaskEditWorkersForm
+from .forms import TaskForm, TaskCheckForm, TaskEditForm, SearchForm, WorkerFormSet, WorkerForm, WorkersEditForm, \
+    TaskEditWorkersForm
 from .functions import get_signature_info, get_data_for_form, get_data_for_detail, get_list_to_sign, get_task_edit_form, \
-    get_list_to_sign_cpe, get_list_incoming_tasks_to_sign, get_list_incoming_tasks_to_workers
+    get_list_to_sign_cpe, get_list_incoming_tasks_to_sign, get_list_incoming_tasks_to_workers, save_to_worker_list, \
+    get_list_to_change_workers
 
 
 class IndexView(View):
@@ -297,8 +299,10 @@ class AddChangeTaskView(View):
         number_id_for_redirect = TaskModel.objects.get(task_number=new_task_with_change.task_number).id
         return redirect(f'/details/{number_id_for_redirect}')
 
+
 class MyInboxListView(View):
     """Получение моих входящих, где назначен исполнителем"""
+
     def get(self, request):
         user = Employee.objects.get(user=request.user)
         # Формируем 2 списка прочтенных и не прочтенных заданий
@@ -323,6 +327,7 @@ class MyInboxListView(View):
 
 class MyInboxReadTask(View):
     """Отметка задания как прочтенное"""
+
     def get(self, request, pk):
         user = Employee.objects.get(user=request.user)
         task = WorkerModel.objects.get(worker_user=user.id, task_id=pk)
@@ -494,15 +499,7 @@ class ToAddWorkersDetailView(View):
         if request.method == "POST":
             worker_user = request.POST.get("worker_user")
             # При каждом новом добавлении пользователя обновляем статус задания (назначены исполнители)
-            task = TaskModel.objects.get(id=pk)
-            task.task_workers = True
-            task.save()
-            # Создаем объект таблицы Исполнители
-            obj = WorkerModel()
-            obj.task_id = pk
-            obj.read_status = False  # Присваиваем флаг о не прочтении сообщения
-            obj.worker_user_id = request.POST.get("worker_user")
-            obj.save()
+            save_to_worker_list(request, pk)
         # Обновляем список исполнителей к данному заданию
         data_all = WorkerModel.objects.get_queryset().filter(task_id=pk)
         content = {"data_all": data_all}
@@ -515,8 +512,6 @@ class ToAddWorkersDetailView(View):
         content = {"data_all": data_all}
         print(content)
         return render(request, 'todo_tasks/htmx/workers.html', content)
-
-
 
 
 class SearchView(View):
@@ -536,17 +531,59 @@ class SearchView(View):
 
 
 class EditWorkerListView(View):
-    def get(self, request):
-        user = Employee.objects.get(user=request.user)
-        print(user.department)
-        form = WorkersEditForm()
+    """Получение страницы с пользователями ответственными по заданию"""
 
-        form.fields["task"].queryset = TaskModel.objects.filter(incoming_dep=user.department)
-            # .filter(department_number=user.department)
+    def get(self, request):
+        """Метод загружает Select поле выбора принятых заданий """
+        user = Employee.objects.get(user=request.user)  # "логинимся"
+        form = WorkersEditForm()  # загружаем форму с заданиями
+        # Фильтруем список по параметру: в каких отделах имеет право подписи
+        form.fields["task"].queryset = get_list_to_change_workers(user)
+
         content = {"form": form,
                    "user": user,
-        }
+                   }
         return render(request, 'todo_tasks/workers/edit_workers.html', content)
+
+    def post(self, request):
+        user = Employee.objects.get(user=request.user)
+        form = WorkersEditForm(request.POST)
+        task = form.data['task']
+        print(task)
+        data_all = WorkerModel.objects.get_queryset().filter(task_id=task)
+        formset = WorkerForm()
+        formset.fields['worker_user'].queryset = Employee.objects.filter(department=user.department)
+        print(data_all)
+        content = {"data_all": data_all,
+                   "task": task,
+                   'formset': formset}
+        return render(request, 'todo_tasks/htmx/edit_workers.html', content)
+
+
+class EditWorkersDetailView(View):
+    def post(self, request, pk):
+        user = Employee.objects.get(user=request.user)
+        print(pk, user)
+        # При каждом новом добавлении пользователя обновляем статус задания (назначены исполнители)
+        save_to_worker_list(request, pk)
+
+        formset = WorkerForm()
+        formset.fields['worker_user'].queryset = Employee.objects.filter(department=user.department)
+        # Обновляем список исполнителей к данному заданию
+        data_all = WorkerModel.objects.get_queryset().filter(task_id=pk)
+        content = {"data_all": data_all,
+                   "task": pk,
+                   "formset": formset
+                   }
+        return render(request, 'todo_tasks/htmx/edit_workers.html', content)
+
+    def delete(self, request, pk):
+        pk2 = WorkerModel.objects.get(id=pk).task_id
+        WorkerModel.objects.get(id=pk).delete()
+        data_all = WorkerModel.objects.get_queryset().filter(task_id=pk2)
+        content = {"data_all": data_all}
+        print(content)
+        return render(request, 'todo_tasks/htmx/edit_workers.html', content)
 
 
 class AdvancedSearchView(View):
