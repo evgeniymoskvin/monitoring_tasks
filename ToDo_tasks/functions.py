@@ -102,10 +102,14 @@ def get_list_to_sign(sign_user) -> list:
 
 
 def get_list_to_sign_cpe(sign_user):
+    """Функция возвращающая queryset из заданий, которые ожидают подписи ГИП-а"""
+    # Получаем из таблицы CpeModel список объектов, где может подписываться данный пользователь
     objects_queryset = CpeModel.objects.get_queryset().filter(cpe_user=sign_user)
+    # Формируем список id этих объектов
     list_objects = []
     for object in objects_queryset:
         list_objects.append(object.cpe_object_id)
+    # Фильтруем задания: объект в списке, подписи ГИП-а нет, первый и второй пользователь подписали, не возвращено на доработку
     to_sign_objects_cpe = TaskModel.objects.get_queryset().filter(task_object__in=list_objects).filter(
         cpe_sign_status=False).filter(first_sign_status=True).filter(second_sign_status=True).filter(
         back_to_change=False)
@@ -113,12 +117,16 @@ def get_list_to_sign_cpe(sign_user):
 
 
 def get_task_edit_form(request, obj):
+    """Функция формирующая форму для редактирования задания"""
     form = TaskEditForm(instance=obj)
+    # Получаем отдел пользователя
     department_user = Employee.objects.get(user=request.user).department
+    # Оставляем только пользователей отдела с возможностью подписывать задания
     form.fields['first_sign_user'].queryset = Employee.objects.filter(department=department_user).filter(
         right_to_sign=True)  # получаем в 1ое поле список пользователей по двум фильтрам
     form.fields['second_sign_user'].queryset = Employee.objects.filter(department=department_user).filter(
         right_to_sign=True)  # получаем во 2ое поле список пользователей по двум фильтрам
+    # todo дальше возможно не надо
     cpe_cpe = CpeModel.objects.get_queryset()
     list_cpe = []
     for objects in cpe_cpe:
@@ -128,10 +136,14 @@ def get_task_edit_form(request, obj):
 
 
 def get_list_incoming_tasks_to_sign(sign_user):
+    """Функция возвращает queryset входящих заданий требующих подписи"""
+    # Получаем queryset того, что может подписывать пользователь
     queryset = CanAcceptModel.objects.get_queryset().filter(user_accept=sign_user)
+    # Получаем список id этих отделов
     list_departments = []
     for dep in queryset:
         list_departments.append(dep.dep_accept_id)
+    # Формируем queryset этих заданий: отдел в списке, ГИП подписал, статус принятия False
     return TaskModel.objects.get_queryset().filter(incoming_dep_id__in=list_departments).filter(
         cpe_sign_status=True).filter(incoming_status=False)
 

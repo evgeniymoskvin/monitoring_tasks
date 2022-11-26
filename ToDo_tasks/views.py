@@ -475,7 +475,7 @@ class ToWorkerListView(View):
 
     def get(self, request):
         sign_user = Employee.objects.get(user=request.user)  # получаем пользователя
-        tasks = get_list_incoming_tasks_to_workers(sign_user)
+        tasks = get_list_incoming_tasks_to_workers(sign_user) # Получаем queryset с заданиями
         print(tasks)
         content = {
             'data_without_workers': tasks,
@@ -484,7 +484,7 @@ class ToWorkerListView(View):
 
 
 class ToAddWorkersDetailView(View):
-    """Страница добавления ответственных"""
+    """Подробная страница задания с возможностью добавления ответственных"""
 
     def get(self, request, pk):
         sign_user = Employee.objects.get(user=request.user)
@@ -496,10 +496,9 @@ class ToAddWorkersDetailView(View):
         return render(request, 'todo_tasks/workers/details_to_add_workers.html', content)
 
     def post(self, request, pk):
-        if request.method == "POST":
-            worker_user = request.POST.get("worker_user")
-            # При каждом новом добавлении пользователя обновляем статус задания (назначены исполнители)
-            save_to_worker_list(request, pk)
+        worker_user = request.POST.get("worker_user")
+        # При каждом новом добавлении пользователя обновляем статус задания (назначены исполнители)
+        save_to_worker_list(request, pk)
         # Обновляем список исполнителей к данному заданию
         data_all = WorkerModel.objects.get_queryset().filter(task_id=pk)
         content = {"data_all": data_all}
@@ -512,22 +511,6 @@ class ToAddWorkersDetailView(View):
         content = {"data_all": data_all}
         print(content)
         return render(request, 'todo_tasks/htmx/workers.html', content)
-
-
-class SearchView(View):
-    """Отображение результатов поиска c главной страницы"""
-
-    def get(self, request, pk):
-        print(pk)
-        """С главной страницы получаем ключ pk для поиска"""
-        user = Employee.objects.get(user=request.user)
-        search_result = TaskModel.objects.filter(
-            Q(text_task__icontains=pk) | Q(task_number__icontains=pk) | Q(author__last_name__icontains=pk) | Q(
-                task_building__icontains=pk))
-        content = {"search_result": search_result,
-                   "search_word": pk,
-                   "user": user}
-        return render(request, 'todo_tasks/search/search_result.html', content)
 
 
 class EditWorkerListView(View):
@@ -546,14 +529,17 @@ class EditWorkerListView(View):
         return render(request, 'todo_tasks/workers/edit_workers.html', content)
 
     def post(self, request):
-        user = Employee.objects.get(user=request.user)
-        form = WorkersEditForm(request.POST)
-        task = form.data['task']
-        print(task)
-        data_all = WorkerModel.objects.get_queryset().filter(task_id=task)
-        formset = WorkerForm()
+        """
+        POST запрос, получающий из формы номер задания и формирующий данные
+        для подгрузки их на странице
+        """
+        user = Employee.objects.get(user=request.user)  # данные пользователя
+        form = WorkersEditForm(request.POST)  # загружаем из формы
+        task = form.data['task']  # Получаем
+        data_all = WorkerModel.objects.get_queryset().filter(task_id=task)  # Получаем список по данному заданию
+        formset = WorkerForm()  # получаем форму сотрудников
+        # Фильтруем сотрудников своего отдела todo на сотрудников управления
         formset.fields['worker_user'].queryset = Employee.objects.filter(department=user.department)
-        print(data_all)
         content = {"data_all": data_all,
                    "task": task,
                    'formset': formset}
@@ -561,11 +547,15 @@ class EditWorkerListView(View):
 
 
 class EditWorkersDetailView(View):
+    """View для обработки POST и DELETE запросов добавления/удаления сотрудников
+    на странице редактирования ответственных """
+
     def post(self, request, pk):
+        """ pk - id необходимого задания"""
         user = Employee.objects.get(user=request.user)
         print(pk, user)
         # При каждом новом добавлении пользователя обновляем статус задания (назначены исполнители)
-        save_to_worker_list(request, pk)
+        save_to_worker_list(request, pk)  # отправляем пользователя и pk в функцию сохраняющую значения в WorkersModel
 
         formset = WorkerForm()
         formset.fields['worker_user'].queryset = Employee.objects.filter(department=user.department)
@@ -578,12 +568,30 @@ class EditWorkersDetailView(View):
         return render(request, 'todo_tasks/htmx/edit_workers.html', content)
 
     def delete(self, request, pk):
+        """pk - номер записи в таблице WorkersModel"""
+        # Получаем id задания, для дальнейшего формирования списка исполнителей
         pk2 = WorkerModel.objects.get(id=pk).task_id
         WorkerModel.objects.get(id=pk).delete()
         data_all = WorkerModel.objects.get_queryset().filter(task_id=pk2)
         content = {"data_all": data_all}
         print(content)
         return render(request, 'todo_tasks/htmx/edit_workers.html', content)
+
+
+
+class SearchView(View):
+    """Отображение результатов поиска c главной страницы"""
+
+    def get(self, request, pk):
+        """pk - строка, по которой происходит поиск"""
+        user = Employee.objects.get(user=request.user)
+        search_result = TaskModel.objects.filter(
+            Q(text_task__icontains=pk) | Q(task_number__icontains=pk) | Q(author__last_name__icontains=pk) | Q(
+                task_building__icontains=pk))
+        content = {"search_result": search_result,
+                   "search_word": pk,
+                   "user": user}
+        return render(request, 'todo_tasks/search/search_result.html', content)
 
 
 class AdvancedSearchView(View):
