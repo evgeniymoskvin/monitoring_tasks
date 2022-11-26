@@ -198,7 +198,7 @@ class TaskModel(models.Model):
 
 
     def __str__(self):
-        return f'{self.task_number}, {self.author}'
+        return f'{self.task_number}, {self.task_order}, {self.task_object}, {self.task_contract}'
 
     class Meta:
         verbose_name = _("задание")
@@ -228,6 +228,9 @@ class WorkerModel(models.Model):
     # comment = models.CharField("Комментарий", max_length=200, null=True)
     read_status = models.BooleanField("Статус прочтения", default=False)
 
+    class Meta:
+        verbose_name = _("ответственный исполнитель")
+        verbose_name_plural = _("ответственные исполнители")
 
 
 class BackCommentModel(models.Model):

@@ -1,10 +1,22 @@
 {% if data_all %}
-{% csrf_token %}
+{#{% csrf_token %}#}
+{% load static %}
+    <br>
 <ul class="list-group">
+<div id="test">
 {% for data in data_all %}
     <li class="list-group-item d-flex justify-content-between align-items-center">
-        {{ data.worker_user }}
+        {{ data.worker_user }} {{ data.worker_user.id }}
+        {% csrf_token %}
+         <form id="form-2" data-method="delete" hx-delete={% url 'delete_worker' data.id %} hx-target="#test" hx-swap="innerHTML" >
+            <button class="btn btn-outline-danger btn-sm"  hx-target="test" type="submit">Больше не ответственный</button>
+        </form>
     </li>
 {% endfor %}
+</div>
 </ul>
 {% endif %}
+
+
+
+

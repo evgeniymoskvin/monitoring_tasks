@@ -1,0 +1,27 @@
+{% extends "todo_tasks/base.html" %}
+{% load static %}
+{% block title %}
+    Главная страница
+{% endblock %}
+{% block content %}
+    <form method="POST">
+        {{ form }}
+    </form>
+
+{% endblock %}
+
+{% block js_stuff %}
+    <!-- JS для работы таблицы со всеми заданиями -->
+    <script>
+        // после загрузки страницы
+        $(function () {
+            // инициализации подсказок для всех элементов на странице, имеющих атрибут data-toggle="tooltip"
+            $('[data-toggle="tooltip"]').tooltip();
+        });
+
+        document.body.addEventListener('htmx:configRequest', (event) => {
+            event.detail.headers['X-CSRFToken'] = '{{ csrf_token }}';
+        })
+
+    </script>
+{% endblock %}

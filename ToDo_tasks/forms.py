@@ -156,6 +156,15 @@ class SearchForm(Form):
         self.fields['task_contract'].choices = [(0, '---------')]
 
 
+class TaskEditWorkersForm(ModelForm):
+    class Meta:
+        model = TaskModel
+        fields = ["task_number", ]
+        widgets = {
+            "task_number": Select(attrs={"class": "form-select",
+                                         "aria-label": "Первый руководитель"}),
+        }
+
 class WorkerForm(ModelForm):
     class Meta:
         model = WorkerModel
@@ -166,6 +175,19 @@ class WorkerForm(ModelForm):
             "worker_user": Select(attrs={"class": "form-select",
                                          "aria-label": "Первый руководитель"}),
         }
+
+
+class WorkersEditForm(ModelForm):
+    class Meta:
+        model = WorkerModel
+        exclude = ['worker_user',
+                   'read_status'
+                   ]
+        widgets = {
+            "task": Select(attrs={"class": "form-select",
+                                         "aria-label": "Первый руководитель"}),
+        }
+
 
 
 # WorkerFormSet = modelformset_factory(WorkerModel, fields=("worker_user",), extra=1, can_delete=False)
