@@ -7,9 +7,8 @@
 {% block buttons %}
     <br>
     {% load static %}
-    <script type="text/javascript" src="{% static 'todo_tasks/htmx/htmx.min.js' %}></script>
-    <form id="form-container" method="POST"
-          hx-post={% url 'details_to_add_workers' pk=obj.id %} hx-target="#worker_list">
+    <script type="text/javascript" src="{% static 'todo_tasks/htmx/htmx.min.js' %}"></script>
+    <form id="form-container" method="POST" hx-post={% url 'details_to_add_workers' pk=obj.id %} hx-target="#worker_list">
         {% csrf_token %}
         <p>Назначить ответственного исполнителя:</p>
         {{ formset.worker_user }}
