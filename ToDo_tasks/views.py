@@ -462,7 +462,7 @@ class IncomingSignDetails(View):
             obj.task_status = 2
             print(obj)
             obj.save()
-        return redirect(request.META['HTTP_REFERER'])
+        return redirect('details_to_add_workers', pk=pk)
 
 
 class ToWorkerListView(View):
