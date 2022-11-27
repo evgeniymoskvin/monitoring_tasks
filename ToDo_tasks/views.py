@@ -18,7 +18,7 @@ from .functions import get_signature_info, get_data_for_form, get_data_for_detai
 class IndexView(View):
     """Главная страница"""
 
-    @method_decorator(login_required)
+    @method_decorator(login_required(login_url='login'))
     def get(self, request):
         """
         Проверяет авторизацию пользователя и выводит данные на странице,
@@ -54,7 +54,7 @@ class IssuedTasksView(View):
 class OutgoingTasksView(View):
     """Страница исходящих заданий, которые еще на подписи"""
 
-    @method_decorator(login_required)
+    @method_decorator(login_required(login_url='login'))
     def get(self, request):
 
         user = Employee.objects.get(user=request.user)
@@ -67,7 +67,7 @@ class OutgoingTasksView(View):
 class IncomingDepView(View):
     """Страница входящих заданий по номеру отделу пользователя"""
 
-    @method_decorator(login_required)
+    @method_decorator(login_required(login_url='login'))
     def get(self, request):
         user = Employee.objects.get(user=request.user)  # Получаем пользователя из запроса
         user_dep = user.department_id  # получаем id номер отдела
@@ -80,7 +80,7 @@ class IncomingDepView(View):
 class UserTaskView(View):
     """Просмотр "мои выданные" заданий """
 
-    @method_decorator(login_required)
+    @method_decorator(login_required(login_url='login'))
     def get(self, request):
         data_user = TaskModel.objects.get_queryset().filter(author__user=request.user).filter(task_status=2)
         user = Employee.objects.get(user=request.user)
@@ -94,7 +94,7 @@ class UserTaskView(View):
 class UserTaskOnSignView(View):
     """Получение списка для страницы исходящих заданий"""
 
-    @method_decorator(login_required)
+    @method_decorator(login_required(login_url='login'))
     def get(self, request):
         data_user = TaskModel.objects.get_queryset().filter(author__user=request.user).filter(task_status=1)
         user = Employee.objects.get(user=request.user)
@@ -108,7 +108,7 @@ class UserTaskOnSignView(View):
 class DetailView(View):
     """Формирование страницы просмотра деталей"""
 
-    @method_decorator(login_required)
+    @method_decorator(login_required(login_url='login'))
     def get(self, request, pk):
         """Получаем номер задания из ссылки и формируем страницу подробностей"""
         content = get_data_for_detail(request, pk)
@@ -136,7 +136,7 @@ class DetailView(View):
 class AddTaskView(View):
     """Добавление нового задания"""
 
-    @method_decorator(login_required)
+    @method_decorator(login_required(login_url='login'))
     def get(self, request):
         form = TaskForm()
         # Фильтруем поля руководителей в соответствии с отделом пользователя
@@ -196,7 +196,7 @@ class EditTaskView(View):
     а нам необходимо обновить данные уже существующего
     """
 
-    @method_decorator(login_required)
+    @method_decorator(login_required(login_url='login'))
     def get(self, request, pk):
         """Получаем номер редактируемого задания из query params (pk) и заполняем форму с данными из бд"""
         obj = TaskModel.objects.get(pk=pk)
@@ -241,7 +241,7 @@ class EditTaskView(View):
 class AddChangeTaskView(View):
     """Выдать изменение к заданию"""
 
-    @method_decorator(login_required)
+    @method_decorator(login_required(login_url='login'))
     def get(self, request, pk):
         obj = TaskModel.objects.get(pk=pk)
         if obj.task_status == 1:
@@ -292,7 +292,7 @@ class AddChangeTaskView(View):
 class MyInboxListView(View):
     """Получение моих входящих, где назначен исполнителем"""
 
-    @method_decorator(login_required)
+    @method_decorator(login_required(login_url='login'))
     def get(self, request):
         user = Employee.objects.get(user=request.user)
         # Формируем 2 списка прочтенных и не прочтенных заданий
@@ -318,7 +318,7 @@ class MyInboxListView(View):
 class MyInboxReadTask(View):
     """Отметка задания как прочтенное"""
 
-    @method_decorator(login_required)
+    @method_decorator(login_required(login_url='login'))
     def get(self, request, pk):
         user = Employee.objects.get(user=request.user)
         task = WorkerModel.objects.get(worker_user=user.id, task_id=pk)
@@ -330,7 +330,7 @@ class MyInboxReadTask(View):
 class ToSignListView(View):
     """Страница со списком заданий ожидающих подписи для выдачи в другой отдел (исходящих)"""
 
-    @method_decorator(login_required)
+    @method_decorator(login_required(login_url='login'))
     def get(self, request):
         sign_user = Employee.objects.get(user=request.user)  # получаем пользователя
         # получаем список заданий
@@ -436,7 +436,7 @@ class IncomingListView(View):
 class IncomingSignDetails(View):
     """Просмотр деталей при подписании задания получающим"""
 
-    @method_decorator(login_required)
+    @method_decorator(login_required(login_url='login'))
     def get(self, request, pk):
         content = get_data_for_detail(request, pk)
         sign_user = Employee.objects.get(user=request.user)
@@ -468,7 +468,7 @@ class IncomingSignDetails(View):
 class ToWorkerListView(View):
     """Страница со списком заданий ожидающих назначить исполнителей"""
 
-    @method_decorator(login_required)
+    @method_decorator(login_required(login_url='login'))
     def get(self, request):
         sign_user = Employee.objects.get(user=request.user)  # получаем пользователя
         tasks = get_list_incoming_tasks_to_workers(sign_user) # Получаем queryset с заданиями
@@ -482,7 +482,7 @@ class ToWorkerListView(View):
 class ToAddWorkersDetailView(View):
     """Подробная страница задания с возможностью добавления ответственных"""
 
-    @method_decorator(login_required)
+    @method_decorator(login_required(login_url='login'))
     def get(self, request, pk):
         sign_user = Employee.objects.get(user=request.user)
         content = get_data_for_detail(request, pk)
@@ -513,7 +513,7 @@ class ToAddWorkersDetailView(View):
 class EditWorkerListView(View):
     """Получение страницы с пользователями ответственными по заданию"""
 
-    @method_decorator(login_required)
+    @method_decorator(login_required(login_url='login'))
     def get(self, request):
         """Метод загружает Select поле выбора принятых заданий """
         user = Employee.objects.get(user=request.user)  # "логинимся"
@@ -580,7 +580,7 @@ class EditWorkersDetailView(View):
 class SearchView(View):
     """Отображение результатов поиска c главной страницы"""
 
-    @method_decorator(login_required)
+    @method_decorator(login_required(login_url='login'))
     def get(self, request, pk):
         """pk - строка, по которой происходит поиск"""
         user = Employee.objects.get(user=request.user)
