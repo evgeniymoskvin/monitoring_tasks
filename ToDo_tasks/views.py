@@ -408,7 +408,7 @@ class ToSignDetailView(View):
         elif 'comment_modal_button' in request.POST:
             obj.cpe_sign_status = True
             obj.cpe_sign_date = timezone.now()
-            obj.task_status = 2
+            obj.cpe_sign_user = Employee.objects.get(user=request.user)
             obj.cpe_comment = request.POST.get('comment_modal_text')
             obj.save()
             print(pk, request.POST.get('comment_modal_text'))
