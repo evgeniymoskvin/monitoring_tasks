@@ -1,3 +1,4 @@
+from django.shortcuts import redirect
 from .models import Employee, TaskModel, CpeModel, ContractModel, ObjectModel, StageModel, CanAcceptModel
 from .forms import TaskForm, TaskCheckForm, TaskEditForm, WorkerModel
 
@@ -176,3 +177,4 @@ def save_to_worker_list(request, pk):
     obj.read_status = False  # Присваиваем флаг о не прочтении сообщения
     obj.worker_user_id = request.POST.get("worker_user")
     obj.save()
+

@@ -1,5 +1,6 @@
 {% extends "todo_tasks/base.html" %}
 {% load static %}
+{% load task_tags %}
 {% block title %}
     Главная страница
 {% endblock %}
@@ -10,7 +11,7 @@
             <div class="row">
                 <div class="col-5">
                     <span data-toggle="tooltip" title="Привет">
-                        <h1 class="display-6" >{{user}}, давайте что-нибудь поищем</h1></span>
+                        <h1 class="display-6" >{{ user }}, давайте что-нибудь поищем</h1></span>
                 </div>
                 <div class="col-7 justify-content-center align-self-center">
                     <span data-toggle="tooltip" title="Чувствителен к регистру">

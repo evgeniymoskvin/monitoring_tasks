@@ -2,6 +2,8 @@
 <html class="h-100" lang="ru">
 <head>
     {% load static %}
+    {% load task_tags %}
+
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>{% block title %}{% endblock %}</title>
@@ -21,6 +23,7 @@
 </head>
 
 <body>
+
 <nav class="py-2 bg-light border-bottom">
     <div class="container d-flex flex-wrap">
         <ul class="nav me-auto">
@@ -86,6 +89,9 @@
 
 {% block js_stuff %}
 {% endblock %}
+
+
+
 
 </body>
 </html>

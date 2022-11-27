@@ -1,10 +1,10 @@
 <!-- Пункты меню для сотрудника -->
-
+{% load task_tags %}
 <a class="dropdown-item" href="{% url 'add_task' %}">Выдать задание</a>
 <hr>
 <a class="dropdown-item" href="{% url 'my_tasks' %}">Мои выданные задания</a>
 <a class="dropdown-item" href="{% url 'my_tasks_on_sign' %}">Мои задания на подписи</a>
-<a class="dropdown-item" href="{% url 'inbox' %}">Мои входящие задания</a>
+<a class="dropdown-item" href="{% url 'inbox' %}">Мои входящие задания {% unread_inbox user %}</a>
 <a class="dropdown-item" href="#submenu3" data-bs-toggle="collapse">Задания
     отдела {{ user.department.command_number }}</a>
 <ul class="collapse nav flex-column ms-1" id="submenu3" data-bs-parent="#menu">

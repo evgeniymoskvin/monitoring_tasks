@@ -1,9 +1,7 @@
 import datetime
-from django.http import request as req
 from django.shortcuts import render, redirect
 from django.utils import timezone
 from django.views import View
-from django.views.generic.list import ListView
 from django.db.models import Q
 
 from .models import Employee, TaskModel, ContractModel, ObjectModel, StageModel, TaskNumbersModel, CommandNumberModel, \
@@ -25,30 +23,15 @@ class IndexView(View):
         """
         # Что бы не падало в ошибку, проверяем авторизацию пользователя
         if request.user.is_anonymous:
-            return redirect('login/')
+            return redirect('/login/')
         elif request.user.is_superuser:
-            return redirect('admin/')
+            return redirect('/admin/')
 
         # Получаем информацию о пользователе из таблицы Employee на основании request
         user = Employee.objects.get(user=request.user)
-
-        # Формируем количество сообщений для меню
-        # todo надо переделать
-        count_task_to_sign = ''
-        count_task_to_workers = ''
-        count_task_incoming_to_sign = ''
-        if user.right_to_sign is True and user.cpe_flag is False:
-            count_task_to_sign = len(get_list_to_sign(user))  # Получение количества заданий ожидающих подписи
-            count_task_to_workers = TaskModel.objects.get_queryset().filter(task_status=2).filter(
-                incoming_dep=user.department).filter(task_workers=False).count()
-            count_task_incoming_to_sign = get_list_incoming_tasks_to_sign(user).count()
-        if user.cpe_flag is True:
-            count_task_to_sign = f'({get_list_to_sign_cpe(user).count()})'
         content = {
             'user': user,
-            "count_task_to_sign": f'({count_task_to_sign})',
-            "count_task_to_workers": f'({count_task_to_workers})',
-            "count_task_incoming_to_sign": f'({count_task_incoming_to_sign})'}
+        }
         return render(request, 'todo_tasks/index.html', content)
 
     def post(self, request):
@@ -75,6 +58,7 @@ class OutgoingTasksView(View):
     """Страница исходящих заданий, которые еще на подписи"""
 
     def get(self, request):
+
         user = Employee.objects.get(user=request.user)
         data_to_sign = TaskModel.objects.get_queryset().filter(department_number=user.department).filter(task_status=1)
         content = {'data_to_sign': data_to_sign,
@@ -124,6 +108,10 @@ class DetailView(View):
     """Формирование страницы просмотра деталей"""
 
     def get(self, request, pk):
+        if request.user.is_anonymous:
+            return redirect('/login/')
+        elif request.user.is_superuser:
+            return redirect('/admin/')
         """Получаем номер задания из ссылки и формируем страницу подробностей"""
         content = get_data_for_detail(request, pk)
         content[
@@ -608,14 +596,13 @@ class AdvancedSearchView(View):
         return redirect(request.META['HTTP_REFERER'])
 
 
-# class AddWorkerView(View):
-#     def get(self, request):
-#         formset = WorkerFormSet(queryset=Employee.objects.none())
-#         data_all = WorkerModel.objects.get_queryset()
-#         content = {"formset": formset,
-#                    "data_all": data_all}
-#
-#         return render(request, 'todo_tasks/test_cancel.html', content)
+class TestView(View):
+    def get(self, request):
+        content = {}
+        print(type(request.user))
+        # print(vars(request))
+
+        return render(request, 'todo_tasks/test_cancel.html', content)
 #
 #     def post(self, request):
 #         worker_user = request.POST.get("form-0-worker_user")
