@@ -9,7 +9,7 @@ from django.db.models import Q
 from .models import Employee, TaskModel, ContractModel, ObjectModel, StageModel, TaskNumbersModel, CommandNumberModel, \
     CpeModel, CanAcceptModel, BackCommentModel, WorkerModel
 from .forms import TaskForm, TaskCheckForm, TaskEditForm, SearchForm, WorkerFormSet, WorkerForm, WorkersEditForm, \
-    TaskEditWorkersForm
+    TaskEditWorkersForm, TaskFormForSave
 from .functions import get_signature_info, get_data_for_form, get_data_for_detail, get_list_to_sign, get_task_edit_form, \
     get_list_to_sign_cpe, get_list_incoming_tasks_to_sign, get_list_incoming_tasks_to_workers, save_to_worker_list, \
     get_list_to_change_workers
@@ -56,7 +56,6 @@ class OutgoingTasksView(View):
 
     @method_decorator(login_required(login_url='login'))
     def get(self, request):
-
         user = Employee.objects.get(user=request.user)
         data_to_sign = TaskModel.objects.get_queryset().filter(department_number=user.department).filter(task_status=1)
         content = {'data_to_sign': data_to_sign,
@@ -159,34 +158,44 @@ class AddTaskView(View):
         return render(request, 'todo_tasks/add_task/add_task.html', context)
 
     def post(self, request):
-        form = TaskForm(request.POST)
-        print(form.errors)
-        if form.is_valid():
-            new_post = form.save(commit=False)  # отменяем отправку form в базу
-            new_post.author = Employee.objects.get(user=request.user)  # добавляем пользователя из request
-            new_post.department_number = new_post.author.department  # добавляем номер отдела пользователя, пока не знаю зачем
-            # Получаем номер последнего задания из таблицы TaskNumbers
-            last_number = TaskNumbersModel.objects.get(command_number=new_post.department_number)
-            today_year = datetime.datetime.today().year  # выносим в отдельную переменную, что бы каждый раз не вызывалась функция
-            # Проверяем год. Если отличается от нынешнего, обнуляем счетчик заданий
-            if last_number.year_of_task == today_year:
-                last_number.count_of_task += 1
-            else:
-                last_number.year_of_task = today_year
-                last_number.count_of_task = 1
-            last_number.save()  # сохраняем в таблице счетчиков (TaskNumbersModel) обновленные данные
+        # Создаем копию пост запроса, что бы можно было подменять свои значения
+        temp_req = request.POST.copy()
+        # Из исходного пост запроса получаем список отделов, куда надо выдать задания
+        incoming_deps_list = request.POST.getlist('incoming_dep')
+        # Перебираем отделы
+        for dep in incoming_deps_list:
+            # Меняем значение отдела, на нужное нам из списка
+            temp_req['incoming_dep'] = int(dep)
+            # Грузим в форму для сохранения
+            form = TaskFormForSave(temp_req)
+            if form.is_valid():
+                new_post = form.save(commit=False)  # отменяем отправку form в базу
+                new_post.department_number = CommandNumberModel.objects.get(id=dep)  # Присваиваем отдел
+                new_post.author = Employee.objects.get(user=request.user)  # добавляем пользователя из request
+                new_post.department_number = new_post.author.department  # добавляем номер отдела пользователя, пока не знаю зачем
+                # Получаем номер последнего задания из таблицы TaskNumbers
+                last_number = TaskNumbersModel.objects.get(command_number=new_post.department_number)
+                today_year = datetime.datetime.today().year  # выносим в отдельную переменную, что бы каждый раз не вызывалась функция
+                # Проверяем год. Если отличается от нынешнего, обнуляем счетчик заданий
+                if last_number.year_of_task == today_year:
+                    last_number.count_of_task += 1
+                else:
+                    last_number.year_of_task = today_year
+                    last_number.count_of_task = 1
+                last_number.save()  # сохраняем в таблице счетчиков (TaskNumbersModel) обновленные данные
 
-            new_post.task_last_edit = datetime.datetime.now()  # Присваиваем дату последнего изменения
+                new_post.task_last_edit = datetime.datetime.now()  # Присваиваем дату последнего изменения
 
-            new_post.task_number = f'ЗД-{new_post.department_number.command_number}-{last_number.count_of_task}-{str(today_year)[2:4]}'
-            new_post.task_change_number = 0  # номер изменения присваиваем 0
-            print(new_post.task_number)
-            print(form.data)
-            form.save()  # сохраняем форму в бд
-            # После сохранения получаем id записи в бд, для формирования ссылки
-            number_id_for_redirect = TaskModel.objects.get(task_number=new_post.task_number).id
-            return redirect(f'/details/{number_id_for_redirect}')
-        return redirect('/')
+                new_post.task_number = f'ЗД-{new_post.department_number.command_number}-{last_number.count_of_task}-{str(today_year)[2:4]}'
+                new_post.task_change_number = 0  # номер изменения присваиваем 0
+                print(new_post.task_number)
+                form.save()  # сохраняем форму в бд
+                # Если отдел был всего 1, то перенаправляем на страницу с деталями задания, иначе перекидываем на страницу всех исходящих заданий
+                if len(incoming_deps_list) == 1:
+                    # После сохранения получаем id записи в бд, для формирования ссылки
+                    number_id_for_redirect = TaskModel.objects.get(task_number=new_post.task_number).id
+                    return redirect(f'/details/{number_id_for_redirect}')
+        return redirect('my_tasks_on_sign')
 
 
 class EditTaskView(View):
@@ -224,8 +233,7 @@ class EditTaskView(View):
             print(form.data['first_sign_user'])
             obj.first_sign_user_id = form.data['first_sign_user']
             obj.second_sign_user_id = form.data['second_sign_user']
-            obj.cpe_sign_user_id = form.data['cpe_sign_user']
-            obj.incoming_employee_id = form.data['incoming_employee']
+            obj.incoming_dep_id = form.data['incoming_dep']
             # На случай, если задание было возвращено, обнуляем значения подписей и флаг back_to_change
             obj.first_sign_status = 0
             obj.second_sign_status = 0
@@ -274,13 +282,13 @@ class AddChangeTaskView(View):
         new_task_with_change.department_number = changing_task.department_number
         new_task_with_change.task_type_work = changing_task.task_type_work
         # Присваиваем номер задания с изменением
-        new_task_with_change.task_number = f'{changing_task.task_number}/И{new_task_with_change.task_change_number}'
+        task_name = str(changing_task.task_number).split('/')
+        new_task_with_change.task_number = f'{task_name[0]}/И{new_task_with_change.task_change_number}'
         # Присваиваем данные из формы
         new_task_with_change.text_task = form.data['text_task']
-        new_task_with_change.first_sign_user_id = form.data['first_sign_user']
         new_task_with_change.second_sign_user_id = form.data['second_sign_user']
-        new_task_with_change.cpe_sign_user_id = form.data['cpe_sign_user']
-        new_task_with_change.incoming_employee_id = form.data['incoming_employee']
+        new_task_with_change.first_sign_user_id = form.data['first_sign_user']
+        new_task_with_change.incoming_dep_id = form.data['incoming_dep']
         new_task_with_change.task_last_edit = timezone.now()
 
         new_task_with_change.save()
@@ -471,7 +479,7 @@ class ToWorkerListView(View):
     @method_decorator(login_required(login_url='login'))
     def get(self, request):
         sign_user = Employee.objects.get(user=request.user)  # получаем пользователя
-        tasks = get_list_incoming_tasks_to_workers(sign_user) # Получаем queryset с заданиями
+        tasks = get_list_incoming_tasks_to_workers(sign_user)  # Получаем queryset с заданиями
         print(tasks)
         content = {
             'data_without_workers': tasks,
@@ -576,7 +584,6 @@ class EditWorkersDetailView(View):
         return render(request, 'todo_tasks/htmx/edit_workers.html', content)
 
 
-
 class SearchView(View):
     """Отображение результатов поиска c главной страницы"""
 
@@ -614,6 +621,8 @@ class TestView(View):
         # print(vars(request))
 
         return render(request, 'todo_tasks/test_cancel.html', content)
+
+
 #
 #     def post(self, request):
 #         worker_user = request.POST.get("form-0-worker_user")

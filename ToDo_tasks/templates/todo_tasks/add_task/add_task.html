@@ -1,10 +1,20 @@
 {% extends "todo_tasks/base.html" %}
+{% load static %}
+
+
+{% block css_stuff %}
+    <link href="{% static 'todo_tasks/select2/select2.min.css' %}" rel="stylesheet"/>
+    <script src="{% static 'todo_tasks/select2/select2.min.js' %}"></script>
+{% endblock %}
+
 
 {% block title %}
     Добавить задание
 {% endblock %}
 
 {% block content %}
+
+
     <br>
     <h3 class="text-center display-6">Выдать задание</h3>
     <br>
@@ -48,7 +58,7 @@
                     {{ form.first_sign_user }}
                 </div>
             </div>
-
+            <br>
             <div class="row justify-content-center">
                 <div class="col-2">
                     Второй руководитель:
@@ -57,15 +67,6 @@
                     {{ form.second_sign_user }}
                 </div>
             </div>
-
-{#            <div class="row justify-content-center">#}
-{#                <div class="col-2">#}
-{#                    ГИП:#}
-{#                </div>#}
-{#                <div class="col-3">#}
-{#                    {{ form.cpe_sign_user }}#}
-{#                </div>#}
-{#            </div>#}
             <br>
 
             <div class="row justify-content-center">
@@ -81,7 +82,8 @@
             <div class="row justify-content-center">
                 <div class="col">
                     <figure class="text-center">
-                        <button class="btn btn-success" type="submit" >Добавить задание</button>
+                        <a class="btn btn-outline-secondary" href="{% url 'index' %}" role="button">Отмена</a>
+                        <button class="btn btn-outline-success" type="submit">Выдать задание</button>
                     </figure>
                 </div>
             </div>
@@ -98,8 +100,41 @@
 
 {% block js_stuff %}
 
-    <!JS для фильтрации списка контрактов>
+
     <script>
+        // JS для поля выбора отделов
+        $(document).ready(function () {
+            $('#id_incoming_dep').select2({
+                placeholder: 'Выберете отдел/отделы'
+            });
+            $('#id_first_sign_user').select2({
+                placeholder: 'Выберете руководителя'
+            });
+            $('#id_second_sign_user').select2({
+                placeholder: 'Выберете руководителя'
+            });
+            $('#id_task_object').select2({
+                placeholder: 'Выберете объект'
+            });
+            $('#id_task_contract').select2({
+                placeholder: 'Выберете № договора'
+            });
+            $('#id_task_stage').select2({
+                placeholder: 'Выберете этап'
+            });
+            $('#id_task_order').select2({
+                placeholder: 'Выберете № заказа'
+            });
+            $('#id_task_type_work').select2({
+                placeholder: 'Выберете тип документации'
+            });
+
+
+
+
+        });
+
+        // JS для фильтрации списка контрактов
         $("#id_task_object").change(function () {
             var url = $("#formAdd").attr("data-contracts-url");
             var objectId = $(this).val();  // получаем object ID из HTML input
@@ -146,7 +181,7 @@
         {#        }#}
         {#    });#}
         {##}
-        {#});#}
+
     </script>
 {% endblock %}
 

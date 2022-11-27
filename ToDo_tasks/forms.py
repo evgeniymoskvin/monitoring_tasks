@@ -1,7 +1,7 @@
 from .models import TaskModel, ObjectModel, ContractModel, StageModel, OrdersModel, Employee, CanAcceptModel, \
     WorkerModel
 from django.forms import ModelForm, TextInput, Textarea, CheckboxInput, Select, ChoiceField, Form, \
-    CharField, ModelChoiceField, modelformset_factory
+    CharField, ModelChoiceField, modelformset_factory, ModelMultipleChoiceField, MultipleChoiceField, SelectMultiple
 
 from django.views import View
 
@@ -48,8 +48,8 @@ class TaskForm(ModelForm):
                                                      "aria-label": "Второй руководитель"}),
                    # "cpe_sign_user": Select(attrs={"class": "form-select",
                    #                                "aria-label": "ГИП"}),
-                   "incoming_dep": Select(attrs={"class": "form-select",
-                                                 "aria-label": "Отдел принимающий задание"}),
+                   "incoming_dep": SelectMultiple(attrs={"class": "form-select",
+                                                    "aria-label": "Отдел принимающий задание"}),
                    "task_building": TextInput(attrs={"class": "form-control",
                                                      "aria-label": "Здание"})
                    }
@@ -60,6 +60,60 @@ class TaskForm(ModelForm):
         self.fields['task_stage'].queryset = StageModel.objects  # подгрузка значений
         self.fields['task_contract'].choices = [(0, '---------')]  # исходное отображение
         self.fields['task_stage'].choices = [(0, '---------')]  # исходное отображение
+
+
+class TaskFormForSave(ModelForm):
+    """Форма для сохранения данных с раздела выдать задание.
+    Необходима для обхода проблем с проверкой поля отдела, куда выдается задание
+    """
+    class Meta:
+        model = TaskModel
+        # fields = '__all__'
+        exclude = [
+            "author",
+            'department_number',
+            'task_number',
+            'task_change_number',
+            "first_sign_status",
+            "second_sign_status",
+            "cpe_sign_status",
+            "back_to_change",
+            "first_sign_date",
+            "second_sign_date",
+            "cpe_sign_date",
+            "task_status",
+            "task_last_edit",
+            "cpe_comment",
+            "incoming_date",
+            "incoming_employee",
+            "task_workers",
+            "cpe_sign_user"
+        ]
+        widgets = {"task_order": Select(attrs={"class": "form-select",
+                                               "aria-label": "Номер заказа"}),
+                   "task_object": Select(attrs={"class": "form-select",
+                                                "aria-label": "Наименование объекта"}),
+                   "task_contract": Select(attrs={"class": "form-select",
+                                                  "aria-label": "Номер контракта"}),
+                   "task_stage": Select(attrs={"class": "form-select",
+                                               "aria-label": "Этап договора"}),
+                   "text_task": Textarea(attrs={"placeholder": "Введите текст задания",
+                                                "class": "form-control"}),
+                   "task_type_work": Select(attrs={"class": "form-select",
+                                                   "aria-label": "Вид документации"}),
+                   "first_sign_user": Select(attrs={"class": "form-select",
+                                                    "aria-label": "Первый руководитель"}),
+                   "second_sign_user": Select(attrs={"class": "form-select",
+                                                     "aria-label": "Второй руководитель"}),
+                   # "cpe_sign_user": Select(attrs={"class": "form-select",
+                   #                                "aria-label": "ГИП"}),
+                   "incoming_dep": Select(attrs={"class": "form-select",
+                                                    "aria-label": "Отдел принимающий задание"}),
+                   "task_building": TextInput(attrs={"class": "form-control",
+                                                     "aria-label": "Здание"})
+                   }
+
+
 
 
 class TaskCheckForm(ModelForm):
@@ -120,7 +174,8 @@ class TaskEditForm(ModelForm):
             'task_stage',
             'task_type_work',
             "task_building",
-            'incoming_employee'
+            'incoming_employee',
+            "cpe_sign_user"
         ]
         widgets = {"text_task": Textarea(attrs={"placeholder": "Введите текст задания",
                                                 "class": "form-control"}),
@@ -128,8 +183,8 @@ class TaskEditForm(ModelForm):
                                                     "aria-label": "Первый руководитель"}),
                    "second_sign_user": Select(attrs={"class": "form-select",
                                                      "aria-label": "Второй руководитель"}),
-                   "cpe_sign_user": Select(attrs={"class": "form-select",
-                                                  "aria-label": "ГИП"}),
+                   # "cpe_sign_user": Select(attrs={"class": "form-select",
+                   #                                "aria-label": "ГИП"}),
                    "incoming_dep": Select(attrs={"class": "form-select",
                                                  "aria-label": "Кому"}),
                    }
@@ -157,15 +212,17 @@ class SearchForm(Form):
 
 
 class TaskEditWorkersForm(ModelForm):
+    """Форма для выбора задания для смены ответственных исполнителей"""
     class Meta:
         model = TaskModel
         fields = ["task_number", ]
         widgets = {
             "task_number": Select(attrs={"class": "form-select",
-                                         "aria-label": "Первый руководитель"}),
+                                         "aria-label": "Задание"}),
         }
 
 class WorkerForm(ModelForm):
+    """Форма для назначения ответственных на странице деталей"""
     class Meta:
         model = WorkerModel
         exclude = ['task',
@@ -178,6 +235,7 @@ class WorkerForm(ModelForm):
 
 
 class WorkersEditForm(ModelForm):
+    """Формат для назначения ответственных на странице редактирования ответственных"""
     class Meta:
         model = WorkerModel
         exclude = ['worker_user',
