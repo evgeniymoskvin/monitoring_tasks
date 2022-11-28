@@ -1,0 +1,90 @@
+{#{% extends "todo_tasks/base.html" %}#}
+{% extends 'todo_tasks/details/details.html' %}
+{#{% block title %}#}
+{#    Подробности#}
+{#{% endblock %}#}
+{% block buttons %}
+    <br>
+    <form method="POST">
+
+        {% csrf_token %}
+        <div class="row justify-content-center">
+            <div class="col">
+
+                <figure class="text-center">
+
+
+                    {% if approve_flag is True %}
+                        <input type="submit" class="btn btn-outline-success" name="approve_sign" value="Подписать"
+                               data-toggle="tooltip" title="Подписать">
+                    {% endif %}
+
+                    <!-- Исчезновение кнопки вернуть, после подписи ГИП-а-->
+{#                    {% if approve_flag is True %}#}
+{#                        <button type="button" class="btn btn-warning" data-bs-toggle="modal"#}
+{#                                data-bs-target="#back_modal"#}
+{#                                data-toggle="tooltip" title="Вернуть задание на исправление">#}
+{#                            Вернуть#}
+{#                        </button>#}
+{#                    {% endif %}#}
+                </figure>
+            </div>
+        </div>
+        {#    </form>#}
+
+
+        <!-- Модальное окно -->
+        <div class="modal fade" id="back_modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+             aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="staticBackdropLabel">Вернуть задание на исправление</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+                    </div>
+                    <div class="modal-body">
+                        <textarea class="form-control" rows="4" name="back_modal_text"></textarea>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                        <input type="submit" class="btn btn-danger" name="back_modal_button" value="Вернуть">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Модальное окно комментария -->
+        <div class="modal fade" id="comment_modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+             aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="staticBackdropLabel">Добавить комментарий к заданию</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+                    </div>
+                    <div class="modal-body">
+                        <textarea class="form-control" rows="4" name="comment_modal_text"></textarea>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                        <input type="submit" class="btn btn-success" name="comment_modal_button" value="Подписать">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </form>
+
+    <script>
+        // после загрузки страницы
+        $(function () {
+            // инициализации подсказок для всех элементов на странице, имеющих атрибут data-toggle="tooltip"
+            $('[data-toggle="tooltip"]').tooltip();
+            $('[data-bs-toggle="tooltip"]').tooltip();
+        });
+    </script>
+{% endblock %}
+
+
+
+

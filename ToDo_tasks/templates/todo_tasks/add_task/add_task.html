@@ -79,6 +79,29 @@
             </div>
             <br>
 
+
+            <div class="row justify-content-center">
+                <div class="col-2">
+                    Требуются ли согласователи?:
+                </div>
+                <div class="col-3">
+                    {{ form.task_need_approve }}
+                </div>
+            </div>
+            <br>
+
+            <div id="approve" style="display: none">
+                <div class="row justify-content-center">
+                    <div class="col-2">
+                        Выберете согласователей:
+                    </div>
+                    <div class="col-3">
+                        {{ approve_form.approve_user }}
+                    </div>
+                </div>
+            </div>
+            <br>
+
             <div class="row justify-content-center">
                 <div class="col">
                     <figure class="text-center">
@@ -129,10 +152,22 @@
                 placeholder: 'Выберете тип документации'
             });
 
-
-
+            $('#id_approve_user').select2({
+                placeholder: 'Выберете согласователей'
+            });
 
         });
+
+        document.getElementById('id_task_need_approve').onchange = toggle;
+
+        function toggle() {
+            var div = document.getElementById('approve');
+            if (this.checked)
+                div.style.display = 'block';
+            else
+                div.style.display = 'none'
+        }
+
 
         // JS для фильтрации списка контрактов
         $("#id_task_object").change(function () {

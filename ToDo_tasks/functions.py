@@ -1,6 +1,6 @@
 from django.shortcuts import redirect
 from .models import Employee, TaskModel, CpeModel, ContractModel, ObjectModel, StageModel, CanAcceptModel
-from .forms import TaskForm, TaskCheckForm, TaskEditForm, WorkerModel
+from .forms import TaskForm, TaskCheckForm, TaskEditForm, WorkerModel, ApproveModel
 
 
 def get_signature_info(obj) -> dict:
@@ -63,6 +63,11 @@ def get_data_for_detail(request, pk) -> dict:
     user = Employee.objects.get(user=request.user)
 
     try:
+        approve_users = ApproveModel.objects.get_queryset().filter(approve_task_id=pk)
+    except:
+        approve_users = False
+
+    try:
         workers = WorkerModel.objects.get_queryset().filter(task_id=pk)
     except:
         workers = False
@@ -72,7 +77,8 @@ def get_data_for_detail(request, pk) -> dict:
         'form': form,
         "sign_info": signature_info,
         "task_status": task_status,
-        "workers": workers
+        "workers": workers,
+        "approve_users": approve_users,
     }
 
 
@@ -113,7 +119,7 @@ def get_list_to_sign_cpe(sign_user):
     # Фильтруем задания: объект в списке, подписи ГИП-а нет, первый и второй пользователь подписали, не возвращено на доработку
     to_sign_objects_cpe = TaskModel.objects.get_queryset().filter(task_object__in=list_objects).filter(
         cpe_sign_status=False).filter(first_sign_status=True).filter(second_sign_status=True).filter(
-        back_to_change=False)
+        back_to_change=False).filter(task_approved=True)
     return to_sign_objects_cpe
 
 

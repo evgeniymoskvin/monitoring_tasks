@@ -53,6 +53,17 @@ def unread_inbox(user):
     if tasks_count_unread > 0:
         count_unread = f'({tasks_count_unread})'
     return count_unread
+
+
+
+@register.simple_tag()
+def need_approve(user):
+    count_unread = ''
+    tasks_to_approve = ApproveModel.objects.get_queryset().filter(approve_user_id=user.id).filter(approve_status=False).count()
+
+    if tasks_to_approve > 0:
+        count_unread = f'({tasks_to_approve})'
+    return count_unread
 # count_task_to_workers = ''
 # count_task_incoming_to_sign = ''
 # if user_ep.right_to_sign is True and user_ep.cpe_flag is False:

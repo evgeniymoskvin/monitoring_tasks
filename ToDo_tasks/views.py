@@ -7,9 +7,9 @@ from django.views import View
 from django.db.models import Q
 
 from .models import Employee, TaskModel, ContractModel, ObjectModel, StageModel, TaskNumbersModel, CommandNumberModel, \
-    CpeModel, CanAcceptModel, BackCommentModel, WorkerModel
+    CpeModel, CanAcceptModel, BackCommentModel, WorkerModel, ApproveModel
 from .forms import TaskForm, TaskCheckForm, TaskEditForm, SearchForm, WorkerFormSet, WorkerForm, WorkersEditForm, \
-    TaskEditWorkersForm, TaskFormForSave
+    TaskEditWorkersForm, TaskFormForSave, ApproveForm, ApproveFormForSave
 from .functions import get_signature_info, get_data_for_form, get_data_for_detail, get_list_to_sign, get_task_edit_form, \
     get_list_to_sign_cpe, get_list_incoming_tasks_to_sign, get_list_incoming_tasks_to_workers, save_to_worker_list, \
     get_list_to_change_workers
@@ -113,6 +113,7 @@ class DetailView(View):
         content = get_data_for_detail(request, pk)
         content[
             'flag'] = True  # Для того, что бы шестеренка была доступна только на странице деталей, и ни на каких других дочерних
+
         return render(request, 'todo_tasks/details/details.html', content)
 
     def post(self, request, pk):
@@ -138,6 +139,7 @@ class AddTaskView(View):
     @method_decorator(login_required(login_url='login'))
     def get(self, request):
         form = TaskForm()
+        approve_form = ApproveForm()
         # Фильтруем поля руководителей в соответствии с отделом пользователя
         department_user = Employee.objects.get(user=request.user).department  # получаем номер отдела
         form.fields['first_sign_user'].queryset = Employee.objects.filter(department=department_user).filter(
@@ -154,7 +156,9 @@ class AddTaskView(View):
         objects = ObjectModel.objects.all()
         context = {'form': form,
                    'user': Employee.objects.get(user=request.user),
-                   'objects': objects}
+                   'objects': objects,
+                   "approve_form": approve_form
+                   }
         return render(request, 'todo_tasks/add_task/add_task.html', context)
 
     def post(self, request):
@@ -162,6 +166,7 @@ class AddTaskView(View):
         temp_req = request.POST.copy()
         # Из исходного пост запроса получаем список отделов, куда надо выдать задания
         incoming_deps_list = request.POST.getlist('incoming_dep')
+        approved_user_list = request.POST.getlist('approve_user')
         # Перебираем отделы
         for dep in incoming_deps_list:
             # Меняем значение отдела, на нужное нам из списка
@@ -183,7 +188,8 @@ class AddTaskView(View):
                     last_number.year_of_task = today_year
                     last_number.count_of_task = 1
                 last_number.save()  # сохраняем в таблице счетчиков (TaskNumbersModel) обновленные данные
-
+                if new_post.task_need_approve is False:
+                    new_post.task_approved = True
                 new_post.task_last_edit = datetime.datetime.now()  # Присваиваем дату последнего изменения
 
                 new_post.task_number = f'ЗД-{new_post.department_number.command_number}-{last_number.count_of_task}-{str(today_year)[2:4]}'
@@ -191,6 +197,12 @@ class AddTaskView(View):
                 print(new_post.task_number)
                 form.save()  # сохраняем форму в бд
                 # Если отдел был всего 1, то перенаправляем на страницу с деталями задания, иначе перекидываем на страницу всех исходящих заданий
+                number_id = TaskModel.objects.get(task_number=new_post.task_number).id
+                if len(approved_user_list) > 0:
+                    for app_user in approved_user_list:
+                        obj = ApproveModel(approve_task_id=number_id, approve_user_id=app_user)
+                        obj.save()
+
                 if len(incoming_deps_list) == 1:
                     # После сохранения получаем id записи в бд, для формирования ссылки
                     number_id_for_redirect = TaskModel.objects.get(task_number=new_post.task_number).id
@@ -582,6 +594,52 @@ class EditWorkersDetailView(View):
         content = {"data_all": data_all}
         print(content)
         return render(request, 'todo_tasks/htmx/edit_workers.html', content)
+
+
+class ApproveListView(View):
+    """Страница со списком заданий ожидающих назначить исполнителей"""
+
+    @method_decorator(login_required(login_url='login'))
+    def get(self, request):
+        sign_user = Employee.objects.get(user=request.user)  # получаем пользователя
+        tasks = ApproveModel.objects.get_queryset().filter(approve_user_id=sign_user.id).filter(approve_status=False)  # Получаем queryset с заданиями
+        tasks_list = []
+        for task in tasks:
+
+            tasks_list.append(task.approve_task_id)
+        data_to_approve_sign = TaskModel.objects.get_queryset().filter(id__in=tasks_list)
+        print(tasks)
+        content = {
+            'tasks': data_to_approve_sign,
+            'user': sign_user}
+        return render(request, 'todo_tasks/to_approve/approve_to_sign.html', content)
+
+class ApproveDetailView(View):
+    """Подпись согласователя"""
+
+    def get(self, request, pk):
+        sign_user = Employee.objects.get(user=request.user)  # получаем пользователя
+        content = get_data_for_detail(request, pk)
+        if len(ApproveModel.objects.get_queryset().filter(approve_task_id=pk).filter(
+                approve_user_id=sign_user.id).filter(approve_status=False)) == 1:
+            content['approve_flag'] = True
+        else:
+            content['approve_flag'] = False
+        return render(request, 'todo_tasks/details/details_to_approve.html', content)
+
+    def post(self,request, pk):
+        if 'approve_sign' in request.POST:
+            sign_user = Employee.objects.get(user=request.user)
+            obj_approve_model = ApproveModel.objects.get(approve_task_id=pk, approve_user_id=sign_user.id)
+            obj_approve_model.approve_status = True
+            obj_approve_model.approve_date = datetime.datetime.now()
+            obj_approve_model.save()
+            if ApproveModel.objects.get_queryset().filter(approve_task_id=pk).count() == ApproveModel.objects.get_queryset().filter(approve_task_id=pk).filter(approve_status=True).count():
+                obj_task = TaskModel.objects.get(id=pk)
+                obj_task.task_approved = True
+                obj_task.save()
+        return redirect(request.META['HTTP_REFERER'])
+
 
 
 class SearchView(View):

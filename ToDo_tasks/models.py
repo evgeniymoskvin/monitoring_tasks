@@ -195,6 +195,8 @@ class TaskModel(models.Model):
     incoming_date = models.DateTimeField("Дата и время подписи принявшего", default=None,
                                          null=True)
     task_workers = models.BooleanField("Наличие исполнителей", default=False)
+    task_approved = models.BooleanField("Согласовано", default=False)
+    task_need_approve = models.BooleanField("Требуются ли согласователи?", default=False)
 
 
     def __str__(self):
@@ -231,6 +233,15 @@ class WorkerModel(models.Model):
     class Meta:
         verbose_name = _("ответственный исполнитель")
         verbose_name_plural = _("ответственные исполнители")
+
+
+class ApproveModel(models.Model):
+    """Таблица согласователей"""
+
+    approve_user = models.ForeignKey(Employee, on_delete=models.SET_NULL, verbose_name="Согласователь", null=True, blank=True)
+    approve_task = models.ForeignKey(TaskModel, on_delete=models.CASCADE, verbose_name="Задание", null=True)
+    approve_status = models.BooleanField("Статус подписи", default=False)
+    approve_date = models.DateTimeField("Дата подписания", default=None, null=True)
 
 
 class BackCommentModel(models.Model):

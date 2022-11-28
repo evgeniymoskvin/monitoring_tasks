@@ -1,6 +1,7 @@
 {% load task_tags %}
 
 <hr>
+<a class="dropdown-item" href="{% url 'approve_list_to_sign' %}">Согласовать задание {% need_approve user %} </a>
 <a class="dropdown-item" href="{% url 'outgoing_to_sign' %}">Подписать исходящие {% get_count_task_to_sign user %}</a>
 <a class="dropdown-item" href="{% url 'incoming_to_sign' %}">Подписать входящие {% get_count_task_incoming_to_sign user %}</a>
 <a class="dropdown-item" href="{% url 'incoming_to_workers' %}">Назначить

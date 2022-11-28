@@ -1,5 +1,5 @@
 from .models import TaskModel, ObjectModel, ContractModel, StageModel, OrdersModel, Employee, CanAcceptModel, \
-    WorkerModel
+    WorkerModel, ApproveModel
 from django.forms import ModelForm, TextInput, Textarea, CheckboxInput, Select, ChoiceField, Form, \
     CharField, ModelChoiceField, modelformset_factory, ModelMultipleChoiceField, MultipleChoiceField, SelectMultiple
 
@@ -28,7 +28,8 @@ class TaskForm(ModelForm):
             "incoming_date",
             "incoming_employee",
             "task_workers",
-            "cpe_sign_user"
+            "cpe_sign_user",
+            "task_approved"
         ]
         widgets = {"task_order": Select(attrs={"class": "form-select",
                                                "aria-label": "Номер заказа"}),
@@ -51,7 +52,8 @@ class TaskForm(ModelForm):
                    "incoming_dep": SelectMultiple(attrs={"class": "form-select",
                                                     "aria-label": "Отдел принимающий задание"}),
                    "task_building": TextInput(attrs={"class": "form-control",
-                                                     "aria-label": "Здание"})
+                                                     "aria-label": "Здание"}),
+                   "task_need_approve": CheckboxInput()
                    }
 
     def __init__(self, *args, **kwargs):
@@ -87,7 +89,8 @@ class TaskFormForSave(ModelForm):
             "incoming_date",
             "incoming_employee",
             "task_workers",
-            "cpe_sign_user"
+            "cpe_sign_user",
+            'task_approved'
         ]
         widgets = {"task_order": Select(attrs={"class": "form-select",
                                                "aria-label": "Номер заказа"}),
@@ -110,7 +113,8 @@ class TaskFormForSave(ModelForm):
                    "incoming_dep": Select(attrs={"class": "form-select",
                                                     "aria-label": "Отдел принимающий задание"}),
                    "task_building": TextInput(attrs={"class": "form-control",
-                                                     "aria-label": "Здание"})
+                                                     "aria-label": "Здание"}),
+                   "task_need_approve": CheckboxInput()
                    }
 
 
@@ -247,6 +251,33 @@ class WorkersEditForm(ModelForm):
         }
 
 
+class ApproveForm(ModelForm):
+    """Форма для """
+    class Meta:
+        model = ApproveModel
+        exclude = [
+            'approve_task',
+            'approve_status',
+            'approve_date',
+        ]
+        widgets = {
+            "approve_user": SelectMultiple(attrs={"class": "form-select",
+                                                  "aria-label": "Согласователь"}),
+        }
+
+class ApproveFormForSave(ModelForm):
+    """Форма для """
+    class Meta:
+        model = ApproveModel
+        exclude = [
+            'approve_task',
+            'approve_status',
+            'approve_date',
+        ]
+        widgets = {
+            "approve_user": Select(attrs={"class": "form-select",
+                                                  "aria-label": "Согласователь"}),
+        }
 
 # WorkerFormSet = modelformset_factory(WorkerModel, fields=("worker_user",), extra=1, can_delete=False)
 WorkerFormSet = modelformset_factory(WorkerModel, form=WorkerForm)

@@ -80,7 +80,7 @@
                     </div>
 
                     {% if obj.first_sign_status %}
-                        <div class="col bg-success text-white text-right">
+                        <div class="col bg-success bg-opacity-75 text-white text-right">
                             <span data-toggle="tooltip" title="{{ obj.first_sign_date }}">Подписано</span>
                         </div>
                     {% else %}
@@ -171,6 +171,25 @@
 
             </div>
         </div>
+        {% if approve_users %}
+            <div>
+            <br>
+                <h5>Назначены согласователи</h5>
+                <ul class="list-group">
+                    {% for user in approve_users %}
+                        {% if user.approve_status %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center bg-success bg-opacity-10">
+                        {% else %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                        {% endif %}
+                        {{ user.approve_user }} <small class="text-muted">
+                        ({{ user.approve_user.job_title }}, {{ user.approve_user.department }},
+                        тел. {{ user.approve_user.user_phone }})</small>
+                    </li>
+                    {% endfor %}
+                <ul>
+            </div>
+        {% endif %}
         {% block buttons %}
         {% endblock %}
 
@@ -182,7 +201,9 @@
             <ul class="list-group">
                 {% for worker in workers %}
                     <li class="list-group-item d-flex justify-content-between align-items-center">
-                        {{ worker.worker_user }} <small class="text-muted"> ({{ worker.worker_user.job_title}}, {{ worker.worker_user.department }}, тел. {{ worker.worker_user.user_phone }})</small>
+                        {{ worker.worker_user }} <small class="text-muted">
+                        ({{ worker.worker_user.job_title }}, {{ worker.worker_user.department }},
+                        тел. {{ worker.worker_user.user_phone }})</small>
                     </li>
                 {% endfor %}
             </ul>

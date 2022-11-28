@@ -1,12 +1,18 @@
-<!-- Пункты меню для сотрудника -->
 {% load task_tags %}
-<a class="dropdown-item" href="{% url 'approve_list_to_sign' %}">Согласовать задание {% need_approve user %} </a>
+
+<hr>
+{% get_right_to_sign user %}
+<a class="dropdown-item" href="{% url 'outgoing_to_sign' %}">Подписать исходящие {{ count_task_to_sign }}</a>
+<a class="dropdown-item" href="{% url 'incoming_to_sign' %}">Подписать входящие {{ count_task_incoming_to_sign }}</a>
+
+<a class="dropdown-item" href="{% url 'incoming_to_workers' %}">Назначить
+        исполнителей {{ count_task_to_workers }}</a>
+<a class="dropdown-item" href="{% url 'edit_workers' %}">Переназначить ответственных</a>
 <hr>
 <a class="dropdown-item" href="{% url 'add_task' %}">Выдать задание</a>
-<hr>
 <a class="dropdown-item" href="{% url 'my_tasks' %}">Мои выданные задания</a>
 <a class="dropdown-item" href="{% url 'my_tasks_on_sign' %}">Мои задания на подписи</a>
-<a class="dropdown-item" href="{% url 'inbox' %}">Мои входящие задания {% unread_inbox user %}</a>
+<a class="dropdown-item" href="{% url 'inbox' %}">Мои входящие задания</a>
 <a class="dropdown-item" href="#submenu3" data-bs-toggle="collapse">Задания
     отдела {{ user.department.command_number }}</a>
 <ul class="collapse nav flex-column ms-1" id="submenu3" data-bs-parent="#menu">
