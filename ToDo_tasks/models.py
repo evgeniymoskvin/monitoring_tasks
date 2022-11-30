@@ -2,6 +2,9 @@ from django.db import models
 from django.contrib.auth.models import User, AbstractUser
 from django.utils.translation import gettext_lazy as _
 import datetime
+from os import path
+from django.conf import settings
+
 
 COMAND_CHOICES = [(000, "000 - Не указан"), (201, "201 - Строительный первый"), (202, "202 - Строительный второй")]
 
@@ -65,7 +68,8 @@ class Employee(models.Model):
 
 class CanAcceptModel(models.Model):
     """Таблица тех, кому могут назначаться задания"""
-    dep_accept = models.ForeignKey(CommandNumberModel, on_delete=models.PROTECT, verbose_name="Отдел за который можно подписаться", null=True)
+    dep_accept = models.ForeignKey(CommandNumberModel, on_delete=models.PROTECT,
+                                   verbose_name="Отдел за который можно подписаться", null=True)
     user_accept = models.ForeignKey(Employee, on_delete=models.PROTECT, verbose_name="Сотрудник", null=True)
 
     def __str__(self):
@@ -198,7 +202,6 @@ class TaskModel(models.Model):
     task_approved = models.BooleanField("Согласовано", default=False)
     task_need_approve = models.BooleanField("Требуются ли согласователи?", default=False)
 
-
     def __str__(self):
         return f'{self.task_number}, {self.task_order}, {self.task_object}, {self.task_contract}'
 
@@ -238,7 +241,8 @@ class WorkerModel(models.Model):
 class ApproveModel(models.Model):
     """Таблица согласователей"""
 
-    approve_user = models.ForeignKey(Employee, on_delete=models.SET_NULL, verbose_name="Согласователь", null=True, blank=True)
+    approve_user = models.ForeignKey(Employee, on_delete=models.SET_NULL, verbose_name="Согласователь", null=True,
+                                     blank=True)
     approve_task = models.ForeignKey(TaskModel, on_delete=models.CASCADE, verbose_name="Задание", null=True)
     approve_status = models.BooleanField("Статус подписи", default=False)
     approve_date = models.DateTimeField("Дата подписания", default=None, null=True)
@@ -248,3 +252,18 @@ class BackCommentModel(models.Model):
     """Таблица заданий возвраты"""
     task = models.ForeignKey(TaskModel, on_delete=models.CASCADE, verbose_name="Задание", null=True)
     bad_comment = models.TextField("Текст задания", max_length=5000, null=True, default=None)
+
+
+def upload_to(instance, filename):
+    return path.join(settings.MEDIA_ROOT, 'files',
+                     # "media", filename)
+                     instance.task.task_number, filename)
+
+
+class AttachmentFilesModel(models.Model):
+    task = models.ForeignKey(TaskModel, on_delete=models.CASCADE, verbose_name="Задание", null=True)
+    file = models.FileField(verbose_name="Файл", null=True, blank=True, upload_to=upload_to)
+    add_data = models.DateTimeField('Дата загрузки', auto_now_add=True, null=True)
+
+    def __str__(self):
+        return f'{self.task}, {self.file.name}'

@@ -64,6 +64,11 @@ def need_approve(user):
     if tasks_to_approve > 0:
         count_unread = f'({tasks_to_approve})'
     return count_unread
+
+@register.simple_tag()
+def split_filename(value:str):
+    return str(value).split('/')[-1]
+
 # count_task_to_workers = ''
 # count_task_incoming_to_sign = ''
 # if user_ep.right_to_sign is True and user_ep.cpe_flag is False:

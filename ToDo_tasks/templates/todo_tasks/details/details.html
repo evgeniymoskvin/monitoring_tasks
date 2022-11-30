@@ -1,5 +1,6 @@
 {% extends "todo_tasks/base.html" %}
 {% load static %}
+{% load task_tags %}
 {% block title %}
     Подробности
 {% endblock %}
@@ -173,21 +174,21 @@
         </div>
         {% if approve_users %}
             <div>
-            <br>
+                <br>
                 <h5>Назначены согласователи</h5>
                 <ul class="list-group">
                     {% for user in approve_users %}
                         {% if user.approve_status %}
-                        <li class="list-group-item d-flex justify-content-between align-items-center bg-success bg-opacity-10">
-                        {% else %}
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <li class="list-group-item d-flex justify-content-between align-items-center bg-success bg-opacity-10">
+                                {% else %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
                         {% endif %}
-                        {{ user.approve_user }} <small class="text-muted">
+                    {{ user.approve_user }} <small class="text-muted">
                         ({{ user.approve_user.job_title }}, {{ user.approve_user.department }},
                         тел. {{ user.approve_user.user_phone }})</small>
                     </li>
                     {% endfor %}
-                <ul>
+                    <ul>
             </div>
         {% endif %}
         {% block buttons %}
@@ -204,6 +205,20 @@
                         {{ worker.worker_user }} <small class="text-muted">
                         ({{ worker.worker_user.job_title }}, {{ worker.worker_user.department }},
                         тел. {{ worker.worker_user.user_phone }})</small>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+        <!-- Формируем список исполнителей, если они имеются-->
+        {% if files %}
+
+            <br>
+            <h5>Приложенные файлы:</h5>
+            <ul class="list-group">
+                {% for file in files %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center" >
+                        <a href="{% url 'download_file' file.id %}" class="link-dark">{% split_filename file.file %}</a>
                     </li>
                 {% endfor %}
             </ul>

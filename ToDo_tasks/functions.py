@@ -1,6 +1,6 @@
 from django.shortcuts import redirect
 from .models import Employee, TaskModel, CpeModel, ContractModel, ObjectModel, StageModel, CanAcceptModel
-from .forms import TaskForm, TaskCheckForm, TaskEditForm, WorkerModel, ApproveModel
+from .forms import TaskForm, TaskCheckForm, TaskEditForm, WorkerModel, ApproveModel, AttachmentFilesModel
 
 
 def get_signature_info(obj) -> dict:
@@ -61,16 +61,9 @@ def get_data_for_detail(request, pk) -> dict:
     data = get_data_for_form(obj)  # получаем данные для подгрузки в форму
     form = TaskCheckForm(initial=data)
     user = Employee.objects.get(user=request.user)
-
-    try:
-        approve_users = ApproveModel.objects.get_queryset().filter(approve_task_id=pk)
-    except:
-        approve_users = False
-
-    try:
-        workers = WorkerModel.objects.get_queryset().filter(task_id=pk)
-    except:
-        workers = False
+    approve_users = ApproveModel.objects.get_queryset().filter(approve_task_id=pk)
+    workers = WorkerModel.objects.get_queryset().filter(task_id=pk)
+    files = AttachmentFilesModel.objects.get_queryset().filter(task_id=pk)
     return {
         'obj': obj,
         'user': user,
@@ -79,6 +72,7 @@ def get_data_for_detail(request, pk) -> dict:
         "task_status": task_status,
         "workers": workers,
         "approve_users": approve_users,
+        "files": files
     }
 
 

@@ -1,7 +1,7 @@
 from .models import TaskModel, ObjectModel, ContractModel, StageModel, OrdersModel, Employee, CanAcceptModel, \
-    WorkerModel, ApproveModel
+    WorkerModel, ApproveModel, AttachmentFilesModel
 from django.forms import ModelForm, TextInput, Textarea, CheckboxInput, Select, ChoiceField, Form, \
-    CharField, ModelChoiceField, modelformset_factory, ModelMultipleChoiceField, MultipleChoiceField, SelectMultiple
+    CharField, ModelChoiceField, modelformset_factory, ModelMultipleChoiceField, MultipleChoiceField, SelectMultiple, FileField, ClearableFileInput, FileInput
 
 from django.views import View
 
@@ -252,7 +252,7 @@ class WorkersEditForm(ModelForm):
 
 
 class ApproveForm(ModelForm):
-    """Форма для """
+    """Форма для выбора согласователей"""
     class Meta:
         model = ApproveModel
         exclude = [
@@ -263,6 +263,15 @@ class ApproveForm(ModelForm):
         widgets = {
             "approve_user": SelectMultiple(attrs={"class": "form-select",
                                                   "aria-label": "Согласователь"}),
+        }
+
+class FilesUploadForm(ModelForm):
+    class Meta:
+        model = AttachmentFilesModel
+        fields = ['file']
+
+        widgets = {
+            'file_upload': ClearableFileInput(attrs={'multiple': True})
         }
 
 class ApproveFormForSave(ModelForm):
