@@ -299,8 +299,9 @@ class EditTaskFiles(View):
 
     def delete(self, request, pk):
         print(pk)
-        task_id = AttachmentFilesModel.objects.get(id=pk).task_id
-        print(task_id)
+        file = AttachmentFilesModel.objects.get(id=pk)
+        task_id = file.task_id
+        os.remove(os.path.join(settings.MEDIA_ROOT, str(file.file)))
         AttachmentFilesModel.objects.get(id=pk).delete()
         old_files = AttachmentFilesModel.objects.get_queryset().filter(task_id=task_id)
 
