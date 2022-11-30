@@ -748,7 +748,8 @@ class DownloadFileView(View):
         file_path = os.path.join(settings.MEDIA_ROOT, str(file_path_in_db.file))
         if os.path.exists(file_path):
             with open(file_path, 'rb') as fh:
-                response = HttpResponse(fh.read(), content_type="")
+                mime_type, _ = mimetypes.guess_type(file_path)
+                response = HttpResponse(fh.read(), content_type=mime_type)
                 response['Content-Disposition'] = 'inline; filename=' + os.path.basename(file_path)
                 return response
         raise Http404

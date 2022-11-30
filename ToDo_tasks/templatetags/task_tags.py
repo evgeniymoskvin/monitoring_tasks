@@ -15,7 +15,7 @@ def get_name(user):
 
 @register.simple_tag()
 def get_count_task_to_sign(user):
-    count_task_to_sign = ''
+    count_task_to_sign = False
     if user.right_to_sign is True and user.cpe_flag is False:
         count_tasks = len(get_list_to_sign(user))
         if count_tasks > 0:
@@ -29,7 +29,7 @@ def get_count_task_to_sign(user):
 
 @register.simple_tag()
 def get_count_task_incoming_to_sign(user):
-    count_task_incoming_to_sign = ''
+    count_task_incoming_to_sign = False
     if user.right_to_sign is True and user.cpe_flag is False:
         count_tasks = get_list_incoming_tasks_to_sign(user).count()
         if count_tasks > 0:
@@ -38,7 +38,7 @@ def get_count_task_incoming_to_sign(user):
 
 @register.simple_tag()
 def get_count_task_workers_to_sign(user):
-    count_task_to_workers = ''
+    count_task_to_workers = False
     if user.right_to_sign is True and user.cpe_flag is False:
         count_tasks = TaskModel.objects.get_queryset().filter(task_status=2).filter(
                 incoming_dep=user.department).filter(task_workers=False).count()
@@ -58,7 +58,7 @@ def unread_inbox(user):
 
 @register.simple_tag()
 def need_approve(user):
-    count_unread = ''
+    count_unread = False
     tasks_to_approve = ApproveModel.objects.get_queryset().filter(approve_user_id=user.id).filter(approve_status=False).count()
 
     if tasks_to_approve > 0:
