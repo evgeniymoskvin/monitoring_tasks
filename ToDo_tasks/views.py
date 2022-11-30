@@ -265,6 +265,50 @@ class EditTaskView(View):
             return redirect(f'/details/{pk}')
 
 
+class EditTaskFiles(View):
+    """Страница корректировки приложенных файлов"""
+
+    @method_decorator(login_required(login_url='login'))
+    def get(self, request, pk):
+        user = Employee.objects.get(user=request.user)  # "логинимся"
+        obj = TaskModel.objects.get(id=pk)  # Получаем информацию по заданию
+        file_form = FilesUploadForm()  # загружаем форму для отправки файлов
+        old_files = AttachmentFilesModel.objects.get_queryset().filter(task_id=pk)  # Получаем список уже имеющихся файлов
+        content = {"file_form": file_form,
+                   "old_files": old_files,
+                   "user": user,
+                   'obj': obj,
+                   }
+        return render(request, 'todo_tasks/files/change_files.html', content)
+
+    def post(self, request, pk):
+        """Загрузка новых файлов"""
+        if request.FILES:
+            for f in request.FILES.getlist('file'):
+                obj = AttachmentFilesModel(file=f, task_id=pk)
+                obj.save()
+        old_files = AttachmentFilesModel.objects.get_queryset().filter(task_id=pk)
+        #  Получаем список согласователей
+        approve_emp = ApproveModel.objects.get_queryset().filter(approve_task_id=pk)
+        for emp in approve_emp:
+            # Аннулируем статус согласованности
+            emp.approve_status = False
+            emp.save()
+        content = {"old_files": old_files}
+        return render(request, 'todo_tasks/htmx/list_files.html', content)
+
+    def delete(self, request, pk):
+        print(pk)
+        task_id = AttachmentFilesModel.objects.get(id=pk).task_id
+        print(task_id)
+        AttachmentFilesModel.objects.get(id=pk).delete()
+        old_files = AttachmentFilesModel.objects.get_queryset().filter(task_id=task_id)
+
+        print(old_files)
+        content = {"old_files": old_files}
+        return render(request, 'todo_tasks/htmx/list_files.html', content)
+
+
 class AddChangeTaskView(View):
     """Выдать изменение к заданию"""
 
@@ -742,7 +786,6 @@ def load_incoming_employee(request):
 
 class DownloadFileView(View):
     def get(self, request, pk):
-
         file_path_in_db = AttachmentFilesModel.objects.get(id=pk)
         print(file_path_in_db.file)
         file_path = os.path.join(settings.MEDIA_ROOT, str(file_path_in_db.file))

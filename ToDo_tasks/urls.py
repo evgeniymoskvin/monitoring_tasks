@@ -20,6 +20,7 @@ urlpatterns = [
         template_name='todo_tasks/system_user/change_password.html',
         success_url='/'), name='change_password'),
     path('details/<int:pk>/change', views.EditTaskView.as_view(), name='change'),
+    path('details/<int:pk>/change_files', views.EditTaskFiles.as_view(), name='change_files'),
     path('details_to_sign/<int:pk>', views.ToSignDetailView.as_view(), name='details_to_sign'),
     path('details_to_add_workers/<int:pk>', views.ToAddWorkersDetailView.as_view(), name='details_to_add_workers'),
     path('outgoing_to_sign/', views.ToSignListView.as_view(), name='outgoing_to_sign'),
@@ -36,7 +37,7 @@ urlpatterns = [
     path('test_view/', views.TestView.as_view(), name='test_view'),
     path('approve_list_to_sign/', views.ApproveListView.as_view(), name='approve_list_to_sign'),
     path('approve_details/<int:pk>', views.ApproveDetailView.as_view(), name='approve_details'),
-    path('download_file/<int:pk>', views.DownloadFileView.as_view(), name='download_file')
+    path('download_file/<int:pk>', views.DownloadFileView.as_view(), name='download_file'),
 
 
 

@@ -1,12 +1,23 @@
 <ul class="dropdown-menu dropdown-menu-start" aria-labelledby="navbarDropdown">
     {% if obj.department_number == user.department %}
-        {% if obj.author.user == request.user and obj.task_status == 1 or obj.back_to_change == True  %}
+        {% if obj.author.user == request.user and obj.task_status == 1 and obj.cpe_sign_status == False or obj.back_to_change == True %}
             <li><a class="dropdown-item" href="{% url "change" pk=obj.id %}">Редактировать</a></li>
-        {% elif user.check_edit == True and obj.task_status == 1 or obj.back_to_change == True %}
+            <li><a class="dropdown-item" href="{% url "change_files" pk=obj.id %}">Отредактировать вложения</a></li>
+        {% elif user.check_edit == True and obj.task_status == 1 and obj.cpe_sign_status == False or obj.back_to_change == True %}
             <li><a class="dropdown-item" href="{% url "change" pk=obj.id %}">Редактировать</a></li>
-        {% elif obj.task_status == 1 or obj.back_to_change == True %}
+            <li><a class="dropdown-item" href="{% url "change_files" pk=obj.id %}">Отредактировать вложения</a></li>
+        {% elif obj.task_status == 1 and obj.back_to_change == True %}
+            <li><a class="dropdown-item" href="{% url "change" pk=obj.id %}">Редактировать</a></li>
+            <li><a class="dropdown-item" href="{% url "change_files" pk=obj.id %}">Отредактировать вложения</a></li>
+        {% else %}
             <li><a class="dropdown-item disabled" href="{% url "change" pk=obj.id %}">Редактировать</a></li>
+            <li><a class="dropdown-item disabled" href="{% url "change_files" pk=obj.id %}">Отредактировать вложения</a>
+            </li>
         {% endif %}
+
+
+
+
         {% if obj.task_status == 2 or obj.task_status == 3  and obj.department_number.id == user.department.id %}
             <li><a class="dropdown-item" data-bs-toggle="modal"
                    data-bs-target="#cancel_task">Аннулировать задание</a></li>

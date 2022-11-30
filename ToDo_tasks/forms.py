@@ -271,7 +271,7 @@ class FilesUploadForm(ModelForm):
         fields = ['file']
 
         widgets = {
-            'file_upload': ClearableFileInput(attrs={'multiple': True})
+            'file': ClearableFileInput(attrs={'multiple': True})
         }
 
 class ApproveFormForSave(ModelForm):

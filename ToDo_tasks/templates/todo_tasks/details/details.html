@@ -17,16 +17,18 @@
             </div>
             <div class="col">
                 <div class="d-flex justify-content-end">
-                    {% if flag == True and user.department == obj.department_number %}
-                        <h4>
+                    <h4>
+                        <img src="{% static 'todo_tasks/icons/file-earmark-pdf.svg' %}" data-toggle="tooltip"
+                             title="Скачать бланк">
+                        {% if flag == True and user.department == obj.department_number %}
                             <a href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
                                aria-expanded="false">
                                 <img src="{% static 'todo_tasks/icons/list.svg' %}" data-toggle="tooltip"
                                      title="Действия">
                                 {% include 'todo_tasks/detail_buttons/buttons_gear_for_details.html' %}
                             </a>
-                        </h4>
-                    {% endif %}
+                            </h4>
+                        {% endif %}
                 </div>
             </div>
         </div>
@@ -81,7 +83,7 @@
                     </div>
 
                     {% if obj.first_sign_status %}
-                        <div class="col bg-success bg-opacity-75 text-white text-right">
+                        <div class="col bg-success text-white text-right">
                             <span data-toggle="tooltip" title="{{ obj.first_sign_date }}">Подписано</span>
                         </div>
                     {% else %}
@@ -172,6 +174,25 @@
 
             </div>
         </div>
+
+        {% if files %}
+
+            <br>
+            <h5>Приложенные файлы:</h5>
+            <ul class="list-group">
+                {% for file in files %}
+                    <li class="list-group-item d-flex justify-content-start align-items-center">
+                        <img src="{% static 'todo_tasks/icons/file-arrow-down.svg' %}">
+                        <a href="{% url 'download_file' file.id %}"
+                           class="nav-link text-black">{% split_filename file.file %}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+
+
+
         {% if approve_users %}
             <div>
                 <br>
@@ -211,18 +232,6 @@
         {% endif %}
 
         <!-- Формируем список исполнителей, если они имеются-->
-        {% if files %}
-
-            <br>
-            <h5>Приложенные файлы:</h5>
-            <ul class="list-group">
-                {% for file in files %}
-                    <li class="list-group-item d-flex justify-content-between align-items-center" >
-                        <a href="{% url 'download_file' file.id %}" class="link-dark">{% split_filename file.file %}</a>
-                    </li>
-                {% endfor %}
-            </ul>
-        {% endif %}
 
 
         {% if obj.task_status == 2 or obj.task_status == 3  and obj.department_number.id == user.department.id %}
