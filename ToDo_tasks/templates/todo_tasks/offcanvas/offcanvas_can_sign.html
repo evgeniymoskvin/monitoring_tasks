@@ -1,20 +1,20 @@
 {% load task_tags %}
 
 <hr>
-{% if need_approve %}
+{#{% if need_approve %}#}
     <a class="dropdown-item" href="{% url 'approve_list_to_sign' %}">Согласовать задание {% need_approve user %} </a>
-{% endif %}
-{% if get_count_task_to_sign %}
+{#{% endif %}#}
+{#{% if get_count_task_to_sign %}#}
 <a class="dropdown-item" href="{% url 'outgoing_to_sign' %}">Подписать исходящие {% get_count_task_to_sign user %}</a>
-{% endif %}
-{% if get_count_task_incoming_to_sign %}
+{#{% endif %}#}
+{#{% if get_count_task_incoming_to_sign %}#}
     <a class="dropdown-item" href="{% url 'incoming_to_sign' %}">Подписать
         входящие {% get_count_task_incoming_to_sign user %}</a>
-{% endif %}
-{% if get_count_task_workers_to_sign %}
+{#{% endif %}#}
+{#{% if get_count_task_workers_to_sign %}#}
     <a class="dropdown-item" href="{% url 'incoming_to_workers' %}">Назначить
         исполнителей {% get_count_task_workers_to_sign user %}</a>
-{% endif %}
+{#{% endif %}#}
 <a class="dropdown-item" href="{% url 'edit_workers' %}">Переназначить ответственных</a>
 <hr>
 <a class="dropdown-item" href="{% url 'add_task' %}">Выдать задание</a>
