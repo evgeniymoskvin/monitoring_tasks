@@ -1,7 +1,8 @@
 from .models import TaskModel, ObjectModel, ContractModel, StageModel, OrdersModel, Employee, CanAcceptModel, \
-    WorkerModel, ApproveModel, AttachmentFilesModel
+    WorkerModel, ApproveModel, AttachmentFilesModel, CommandNumberModel
 from django.forms import ModelForm, TextInput, Textarea, CheckboxInput, Select, ChoiceField, Form, \
-    CharField, ModelChoiceField, modelformset_factory, ModelMultipleChoiceField, MultipleChoiceField, SelectMultiple, FileField, ClearableFileInput, FileInput
+    CharField, ModelChoiceField, modelformset_factory, ModelMultipleChoiceField, MultipleChoiceField, SelectMultiple, \
+    FileField, ClearableFileInput, FileInput, DateTimeField, DateTimeInput
 
 from django.views import View
 
@@ -50,7 +51,7 @@ class TaskForm(ModelForm):
                    # "cpe_sign_user": Select(attrs={"class": "form-select",
                    #                                "aria-label": "ГИП"}),
                    "incoming_dep": SelectMultiple(attrs={"class": "form-select",
-                                                    "aria-label": "Отдел принимающий задание"}),
+                                                         "aria-label": "Отдел принимающий задание"}),
                    "task_building": TextInput(attrs={"class": "form-control",
                                                      "aria-label": "Здание"}),
                    "task_need_approve": CheckboxInput()
@@ -68,6 +69,7 @@ class TaskFormForSave(ModelForm):
     """Форма для сохранения данных с раздела выдать задание.
     Необходима для обхода проблем с проверкой поля отдела, куда выдается задание
     """
+
     class Meta:
         model = TaskModel
         # fields = '__all__'
@@ -111,13 +113,11 @@ class TaskFormForSave(ModelForm):
                    # "cpe_sign_user": Select(attrs={"class": "form-select",
                    #                                "aria-label": "ГИП"}),
                    "incoming_dep": Select(attrs={"class": "form-select",
-                                                    "aria-label": "Отдел принимающий задание"}),
+                                                 "aria-label": "Отдел принимающий задание"}),
                    "task_building": TextInput(attrs={"class": "form-control",
                                                      "aria-label": "Здание"}),
                    "task_need_approve": CheckboxInput()
                    }
-
-
 
 
 class TaskCheckForm(ModelForm):
@@ -194,6 +194,10 @@ class TaskEditForm(ModelForm):
                    }
 
 
+class DateInput(DateTimeInput):
+    input_type = 'date'
+
+
 class SearchForm(Form):
     task_order = ModelChoiceField(widget=Select(attrs={"class": "form-select",
                                                        "aria-label": "Номер заказа"}),
@@ -208,15 +212,41 @@ class SearchForm(Form):
                                      queryset=ContractModel.objects,
                                      empty_label="Не выбрано",
                                      required=False)
+    task_stage = ModelChoiceField(widget=Select(attrs={"class": "form-select"}),
+                                  queryset=StageModel.objects,
+                                  empty_label="Не выбрано",
+                                  required=False)
+    task_building = CharField(widget=TextInput(attrs={"class": "form-control",
+                                                      "placeholder": "Здание"}),
+                              required=False)
+    task_dep = ModelChoiceField(widget=Select(attrs={"class": "form-select"}),
+                                queryset=CommandNumberModel.objects,
+                                empty_label="Не выбрано",
+                                required=False)
+    task_incoming_dep = ModelChoiceField(widget=Select(attrs={"class": "form-select"}),
+                                         queryset=CommandNumberModel.objects,
+                                         empty_label="Не выбрано",
+                                         required=False)
+    choice_type_work = [(0, 'Не выбрано'), (1, 'РД'), (2, 'ПД')]
+    type_work = ChoiceField(widget=Select(attrs={"class": "form-select"}),
+                            choices=choice_type_work,
+                            # empty_label="Не выбрано",
+                            required=False)
+    date_start = DateTimeField(widget=DateInput(attrs={"class": "form-control"}), required=False)
+    date_end = DateTimeField(widget=DateInput(attrs={"class": "form-control"}), required=False)
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['task_contract'].queryset = ContractModel.objects  # подгрузка значений
-        self.fields['task_contract'].choices = [(0, '---------')]
+    task_text = CharField(widget=TextInput(attrs={"class": "form-control",
+                                                  "placeholder": "Для кириллицы читывайте регистр"}), required=False)
+
+    # def __init__(self, *args, **kwargs):
+    #     super().__init__(*args, **kwargs)
+    #     self.fields['task_contract'].queryset = ContractModel.objects  # подгрузка значений
+    #     self.fields['task_contract'].choices = [(0, '---------')]
 
 
 class TaskEditWorkersForm(ModelForm):
     """Форма для выбора задания для смены ответственных исполнителей"""
+
     class Meta:
         model = TaskModel
         fields = ["task_number", ]
@@ -225,8 +255,10 @@ class TaskEditWorkersForm(ModelForm):
                                          "aria-label": "Задание"}),
         }
 
+
 class WorkerForm(ModelForm):
     """Форма для назначения ответственных на странице деталей"""
+
     class Meta:
         model = WorkerModel
         exclude = ['task',
@@ -240,6 +272,7 @@ class WorkerForm(ModelForm):
 
 class WorkersEditForm(ModelForm):
     """Формат для назначения ответственных на странице редактирования ответственных"""
+
     class Meta:
         model = WorkerModel
         exclude = ['worker_user',
@@ -247,12 +280,13 @@ class WorkersEditForm(ModelForm):
                    ]
         widgets = {
             "task": Select(attrs={"class": "form-select",
-                                         "aria-label": "Первый руководитель"}),
+                                  "aria-label": "Первый руководитель"}),
         }
 
 
 class ApproveForm(ModelForm):
     """Форма для выбора согласователей"""
+
     class Meta:
         model = ApproveModel
         exclude = [
@@ -265,6 +299,7 @@ class ApproveForm(ModelForm):
                                                   "aria-label": "Согласователь"}),
         }
 
+
 class FilesUploadForm(ModelForm):
     class Meta:
         model = AttachmentFilesModel
@@ -274,8 +309,10 @@ class FilesUploadForm(ModelForm):
             'file': ClearableFileInput(attrs={'multiple': True})
         }
 
+
 class ApproveFormForSave(ModelForm):
     """Форма для """
+
     class Meta:
         model = ApproveModel
         exclude = [
@@ -285,8 +322,9 @@ class ApproveFormForSave(ModelForm):
         ]
         widgets = {
             "approve_user": Select(attrs={"class": "form-select",
-                                                  "aria-label": "Согласователь"}),
+                                          "aria-label": "Согласователь"}),
         }
+
 
 # WorkerFormSet = modelformset_factory(WorkerModel, fields=("worker_user",), extra=1, can_delete=False)
 WorkerFormSet = modelformset_factory(WorkerModel, form=WorkerForm)

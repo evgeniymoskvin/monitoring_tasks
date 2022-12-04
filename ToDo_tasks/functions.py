@@ -172,3 +172,6 @@ def save_to_worker_list(request, pk):
     obj.worker_user_id = request.POST.get("worker_user")
     obj.save()
 
+
+def is_valid_queryparam(param):
+    return param != '' and param is not None

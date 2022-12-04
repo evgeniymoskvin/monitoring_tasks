@@ -11,16 +11,19 @@
             <div class="row">
                 <div class="col-5">
                     <span data-toggle="tooltip" title="Привет">
-                        <h1 class="display-6" >{{ user }}, давайте что-нибудь поищем</h1></span>
+                        <h1 class="display-6">{{ user }}, давайте что-нибудь поищем</h1></span>
                 </div>
                 <div class="col-7 justify-content-center align-self-center">
+                    <br>
                     <span data-toggle="tooltip" title="Чувствителен к регистру">
                     <div class="input-group mb-3">
                         <input type="text" class="form-control" placeholder="Пишите вот сюда" name="search_field">
                         <input type="submit" class="btn btn-secondary" name="search_button" value="Найти">
                     </div>
                     </span>
+
                 </div>
+                <p  href="{% url 'advanced_search' %}">Или перейдем в расширенный <a class="text-black" href="{% url 'advanced_search' %}">поиск</a></p>
             </div>
 
         </div>

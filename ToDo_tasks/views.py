@@ -17,7 +17,7 @@ from .forms import TaskForm, TaskCheckForm, TaskEditForm, SearchForm, WorkerForm
     TaskEditWorkersForm, TaskFormForSave, ApproveForm, ApproveFormForSave, FilesUploadForm
 from .functions import get_signature_info, get_data_for_form, get_data_for_detail, get_list_to_sign, get_task_edit_form, \
     get_list_to_sign_cpe, get_list_incoming_tasks_to_sign, get_list_incoming_tasks_to_workers, save_to_worker_list, \
-    get_list_to_change_workers
+    get_list_to_change_workers, is_valid_queryparam
 
 
 class IndexView(View):
@@ -261,6 +261,12 @@ class EditTaskView(View):
             obj.task_last_edit = timezone.now()  # обновляем дату последнего изменения
             # Сохраняем новые данные в базу данных
             obj.save()
+            #  Получаем список согласователей для аннулирования статуса
+            approve_emp = ApproveModel.objects.get_queryset().filter(approve_task_id=pk)
+            for emp in approve_emp:
+                # Аннулируем статус согласованности
+                emp.approve_status = False
+                emp.save()
             print(f"сработал пост{pk}")
             return redirect(f'/details/{pk}')
 
@@ -273,11 +279,26 @@ class EditTaskFiles(View):
         user = Employee.objects.get(user=request.user)  # "логинимся"
         obj = TaskModel.objects.get(id=pk)  # Получаем информацию по заданию
         file_form = FilesUploadForm()  # загружаем форму для отправки файлов
-        old_files = AttachmentFilesModel.objects.get_queryset().filter(task_id=pk)  # Получаем список уже имеющихся файлов
+        old_files = AttachmentFilesModel.objects.get_queryset().filter(
+            task_id=pk)  # Получаем список уже имеющихся файлов
+
+        # Формируем список id этих объектов
+
+        if user.cpe_flag is True:
+            objects_queryset = CpeModel.objects.get_queryset().filter(cpe_user=user)
+            list_objects = []
+            for l_obj in objects_queryset:
+                list_objects.append(l_obj.cpe_object_id)
+                if obj.task_object in list_objects:
+                    cpe_flag = True
+        else:
+            cpe_flag = False
+
         content = {"file_form": file_form,
                    "old_files": old_files,
                    "user": user,
                    'obj': obj,
+                   'cpe_flag': cpe_flag,
                    }
         return render(request, 'todo_tasks/files/change_files.html', content)
 
@@ -714,10 +735,59 @@ class SearchView(View):
 
 class AdvancedSearchView(View):
     def get(self, request):
+        queryset = TaskModel.objects
         user = Employee.objects.get(user=request.user)
-        form = SearchForm()
+
+        search_object = request.GET.get('task_object')
+        search_building = request.GET.get('task_building')
+        search_contract = request.GET.get('task_contract')
+        search_stage = request.GET.get('task_stage')
+        search_dep = request.GET.get('task_dep')
+        search_incoming_dep = request.GET.get('task_incoming_dep')
+        search_type_work = request.GET.get('type_work')
+        search_date_start = request.GET.get('date_start')
+        search_date_end = request.GET.get('date_end')
+        search_task_text = request.GET.get('task_text')
+        data = {"task_object": search_object,
+                "task_building": search_building,
+                'task_contract': search_contract,
+                'task_stage': search_stage,
+                'task_dep': search_dep,
+                'task_incoming_dep': search_incoming_dep,
+                'type_work': search_type_work,
+                'date_start': search_date_start,
+                'date_end': search_date_end,
+                "task_text": search_task_text
+                }
+        if is_valid_queryparam(search_object):
+            queryset = queryset.filter(task_object=search_object)
+        if is_valid_queryparam(search_contract):
+            queryset = queryset.filter(task_contract=search_contract)
+        if is_valid_queryparam(search_stage):
+            queryset = queryset.filter(task_status=search_stage)
+        if is_valid_queryparam(search_building):
+            queryset = queryset.filter(task_building__icontains=search_building)
+        if is_valid_queryparam(search_dep):
+            queryset = queryset.filter(department_number=search_dep)
+        if is_valid_queryparam(search_incoming_dep):
+            queryset = queryset.filter(incoming_dep=search_incoming_dep)
+        if is_valid_queryparam(search_type_work) and search_type_work != '0':
+            queryset = queryset.filter(task_type_work=search_type_work)
+        if is_valid_queryparam(search_date_start):
+            queryset = queryset.filter(cpe_sign_date__gte=search_date_start)
+        if is_valid_queryparam(search_date_end):
+            queryset = queryset.filter(cpe_sign_date__gte=search_date_end)
+        if is_valid_queryparam(search_task_text):
+            queryset = queryset.filter(text_task__icontains=search_task_text)
+
+        # Для того что бы можно было попасть с главной страницы, иначе падает в ошибку по типу объекта
+        if hasattr(queryset, '__iter__') is False:
+            queryset = TaskModel.objects.none()
+
+        form = SearchForm(initial=data)
         content = {"user": user,
-                   "form": form}
+                   "form": form,
+                   "search_result": queryset}
         return render(request, 'todo_tasks/search/advanced_search.html', content)
 
     def post(self, request):
