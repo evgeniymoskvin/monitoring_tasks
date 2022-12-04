@@ -776,7 +776,7 @@ class AdvancedSearchView(View):
         if is_valid_queryparam(search_date_start):
             queryset = queryset.filter(cpe_sign_date__gte=search_date_start)
         if is_valid_queryparam(search_date_end):
-            queryset = queryset.filter(cpe_sign_date__gte=search_date_end)
+            queryset = queryset.filter(cpe_sign_date__lte=search_date_end)
         if is_valid_queryparam(search_task_text):
             queryset = queryset.filter(text_task__icontains=search_task_text)
 

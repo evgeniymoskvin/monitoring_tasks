@@ -13,7 +13,8 @@
     <br>
     <h4>Расширенный поиск</h4>
     <br>
-    <form method="GET" action=".">
+    <form id="formAdd" method="GET" action="." data-contracts-url="{% url 'ajax_load_contracts' %}"
+          data-stages-url="{% url 'ajax_load_stages' %}">
         Наименование бъекта:
         <div class="form-row">
             <div class="form-group col-12">
@@ -170,11 +171,7 @@
     <!-- JS для работы таблицы со всеми заданиями -->
     <script>
 
-        // после загрузки страницы
-        $(function () {
-            // инициализации подсказок для всех элементов на странице, имеющих атрибут data-toggle="tooltip"
-            $('[data-toggle="tooltip"]').tooltip();
-        });
+
 
         {#$(document).ready(function () {#}
         {#    var table = $('#incoming_table_dep').DataTable({#}
@@ -202,17 +199,17 @@
         {#        .appendTo($('.col-sm-6:eq(0)', table.table().container()));#}
         {#});#}
 
-       $(document).ready(function () {
-           $('#id_task_object').select2({
-               placeholder: 'Выберите объект'
-           });
-
-           $('#id_task_contract').select2({
-               placeholder: 'Выберите № договора'
-           });
-           $('#id_task_stage').select2({
-               placeholder: 'Выберите этап'
-           });
+       {#$(document).ready(function () {#}
+       {#    $('#id_task_object').select2({#}
+       {#        placeholder: 'Выберите объект'#}
+       {#    });#}
+       {##}
+       {#    $('#id_task_contract').select2({#}
+       {#        placeholder: 'Выберите № договора'#}
+       {#    });#}
+       {#    $('#id_task_stage').select2({#}
+       {#        placeholder: 'Выберите этап'#}
+       {#    });#}
 
        });
 
