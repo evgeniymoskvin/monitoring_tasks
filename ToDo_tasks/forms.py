@@ -232,11 +232,15 @@ class SearchForm(Form):
                             choices=choice_type_work,
                             # empty_label="Не выбрано",
                             required=False)
+    choice_status = [(2, 'Актуально'), (1, 'На подписании'), (3, 'На корректировке'), (0, 'Аннулировано')]
+    task_status = ChoiceField(widget=Select(attrs={"class": "form-select"}),
+                              choices=choice_status,
+                              required=False)
     date_start = DateTimeField(widget=DateInput(attrs={"class": "form-control"}), required=False)
     date_end = DateTimeField(widget=DateInput(attrs={"class": "form-control"}), required=False)
 
     task_text = CharField(widget=TextInput(attrs={"class": "form-control",
-                                                  "placeholder": "Для кириллицы читывайте регистр"}), required=False)
+                                                  "placeholder": "Для кириллицы учитывайте регистр"}), required=False)
 
     # def __init__(self, *args, **kwargs):
     #     super().__init__(*args, **kwargs)

@@ -748,6 +748,7 @@ class AdvancedSearchView(View):
         search_date_start = request.GET.get('date_start')
         search_date_end = request.GET.get('date_end')
         search_task_text = request.GET.get('task_text')
+        search_task_status = request.GET.get('task_status')
         data = {"task_object": search_object,
                 "task_building": search_building,
                 'task_contract': search_contract,
@@ -757,7 +758,8 @@ class AdvancedSearchView(View):
                 'type_work': search_type_work,
                 'date_start': search_date_start,
                 'date_end': search_date_end,
-                "task_text": search_task_text
+                "task_text": search_task_text,
+                "task_status": search_task_status
                 }
         if is_valid_queryparam(search_object):
             queryset = queryset.filter(task_object=search_object)
@@ -769,6 +771,8 @@ class AdvancedSearchView(View):
             queryset = queryset.filter(task_building__icontains=search_building)
         if is_valid_queryparam(search_dep):
             queryset = queryset.filter(department_number=search_dep)
+        if is_valid_queryparam(search_task_status):
+            queryset = queryset.filter(task_status=search_task_status)
         if is_valid_queryparam(search_incoming_dep):
             queryset = queryset.filter(incoming_dep=search_incoming_dep)
         if is_valid_queryparam(search_type_work) and search_type_work != '0':
