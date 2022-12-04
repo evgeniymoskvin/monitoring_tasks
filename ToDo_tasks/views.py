@@ -764,7 +764,7 @@ class AdvancedSearchView(View):
         if is_valid_queryparam(search_contract):
             queryset = queryset.filter(task_contract=search_contract)
         if is_valid_queryparam(search_stage):
-            queryset = queryset.filter(task_status=search_stage)
+            queryset = queryset.filter(task_stage=search_stage)
         if is_valid_queryparam(search_building):
             queryset = queryset.filter(task_building__icontains=search_building)
         if is_valid_queryparam(search_dep):
