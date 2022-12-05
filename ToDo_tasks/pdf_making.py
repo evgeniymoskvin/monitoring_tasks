@@ -3,6 +3,7 @@ from .models import TaskModel, AttachmentFilesModel
 import os
 
 
+
 def pdf_gen(pk):
     print(pk)
     task_from_model = TaskModel.objects.get(id=pk)
@@ -17,6 +18,7 @@ def pdf_gen(pk):
     mark = 'ТХ',  # Марка документации
     task = task_from_model.task_number
     content = task_from_model.text_task
+
     cpe = task_from_model.cpe_sign_user
     if cpe:
         cpe_job_title = task_from_model.cpe_sign_user.job_title
