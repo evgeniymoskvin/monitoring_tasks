@@ -864,13 +864,13 @@ def load_incoming_employee(request):
 class DownloadFileView(View):
     def get(self, request, pk):
         file_path_in_db = AttachmentFilesModel.objects.get(id=pk)
-        filename = str(file_path_in_db.file).split('/')[-1]
+        print(file_path_in_db.file)
         file_path = os.path.join(settings.MEDIA_ROOT, str(file_path_in_db.file))
         if os.path.exists(file_path):
             with open(file_path, 'rb') as fh:
                 mime_type, _ = mimetypes.guess_type(file_path)
                 response = HttpResponse(fh.read(), content_type=mime_type)
-                response['Content-Disposition'] = 'inline; filename=' + filename
+                response['Content-Disposition'] = 'inline; filename=' + os.path.basename(file_path)
                 return response
         raise Http404
 
