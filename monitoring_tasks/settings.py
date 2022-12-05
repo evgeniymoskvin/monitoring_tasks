@@ -41,7 +41,6 @@ INSTALLED_APPS = [
     'rest_framework',
     'ToDo_tasks',
     'login',
-    'fpdf',
 
 ]
 
