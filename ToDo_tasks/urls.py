@@ -38,6 +38,7 @@ urlpatterns = [
     path('approve_list_to_sign/', views.ApproveListView.as_view(), name='approve_list_to_sign'),
     path('approve_details/<int:pk>', views.ApproveDetailView.as_view(), name='approve_details'),
     path('download_file/<int:pk>', views.DownloadFileView.as_view(), name='download_file'),
+    path('download_blank/<int:pk>', views.DownloadBlankView.as_view(), name='download_blank'),
 
 
 

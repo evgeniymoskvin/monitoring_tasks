@@ -12,12 +12,13 @@ from django.conf import settings
 from django.http import HttpResponse, Http404
 
 from .models import Employee, TaskModel, ContractModel, ObjectModel, StageModel, TaskNumbersModel, CommandNumberModel, \
-    CpeModel, CanAcceptModel, BackCommentModel, WorkerModel, ApproveModel, AttachmentFilesModel
-from .forms import TaskForm, TaskCheckForm, TaskEditForm, SearchForm, WorkerFormSet, WorkerForm, WorkersEditForm, \
-    TaskEditWorkersForm, TaskFormForSave, ApproveForm, ApproveFormForSave, FilesUploadForm
-from .functions import get_signature_info, get_data_for_form, get_data_for_detail, get_list_to_sign, get_task_edit_form, \
+    CpeModel, CanAcceptModel, WorkerModel, ApproveModel, AttachmentFilesModel
+from .forms import TaskForm, TaskEditForm, SearchForm, WorkerForm, WorkersEditForm, \
+    TaskFormForSave, ApproveForm, FilesUploadForm
+from .functions import get_data_for_detail, get_list_to_sign, get_task_edit_form, \
     get_list_to_sign_cpe, get_list_incoming_tasks_to_sign, get_list_incoming_tasks_to_workers, save_to_worker_list, \
     get_list_to_change_workers, is_valid_queryparam
+from ToDo_tasks.pdf_making.pdf import pdf_gen
 
 
 class IndexView(View):
@@ -869,5 +870,17 @@ class DownloadFileView(View):
                 mime_type, _ = mimetypes.guess_type(file_path)
                 response = HttpResponse(fh.read(), content_type=mime_type)
                 response['Content-Disposition'] = 'inline; filename=' + os.path.basename(file_path)
+                return response
+        raise Http404
+
+class DownloadBlankView(View):
+    def get(self, request, pk):
+        pdf_gen(pk)
+        task_inf = TaskModel.objects.get(id=pk)
+        if os.path.exists(f'../monitoring_tasks/media/files/{task_inf.task_number}/'):
+            with open(f"../monitoring_tasks/media/files/{task_inf.task_number}/{task_inf.task_number}.pdf", 'rb') as fh:
+                mime_type, _ = mimetypes.guess_type(f"../monitoring_tasks/media/files/{task_inf.task_number}/{task_inf.task_number}.pdf")
+                response = HttpResponse(fh.read(), content_type=mime_type)
+                response['Content-Disposition'] = 'inline; filename=' + 'blank.pdf'
                 return response
         raise Http404
