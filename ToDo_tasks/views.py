@@ -18,7 +18,7 @@ from .forms import TaskForm, TaskEditForm, SearchForm, WorkerForm, WorkersEditFo
 from .functions import get_data_for_detail, get_list_to_sign, get_task_edit_form, \
     get_list_to_sign_cpe, get_list_incoming_tasks_to_sign, get_list_incoming_tasks_to_workers, save_to_worker_list, \
     get_list_to_change_workers, is_valid_queryparam
-from ToDo_tasks.pdf import pdf_gen
+from ToDo_tasks.pdf_making.pdf import pdf_gen
 
 
 class IndexView(View):
