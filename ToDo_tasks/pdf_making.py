@@ -22,26 +22,43 @@ def pdf_gen(pk):
     cpe = task_from_model.cpe_sign_user
     if cpe:
         cpe_job_title = task_from_model.cpe_sign_user.job_title
+        cpe_date = task_from_model.cpe_sign_date.strftime('%d.%m.%Y, %H:%M:%S')
     else:
+        cpe = "Не определен"
         cpe_job_title = "ГИП"
-    cpe_date = task_from_model.cpe_sign_date
+        cpe_date = "Данные отсутствуют"
+
+
     ruk1 = task_from_model.first_sign_user
     ruk1_job_title = task_from_model.first_sign_user.job_title
     ruk1_date = task_from_model.first_sign_date
+    if ruk1_date:
+        ruk1_date = ruk1_date.strftime('%d.%m.%Y, %H:%M:%S')
+    else:
+        ruk1_date = "Данные отсутствуют"
     ruk2 = task_from_model.second_sign_user
     ruk2_job_title = task_from_model.second_sign_user.job_title
     ruk2_date = task_from_model.second_sign_date
+    if ruk2_date:
+        ruk2_date = ruk2_date.strftime('%d.%m.%Y, %H:%M:%S')
+    else:
+        ruk2_date = "Данные отсутствуют"
     isp = task_from_model.author
     isp_job_title = task_from_model.author.job_title
-    isp_date = task_from_model.cpe_sign_date
+    isp_date = task_from_model.task_last_edit.strftime('%d.%m.%Y, %H:%M:%S')
     isp_phone = task_from_model.author.user_phone
     getter = task_from_model.incoming_employee
     if getter:
         getter_job_title = task_from_model.incoming_employee.job_title
+        getter_date = task_from_model.incoming_date.strftime('%d.%m.%Y, %H:%M:%S')
     else:
+        getter = "Не определен"
         getter_job_title = "Не определен"
-    getter_date = task_from_model.incoming_date
+        getter_date = "Данные отсутствуют"
+
     cpe_comment = task_from_model.cpe_comment
+    if not cpe_comment:
+        cpe_comment = "Отсутствует"
 
     cpe_mark0 = task_from_model.cpe_sign_status
     ruk1_mark0 = task_from_model.first_sign_status
@@ -50,10 +67,10 @@ def pdf_gen(pk):
     getter_mark0 = task_from_model.incoming_status
 
     files_in_db = AttachmentFilesModel.objects.get_queryset().filter(task_id=pk)
+    files_list = []
     for file in files_in_db:
-        print(file)
-
-    structure = 'План на отм.0.000.dwg\nСхема.pdf'
+        files_list.append((str(file.file).split('/')[-1]))
+    structure = "\n".join(files_list)
 
     default_date = ''  # как request.post возвращает пустую дату
 

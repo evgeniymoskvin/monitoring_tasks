@@ -30,6 +30,7 @@ class IndexView(View):
         Проверяет авторизацию пользователя и выводит данные на странице,
         либо redirect на страницу авторизации
         """
+
         # Получаем информацию о пользователе из таблицы Employee на основании request
         user = Employee.objects.get(user=request.user)
         content = {
@@ -863,13 +864,13 @@ def load_incoming_employee(request):
 class DownloadFileView(View):
     def get(self, request, pk):
         file_path_in_db = AttachmentFilesModel.objects.get(id=pk)
-        print(file_path_in_db.file)
+        filename = str(file_path_in_db.file).split('/')[-1]
         file_path = os.path.join(settings.MEDIA_ROOT, str(file_path_in_db.file))
         if os.path.exists(file_path):
             with open(file_path, 'rb') as fh:
                 mime_type, _ = mimetypes.guess_type(file_path)
                 response = HttpResponse(fh.read(), content_type=mime_type)
-                response['Content-Disposition'] = 'inline; filename=' + os.path.basename(file_path)
+                response['Content-Disposition'] = 'inline; filename=' + filename
                 return response
         raise Http404
 
