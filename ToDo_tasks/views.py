@@ -877,9 +877,9 @@ class DownloadBlankView(View):
     def get(self, request, pk):
         pdf_gen(pk)
         task_inf = TaskModel.objects.get(id=pk)
-        if os.path.exists(f'../monitoring_tasks/media/files/{task_inf.task_number}/'):
-            with open(f"../monitoring_tasks/media/files/{task_inf.task_number}/{task_inf.task_number}.pdf", 'rb') as fh:
-                mime_type, _ = mimetypes.guess_type(f"../monitoring_tasks/media/files/{task_inf.task_number}/{task_inf.task_number}.pdf")
+        if os.path.exists(os.path.join(settings.BASE_DIR, 'media', 'files', str(task_inf.task_number))):
+            with open(os.path.join(settings.BASE_DIR, 'media', 'files', str(task_inf.task_number), f'{task_inf.task_number}.pdf'), 'rb') as fh:
+                mime_type, _ = mimetypes.guess_type(os.path.join(settings.BASE_DIR, 'media', 'files', str(task_inf.task_number), f'{task_inf.task_number}.pdf'))
                 response = HttpResponse(fh.read(), content_type=mime_type)
                 response['Content-Disposition'] = 'inline; filename=' + 'blank.pdf'
                 return response

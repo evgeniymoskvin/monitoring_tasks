@@ -1,7 +1,7 @@
 from fpdf import FPDF
 from .models import TaskModel, AttachmentFilesModel
+from django.conf import settings
 import os
-
 
 
 def pdf_gen(pk):
@@ -49,23 +49,21 @@ def pdf_gen(pk):
     isp_mark0 = True
     getter_mark0 = task_from_model.incoming_status
 
-
     files_in_db = AttachmentFilesModel.objects.get_queryset().filter(task_id=pk)
     for file in files_in_db:
         print(file)
 
     structure = 'План на отм.0.000.dwg\nСхема.pdf'
 
-
-
     default_date = ''  # как request.post возвращает пустую дату
 
     pdf = FPDF(orientation='P', unit='mm', format='A4')
     pdf.add_page()
-    pdf.add_font('times', '', '../monitoring_tasks/ToDo_tasks/pdf_making/times.ttf', uni=True)
+    pdf.add_font('times', '', os.path.join(settings.BASE_DIR, 'ToDo_tasks', 'pdf_making', 'times.ttf'), uni=True)
     pdf.set_font('times', '', 14)
-    pdf.add_font('timesbd', '', '../monitoring_tasks/ToDo_tasks/pdf_making/timesbd.ttf', uni=True)
-    pdf.image('../monitoring_tasks/ToDo_tasks/pdf_making/image/w.jpg', x=10, y=10, w=2.76*30, h=30)
+    pdf.add_font('timesbd', '', os.path.join(settings.BASE_DIR, 'ToDo_tasks', 'pdf_making', 'timesbd.ttf'), uni=True)
+    pdf.image(os.path.join(settings.BASE_DIR, 'ToDo_tasks', 'pdf_making', 'image', 'w.jpg'), x=10, y=10, w=2.76 * 30,
+              h=30)
 
     pdf.x = 10
     pdf.y = 45
@@ -313,6 +311,6 @@ def pdf_gen(pk):
     pdf.y = down14
     pdf.multi_cell(60, 7, txt=f'{getter}', align='L')
     down15 = max(down15, pdf.y) + 5
-    if not os.path.exists(f"../monitoring_tasks/media/files/{task}"):
-        os.makedirs(f"../monitoring_tasks/media/files/{task}")
-    pdf.output(f"../monitoring_tasks/media/files/{task}/{task}.pdf")
+    if not os.path.exists(os.path.join(settings.BASE_DIR, 'media', 'files', str(task))):
+        os.makedirs(os.path.join(settings.BASE_DIR, 'media', 'files', str(task)))
+    pdf.output(os.path.join(settings.BASE_DIR, 'media', 'files', str(task), f'{task}.pdf'))
