@@ -18,7 +18,7 @@ from .forms import TaskForm, TaskEditForm, SearchForm, WorkerForm, WorkersEditFo
 from .functions import get_data_for_detail, get_list_to_sign, get_task_edit_form, \
     get_list_to_sign_cpe, get_list_incoming_tasks_to_sign, get_list_incoming_tasks_to_workers, save_to_worker_list, \
     get_list_to_change_workers, is_valid_queryparam
-# from .pdf_making import pdf_gen
+from .pdf_making import pdf_gen
 
 
 class IndexView(View):
@@ -875,12 +875,12 @@ class DownloadFileView(View):
 
 class DownloadBlankView(View):
     def get(self, request, pk):
-        # pdf_gen(pk)
-        # task_inf = TaskModel.objects.get(id=pk)
-        # if os.path.exists(f'../monitoring_tasks/media/files/{task_inf.task_number}/'):
-        #     with open(f"../monitoring_tasks/media/files/{task_inf.task_number}/{task_inf.task_number}.pdf", 'rb') as fh:
-        #         mime_type, _ = mimetypes.guess_type(f"../monitoring_tasks/media/files/{task_inf.task_number}/{task_inf.task_number}.pdf")
-        #         response = HttpResponse(fh.read(), content_type=mime_type)
-        #         response['Content-Disposition'] = 'inline; filename=' + 'blank.pdf'
-        #         return response
+        pdf_gen(pk)
+        task_inf = TaskModel.objects.get(id=pk)
+        if os.path.exists(f'../monitoring_tasks/media/files/{task_inf.task_number}/'):
+            with open(f"../monitoring_tasks/media/files/{task_inf.task_number}/{task_inf.task_number}.pdf", 'rb') as fh:
+                mime_type, _ = mimetypes.guess_type(f"../monitoring_tasks/media/files/{task_inf.task_number}/{task_inf.task_number}.pdf")
+                response = HttpResponse(fh.read(), content_type=mime_type)
+                response['Content-Disposition'] = 'inline; filename=' + 'blank.pdf'
+                return response
         raise Http404

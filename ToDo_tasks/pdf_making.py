@@ -3,7 +3,8 @@
 # import os
 #
 #
-# def pdf_gen(pk):
+def pdf_gen(pk):
+    print(pk)
 #     task_from_model = TaskModel.objects.get(id=pk)
 #     ovz = task_from_model.department_number.command_number
 #     opz = task_from_model.incoming_dep.command_number
