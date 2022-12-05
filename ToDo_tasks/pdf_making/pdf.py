@@ -1,8 +1,6 @@
-import fpdf
 from fpdf import FPDF
 from ToDo_tasks.models import TaskModel, AttachmentFilesModel
 import os
-from django.conf import settings
 
 
 def pdf_gen(pk):
