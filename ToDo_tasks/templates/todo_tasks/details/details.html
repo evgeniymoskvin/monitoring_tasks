@@ -20,7 +20,7 @@
                     <h4>
                         <a href="{% url 'download_blank' obj.id %}"><img src="{% static 'todo_tasks/icons/file-earmark-pdf.svg' %}" data-toggle="tooltip"
                              title="Скачать бланк"></a>
-                        {% if flag == True and user.department == obj.department_number %}
+                        {% if flag == True and user.department == obj.department_number or user.department == obj.incoming_dep %}
                             <a href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
                                aria-expanded="false">
                                 <img src="{% static 'todo_tasks/icons/list.svg' %}" data-toggle="tooltip"
