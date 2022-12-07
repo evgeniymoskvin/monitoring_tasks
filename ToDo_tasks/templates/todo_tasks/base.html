@@ -67,13 +67,29 @@
                     {% include "todo_tasks/offcanvas/offcanvas_worker.html" %}
                 {% endif %}
                 <hr class="dropdown-divider">
-                <a class="dropdown-item" href="{% url 'change_password' %}">Сменить пароль</a>
-                <a class="dropdown-item" href="{% url 'logout' %}">Выйти</a>
+{#                <a class="dropdown-item" href="{% url 'change_password' %}">Сменить пароль</a>#}
+{#                <a class="dropdown-item" href="{% url 'logout' %}">Выйти</a>#}
 
 
-
+                    <div class="dropdown">
+                        <a href="#" class="dropdown-item align-items-center text-black dropdown-toggle"
+                           id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
+                            {{ user }}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
+                            <li><a class="dropdown-item" href="#">Профиль</a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><a class="dropdown-item" href="{% url 'logout' %}">Выйти</a></li>
+                        </ul>
+                    </div>
+                </div>
             </div>
+
+
         </div>
+    </div>
     </div>
 </nav>
 
@@ -92,8 +108,6 @@
 
 {% block js_stuff %}
 {% endblock %}
-
-
 
 
 </body>

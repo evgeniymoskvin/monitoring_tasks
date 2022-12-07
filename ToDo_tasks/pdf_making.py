@@ -3,6 +3,14 @@ from .models import TaskModel, AttachmentFilesModel
 from django.conf import settings
 import os
 
+class PDF(FPDF):
+    task = 'ЗД'
+
+    def footer(self):
+        self.set_y(-15)
+        self.set_font('times', '', 11)
+        self.cell(0, 10, f'Задание №{self.task} л.{self.page_no()}', 0, 0, 'R')
+
 
 def pdf_gen(pk):
     print(pk)
@@ -74,8 +82,9 @@ def pdf_gen(pk):
 
     default_date = ''  # как request.post возвращает пустую дату
 
-    pdf = FPDF(orientation='P', unit='mm', format='A4')
+    pdf = PDF(orientation='P', unit='mm', format='A4')
     pdf.add_page()
+    pdf.task = task
     pdf.add_font('times', '', os.path.join(settings.BASE_DIR, 'ToDo_tasks', 'pdf_making', 'times.ttf'), uni=True)
     pdf.set_font('times', '', 14)
     pdf.add_font('timesbd', '', os.path.join(settings.BASE_DIR, 'ToDo_tasks', 'pdf_making', 'timesbd.ttf'), uni=True)

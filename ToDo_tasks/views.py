@@ -118,6 +118,8 @@ class DetailView(View):
     def get(self, request, pk):
         """Получаем номер задания из ссылки и формируем страницу подробностей"""
         content = get_data_for_detail(request, pk)
+        if TaskModel.objects.get(id=pk) in get_list_to_change_workers(content['user']):
+            content['change_work_flag'] = True
         content[
             'flag'] = True  # Для того, что бы шестеренка была доступна только на странице деталей, и ни на каких других дочерних
 
@@ -610,6 +612,7 @@ class EditWorkerListView(View):
 
     @method_decorator(login_required(login_url='login'))
     def get(self, request):
+        print("эта вьюха")
         """Метод загружает Select поле выбора принятых заданий """
         user = Employee.objects.get(user=request.user)  # "логинимся"
         form = WorkersEditForm()  # загружаем форму с заданиями
@@ -642,6 +645,18 @@ class EditWorkerListView(View):
 class EditWorkersDetailView(View):
     """View для обработки POST и DELETE запросов добавления/удаления сотрудников
     на странице редактирования ответственных """
+
+    def get(self, request, pk):
+        user = Employee.objects.get(user=request.user)
+        obj = TaskModel.objects.get(id=pk)
+        data_all = WorkerModel.objects.get_queryset().filter(task_id=pk)
+        formset = WorkerForm()
+        formset.fields['worker_user'].queryset = Employee.objects.filter(department=user.department)
+        content = {"data_all": data_all,
+                   'user': user,
+                   "obj": obj,
+                   'formset': formset}
+        return render(request, 'todo_tasks/workers/from_detail_to_change_workers.html', content)
 
     def post(self, request, pk):
         """ pk - id необходимого задания"""
@@ -736,6 +751,7 @@ class SearchView(View):
 
 
 class AdvancedSearchView(View):
+    """Подробный поиск"""
     def get(self, request):
         queryset = TaskModel.objects
         user = Employee.objects.get(user=request.user)
@@ -796,10 +812,10 @@ class AdvancedSearchView(View):
                    "search_result": queryset}
         return render(request, 'todo_tasks/search/advanced_search.html', content)
 
-    def post(self, request):
-        form = SearchForm(request.POST)
-        print(form.data)
-        return redirect(request.META['HTTP_REFERER'])
+    # def post(self, request):
+    #     form = SearchForm(request.POST)
+    #     print(form.data)
+    #     return redirect(request.META['HTTP_REFERER'])
 
 
 class TestView(View):

@@ -39,6 +39,7 @@ urlpatterns = [
     path('approve_details/<int:pk>', views.ApproveDetailView.as_view(), name='approve_details'),
     path('download_file/<int:pk>', views.DownloadFileView.as_view(), name='download_file'),
     path('download_blank/<int:pk>', views.DownloadBlankView.as_view(), name='download_blank'),
+    path('change_workers/<int:pk>', views.EditWorkersDetailView.as_view(), name='change_workers')
 
 
 
