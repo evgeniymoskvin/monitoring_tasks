@@ -135,6 +135,18 @@ MEDIA_URL = "/media/"
 # MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_ROOT = 'var/www/evgmosk'
 
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.yandex.ru'
+# EMAIL_PORT = 465
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'tttestttsait@yandex.ru'
+EMAIL_HOST_PASSWORD = 'yqbjakcgwcgpyimh'
+EMAIL_USE_TLS = True
+# EMAIL_USE_SSL = True
+SERVER_EMAIL = EMAIL_HOST_USER
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+
 # STATICFILES_DIRS = [
 #     BASE_DIR / "static",
 # ]

@@ -12,6 +12,7 @@ from django.db.models import Q
 from django.conf import settings
 from django.http import HttpResponse, Http404
 
+
 from .models import Employee, TaskModel, ContractModel, ObjectModel, StageModel, TaskNumbersModel, CommandNumberModel, \
     CpeModel, CanAcceptModel, WorkerModel, ApproveModel, AttachmentFilesModel
 from .forms import TaskForm, TaskEditForm, SearchForm, WorkerForm, WorkersEditForm, \
@@ -20,7 +21,7 @@ from .functions import get_data_for_detail, get_list_to_sign, get_task_edit_form
     get_list_to_sign_cpe, get_list_incoming_tasks_to_sign, get_list_incoming_tasks_to_workers, save_to_worker_list, \
     get_list_to_change_workers, is_valid_queryparam
 from .pdf_making import pdf_gen
-
+from .email_functions import email_create_task
 
 class IndexView(View):
     """Главная страница"""
@@ -37,6 +38,7 @@ class IndexView(View):
         content = {
             'user': user,
         }
+        # send_mail('текст', 'текст2', 'tttestttsait@yandex.ru', ['tttestttsait@yandex.ru'], fail_silently=False)
         return render(request, 'todo_tasks/index.html', content)
 
     def post(self, request):
@@ -206,6 +208,14 @@ class AddTaskView(View):
                 form.save()  # сохраняем форму в бд
                 # Получаем id номер созданного задания
                 number_id = TaskModel.objects.get(task_number=new_post.task_number).id
+                email_create_task(new_post, approved_user_list)
+                # email = EmailMessage(f'Задание {new_post.task_number} создано', f'Задание {new_post.task_number} создано, посмотрите /details/{number_id}',
+                #                      to=[new_post.author.user.email])
+                # email.send()
+                # email = EmailMessage(f'Задание {new_post.task_number} ожидает вашей подписи',
+                #                      f'{new_post.first_sign_user}. {new_post.author} выдал задание {new_post.task_number} и оно ожидает Вашей подписи. Посмотрите /details/{number_id}',
+                #                      to=[new_post.first_sign_user.user.email])
+                # email.send()
                 # Добавляем файлы, если есть
                 if request.FILES:
                     for f in request.FILES.getlist('file'):
