@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User, AbstractUser
 from django.utils.translation import gettext_lazy as _
+from django.core.files.storage import FileSystemStorage
 import datetime
 from os import path
 from django.conf import settings
@@ -263,7 +264,7 @@ def upload_to(instance, filename):
 
 class AttachmentFilesModel(models.Model):
     task = models.ForeignKey(TaskModel, on_delete=models.CASCADE, verbose_name="Задание", null=True)
-    file = models.FileField(verbose_name="Файл", null=True, blank=True, upload_to=upload_to)
+    file = models.FileField(storage=FileSystemStorage(), verbose_name="Файл", null=True, blank=True, upload_to=upload_to)
     add_data = models.DateTimeField('Дата загрузки', auto_now_add=True, null=True)
 
     def __str__(self):
