@@ -6,7 +6,6 @@ import datetime
 from os import path
 from django.conf import settings
 
-
 COMAND_CHOICES = [(000, "000 - Не указан"), (201, "201 - Строительный первый"), (202, "202 - Строительный второй")]
 
 
@@ -256,15 +255,18 @@ class BackCommentModel(models.Model):
 
 
 def upload_to(instance, filename):
-    return path.join(settings.MEDIA_ROOT, 'files',
-                     # "media", filename)
-                     instance.task.task_number,
-                     filename)
+    new_path = path.join('files',
+                         # "media", filename)
+                         instance.task.task_number,
+                         filename)
+    print(new_path)
+    return new_path
 
 
 class AttachmentFilesModel(models.Model):
     task = models.ForeignKey(TaskModel, on_delete=models.CASCADE, verbose_name="Задание", null=True)
-    file = models.FileField(storage=FileSystemStorage(), verbose_name="Файл", null=True, blank=True, upload_to=upload_to)
+    file = models.FileField(storage=FileSystemStorage(), verbose_name="Файл", null=True, blank=True,
+                            upload_to=upload_to)
     add_data = models.DateTimeField('Дата загрузки', auto_now_add=True, null=True)
 
     def __str__(self):
