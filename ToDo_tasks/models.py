@@ -257,7 +257,8 @@ class BackCommentModel(models.Model):
 def upload_to(instance, filename):
     return path.join(settings.MEDIA_ROOT, 'files',
                      # "media", filename)
-                     instance.task.task_number, filename)
+                     # instance.task.task_number,
+                     filename)
 
 
 class AttachmentFilesModel(models.Model):
