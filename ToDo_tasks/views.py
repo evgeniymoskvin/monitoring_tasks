@@ -12,7 +12,6 @@ from django.db.models import Q
 from django.conf import settings
 from django.http import HttpResponse, Http404
 
-
 from .models import Employee, TaskModel, ContractModel, ObjectModel, StageModel, TaskNumbersModel, CommandNumberModel, \
     CpeModel, CanAcceptModel, WorkerModel, ApproveModel, AttachmentFilesModel
 from .forms import TaskForm, TaskEditForm, SearchForm, WorkerForm, WorkersEditForm, \
@@ -21,7 +20,8 @@ from .functions import get_data_for_detail, get_list_to_sign, get_task_edit_form
     get_list_to_sign_cpe, get_list_incoming_tasks_to_sign, get_list_incoming_tasks_to_workers, save_to_worker_list, \
     get_list_to_change_workers, is_valid_queryparam
 from .pdf_making import pdf_gen
-from .email_functions import email_create_task
+from .email_functions import email_create_task, check_and_send_to_cpe, email_after_cpe_sign
+
 
 class IndexView(View):
     """Главная страница"""
@@ -209,13 +209,6 @@ class AddTaskView(View):
                 # Получаем id номер созданного задания
                 number_id = TaskModel.objects.get(task_number=new_post.task_number).id
                 email_create_task(new_post, approved_user_list)
-                # email = EmailMessage(f'Задание {new_post.task_number} создано', f'Задание {new_post.task_number} создано, посмотрите /details/{number_id}',
-                #                      to=[new_post.author.user.email])
-                # email.send()
-                # email = EmailMessage(f'Задание {new_post.task_number} ожидает вашей подписи',
-                #                      f'{new_post.first_sign_user}. {new_post.author} выдал задание {new_post.task_number} и оно ожидает Вашей подписи. Посмотрите /details/{number_id}',
-                #                      to=[new_post.first_sign_user.user.email])
-                # email.send()
                 # Добавляем файлы, если есть
                 if request.FILES:
                     for f in request.FILES.getlist('file'):
@@ -306,6 +299,8 @@ class EditTaskFiles(View):
                 list_objects.append(l_obj.cpe_object_id)
                 if obj.task_object in list_objects:
                     cpe_flag = True
+                else:
+                    cpe_flag = False
         else:
             cpe_flag = False
 
@@ -478,16 +473,20 @@ class ToSignDetailView(View):
             obj.first_sign_status = True
             obj.first_sign_date = timezone.now()
             obj.save()
+            check_and_send_to_cpe(pk)
         elif 'sign2' in request.POST:
             obj.second_sign_status = True
             obj.second_sign_date = timezone.now()
             obj.save()
+            check_and_send_to_cpe(pk)
             print(pk, ' sign')
         elif 'sign3' in request.POST:
             obj.cpe_sign_status = True
             obj.cpe_sign_date = timezone.now()
             obj.cpe_sign_user = Employee.objects.get(user=request.user)
             obj.save()
+            email_after_cpe_sign(pk)
+            # check_and_send_to_cpe(pk) Здесь будем отправлять получателю
             print(pk, ' sign')
         elif 'cancel1' in request.POST:
             print(pk, ' cancel1')
@@ -519,6 +518,8 @@ class ToSignDetailView(View):
             obj.cpe_sign_user = Employee.objects.get(user=request.user)
             obj.cpe_comment = request.POST.get('comment_modal_text')
             obj.save()
+            email_after_cpe_sign(pk)
+            # check_and_send_to_cpe(pk) Здесь будем напрявлять исполнителю
             print(pk, request.POST.get('comment_modal_text'))
         return redirect(request.META['HTTP_REFERER'])
 
@@ -736,12 +737,14 @@ class ApproveDetailView(View):
             obj_approve_model.approve_status = True
             obj_approve_model.approve_date = datetime.datetime.now()
             obj_approve_model.save()
+            # Проверка, если все согласователи подписали, то ставим в таблице TaskModel task_approved = True
             if ApproveModel.objects.get_queryset().filter(
                     approve_task_id=pk).count() == ApproveModel.objects.get_queryset().filter(
                 approve_task_id=pk).filter(approve_status=True).count():
                 obj_task = TaskModel.objects.get(id=pk)
                 obj_task.task_approved = True
                 obj_task.save()
+                check_and_send_to_cpe(pk)
         return redirect(request.META['HTTP_REFERER'])
 
 
@@ -763,6 +766,7 @@ class SearchView(View):
 
 class AdvancedSearchView(View):
     """Подробный поиск"""
+
     def get(self, request):
         queryset = TaskModel.objects
         user = Employee.objects.get(user=request.user)
@@ -901,13 +905,17 @@ class DownloadFileView(View):
                 return response
         raise Http404
 
+
 class DownloadBlankView(View):
     def get(self, request, pk):
         pdf_gen(pk)
         task_inf = TaskModel.objects.get(id=pk)
         if os.path.exists(os.path.join(settings.BASE_DIR, 'media', 'files', str(task_inf.task_number))):
-            with open(os.path.join(settings.BASE_DIR, 'media', 'files', str(task_inf.task_number), f'{task_inf.task_number}.pdf'), 'rb') as fh:
-                mime_type, _ = mimetypes.guess_type(os.path.join(settings.BASE_DIR, 'media', 'files', str(task_inf.task_number), f'{task_inf.task_number}.pdf'))
+            with open(os.path.join(settings.BASE_DIR, 'media', 'files', str(task_inf.task_number),
+                                   f'{task_inf.task_number}.pdf'), 'rb') as fh:
+                mime_type, _ = mimetypes.guess_type(
+                    os.path.join(settings.BASE_DIR, 'media', 'files', str(task_inf.task_number),
+                                 f'{task_inf.task_number}.pdf'))
                 response = HttpResponse(fh.read(), content_type=mime_type)
                 response['Content-Disposition'] = "inline; filename=" + escape_uri_path(f'{task_inf.task_number}.pdf')
                 return response
