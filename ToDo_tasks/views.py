@@ -21,7 +21,7 @@ from .functions import get_data_for_detail, get_list_to_sign, get_task_edit_form
     get_list_to_change_workers, is_valid_queryparam
 from .pdf_making import pdf_gen
 from .email_functions import email_create_task, check_and_send_to_cpe, email_after_cpe_sign, delete_worker_email, \
-    incoming_not_sign_email
+    incoming_not_sign_email, email_not_sign
 
 
 class IndexView(View):
@@ -514,6 +514,7 @@ class ToSignDetailView(View):
             print(request.POST.get('back_modal_text'))
             obj.back_to_change = True
             obj.save()
+            email_not_sign(pk, request.POST.get('back_modal_text'))
             # obj =
         elif 'comment_modal_button' in request.POST:
             obj.cpe_sign_status = True

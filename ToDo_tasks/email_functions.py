@@ -107,11 +107,12 @@ def incoming_not_sign_email(pk, incoming_signer, comment):
                                    to=[task.author.user.email])
     email_to_author.send()
 
-def email_not_sign(pk, incoming_signer, comment):
+def email_not_sign(pk, comment):
     task = TaskModel.objects.get(id=pk)
     email_to_author = EmailMessage(f'Отказ в подписании задания {task.task_number}.',
                                    f'{task.task_number} не подписано.'
-                                   f'\n{incoming_signer}: {comment}.'
+                                   f'\nКомментарий: {comment}.'
                                    f'\nПосмотрите {HOST}/details/{task.id}',
                                    to=[task.author.user.email])
     email_to_author.send()
+
