@@ -1,9 +1,10 @@
 <!-- Пункты меню для сотрудника -->
 {% load task_tags %}
-<a class="dropdown-item" href="{% url 'approve_list_to_sign' %}">Согласовать задание {% need_approve user %} </a>
-<hr>
 <a class="dropdown-item" href="{% url 'add_task' %}">Выдать задание</a>
 <hr>
+<a class="dropdown-item" href="{% url 'approve_list_to_sign' %}">Согласовать задание {% need_approve user %} </a>
+<hr>
+
 <a class="dropdown-item" href="{% url 'my_tasks' %}">Мои выданные задания</a>
 <a class="dropdown-item" href="{% url 'my_tasks_on_sign' %}">Мои задания на подписи</a>
 <a class="dropdown-item" href="{% url 'inbox' %}">Мои входящие задания {% unread_inbox user %}</a>
@@ -20,4 +21,3 @@
         <a class="dropdown-item" href=" {% url 'outgoing_tasks' %}"> - Исходящие</a>
     </li>
 </ul>
-<a class="dropdown-item" href="{% url 'advanced_search' %}">Расширенный поиск</a>

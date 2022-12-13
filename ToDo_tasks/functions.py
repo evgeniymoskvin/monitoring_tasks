@@ -1,6 +1,7 @@
 from django.shortcuts import redirect
 from .models import Employee, TaskModel, CpeModel, ContractModel, ObjectModel, StageModel, CanAcceptModel
 from .forms import TaskForm, TaskCheckForm, TaskEditForm, WorkerModel, ApproveModel, AttachmentFilesModel
+from .email_functions import add_worker_email
 
 
 def get_signature_info(obj) -> dict:
@@ -171,6 +172,7 @@ def save_to_worker_list(request, pk):
     obj.read_status = False  # Присваиваем флаг о не прочтении сообщения
     obj.worker_user_id = request.POST.get("worker_user")
     obj.save()
+    add_worker_email(pk, request.POST.get("worker_user"))
 
 
 def is_valid_queryparam(param):

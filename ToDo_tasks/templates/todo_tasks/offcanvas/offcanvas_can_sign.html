@@ -1,5 +1,6 @@
 {% load task_tags %}
 
+<a class="dropdown-item" href="{% url 'add_task' %}">Выдать задание</a>
 <hr>
 
 <a class="dropdown-item" href="{% url 'approve_list_to_sign' %}">Согласовать задание {% need_approve user %} </a>
@@ -10,9 +11,9 @@
 <a class="dropdown-item" href="{% url 'incoming_to_workers' %}">Назначить
     исполнителей {% get_count_task_workers_to_sign user %}</a>
 
-<a class="dropdown-item" href="{% url 'edit_workers' %}">Переназначить ответственных</a>
+{#<a class="dropdown-item" href="{% url 'edit_workers' %}">Переназначить ответственных</a>#}
 <hr>
-<a class="dropdown-item" href="{% url 'add_task' %}">Выдать задание</a>
+
 <a class="dropdown-item" href="{% url 'my_tasks' %}">Мои выданные задания</a>
 <a class="dropdown-item" href="{% url 'my_tasks_on_sign' %}">Мои задания на подписи</a>
 <a class="dropdown-item" href="{% url 'inbox' %}">Мои входящие задания</a>
@@ -29,4 +30,3 @@
         <a class="dropdown-item" href=" {% url 'outgoing_tasks' %}"> - Исходящие</a>
     </li>
 </ul>
-<a class="dropdown-item" href="{% url 'advanced_search' %}">Расширенный поиск</a>

@@ -6,30 +6,30 @@
 
 {% block content %}
     <br>
-    <h3 class="text-center display-6">{{ user }}, эти задания ожидают Вашей подписи</h3>
-<table id="incoming_table" class="table table-hover" style="width: 100%">
-                    <thead>
-                    <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">Номер задания</th>
-                        <th scope="col">Текст задания</th>
-                        <th scope="col">Автор задания</th>
-                    </tr>
-                    </thead>
-                    <tbody>
+    <h4>{{ user }}, эти задания ожидают Вашей подписи:</h4>
+    <table id="incoming_table" class="table table-hover" style="width: 100%">
+        <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Номер задания</th>
+            <th scope="col">Текст задания</th>
+            <th scope="col">Автор задания</th>
+        </tr>
+        </thead>
+        <tbody>
 
-                    {% for obj in tasks %}
-                        <tr data-href="{% url 'incoming_to_sign_details' pk=obj.id %}">
-                            <th scope="row">{{ forloop.counter }}</th>
-                            <td>
-                                {{ obj.task_number }}</td>
-                            <td>{{ obj.text_task|truncatechars:100 }}</td>
-                            <td>{{ obj.author }}</td>
-                        </tr>
-                    {% endfor %}
+        {% for obj in tasks %}
+            <tr data-href="{% url 'incoming_to_sign_details' pk=obj.id %}">
+                <th scope="row">{{ forloop.counter }}</th>
+                <td>
+                    {{ obj.task_number }}</td>
+                <td>{{ obj.text_task|truncatechars:100 }}</td>
+                <td>{{ obj.author }}</td>
+            </tr>
+        {% endfor %}
 
-                    </tbody>
-                </table>
+        </tbody>
+    </table>
 
 {% endblock %}
 

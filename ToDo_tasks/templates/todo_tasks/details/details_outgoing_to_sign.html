@@ -8,6 +8,7 @@
     <form method="POST">
 
         {% csrf_token %}
+        {% if obj.back_to_change == False %}
         <div class="row justify-content-center">
             <div class="col">
 
@@ -95,7 +96,7 @@
                 </div>
             </div>
         </div>
-
+        {% endif %}
     </form>
 
     <script>

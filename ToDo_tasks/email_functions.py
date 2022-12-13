@@ -76,3 +76,42 @@ def email_after_cpe_sign(pk):
                                     f'Задание {task.task_number} подписано. \nПосмотрите {HOST}/details/{task.id}',
                                     to=[task.author.user.email])
         email_author.send()
+
+
+def add_worker_email(pk, worker_id):
+    task = TaskModel.objects.get(id=pk)
+    worker = Employee.objects.get(id=worker_id)
+    email_to_worker = EmailMessage(f'Направлено задание  {task.task_number}.',
+                                   f'{worker}, Вы назначены ответственным исполнителем по заданию {task.task_number}. Прошу принять в работу. '
+                                   f'\nПосмотрите {HOST}/details/{task.id}. \nКомментарий ГИп-а: {task.cpe_comment}',
+                                   to=[worker.user.email])
+    email_to_worker.send()
+
+
+def delete_worker_email(pk):
+    worker = WorkerModel.objects.get(id=pk)
+    task = worker.task
+    email_to_worker = EmailMessage(f'Больше не ответственный по заданию {task.task_number}.',
+                                   f'{worker.worker_user}, Вы больше не ответственный исполнитель по заданию {task.task_number}.'
+                                   f'\nПосмотрите {HOST}/details/{task.id}',
+                                   to=[worker.worker_user.user.email])
+    email_to_worker.send()
+
+
+def incoming_not_sign_email(pk, incoming_signer, comment):
+    task = TaskModel.objects.get(id=pk)
+    email_to_author = EmailMessage(f'Отказ в подписании задания {task.task_number}.',
+                                   f'{task.task_number} не подписано.'
+                                   f'\n{incoming_signer}: {comment}.'
+                                   f'\nПосмотрите {HOST}/details/{task.id}',
+                                   to=[task.author.user.email])
+    email_to_author.send()
+
+def email_not_sign(pk, incoming_signer, comment):
+    task = TaskModel.objects.get(id=pk)
+    email_to_author = EmailMessage(f'Отказ в подписании задания {task.task_number}.',
+                                   f'{task.task_number} не подписано.'
+                                   f'\n{incoming_signer}: {comment}.'
+                                   f'\nПосмотрите {HOST}/details/{task.id}',
+                                   to=[task.author.user.email])
+    email_to_author.send()

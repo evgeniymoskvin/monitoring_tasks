@@ -20,7 +20,8 @@ from .functions import get_data_for_detail, get_list_to_sign, get_task_edit_form
     get_list_to_sign_cpe, get_list_incoming_tasks_to_sign, get_list_incoming_tasks_to_workers, save_to_worker_list, \
     get_list_to_change_workers, is_valid_queryparam
 from .pdf_making import pdf_gen
-from .email_functions import email_create_task, check_and_send_to_cpe, email_after_cpe_sign
+from .email_functions import email_create_task, check_and_send_to_cpe, email_after_cpe_sign, delete_worker_email, \
+    incoming_not_sign_email
 
 
 class IndexView(View):
@@ -511,6 +512,8 @@ class ToSignDetailView(View):
             return redirect('incoming_to_sign')
         elif 'back_modal_button' in request.POST:
             print(request.POST.get('back_modal_text'))
+            obj.back_to_change = True
+            obj.save()
             # obj =
         elif 'comment_modal_button' in request.POST:
             obj.cpe_sign_status = True
@@ -556,7 +559,8 @@ class IncomingSignDetails(View):
         if sign_user.department_id in list_departments:
             content['can_sign'] = True
         else:
-            content['cpe_flag'] = False
+            content['can_sign'] = False
+            # content['cpe_flag'] = False
         return render(request, 'todo_tasks/details/details_to_incoming_sign.html', content)
 
     def post(self, request, pk):
@@ -569,9 +573,17 @@ class IncomingSignDetails(View):
             obj.incoming_date = timezone.now()
             obj.incoming_status = True
             obj.task_status = 2
-            print(obj)
             obj.save()
-        return redirect('details_to_add_workers', pk=pk)
+            return redirect('details_to_add_workers', pk=pk)
+        elif 'not_incoming_button' in request.POST:
+            incoming_not_sign_email(pk, Employee.objects.get(user=request.user), request.POST.get("comment_modal_text"))
+            print(pk, 'not_sign_incoming')
+            print(request.POST.get("comment_modal_text"))
+            if request.POST.get("checkbox") == 'need_edit':
+                print(request.POST.get("checkbox"))
+                obj.back_to_change = True
+                obj.save()
+            return redirect('incoming_to_sign')
 
 
 class ToWorkerListView(View):
@@ -612,6 +624,7 @@ class ToAddWorkersDetailView(View):
 
     def delete(self, request, pk):
         pk2 = WorkerModel.objects.get(id=pk).task_id
+        delete_worker_email(pk)
         WorkerModel.objects.get(id=pk).delete()
         data_all = WorkerModel.objects.get_queryset().filter(task_id=pk2)
         content = {"data_all": data_all}
