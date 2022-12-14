@@ -98,21 +98,63 @@ def delete_worker_email(pk):
     email_to_worker.send()
 
 
-def incoming_not_sign_email(pk, incoming_signer, comment):
+def incoming_not_sign_email(pk, incoming_signer, comment, need_edit=False):
     task = TaskModel.objects.get(id=pk)
+    str_need_edit = 'не требуется'
+    if need_edit is True:
+        str_need_edit = 'требуется'
     email_to_author = EmailMessage(f'Отказ в подписании задания {task.task_number}.',
                                    f'{task.task_number} не подписано.'
                                    f'\n{incoming_signer}: {comment}.'
+                                   f'\nРедактирование задания {str_need_edit}.'
                                    f'\nПосмотрите {HOST}/details/{task.id}',
                                    to=[task.author.user.email])
     email_to_author.send()
 
-def email_not_sign(pk, comment):
+
+def email_not_sign(pk, comment, need_edit=False):
     task = TaskModel.objects.get(id=pk)
+    str_need_edit = 'не требуется'
+    if need_edit is True:
+        str_need_edit = 'требуется'
     email_to_author = EmailMessage(f'Отказ в подписании задания {task.task_number}.',
                                    f'{task.task_number} не подписано.'
                                    f'\nКомментарий: {comment}.'
+                                   f'\nРедактирование задания {str_need_edit}.'
                                    f'\nПосмотрите {HOST}/details/{task.id}',
                                    to=[task.author.user.email])
     email_to_author.send()
 
+
+def email_change_task(obj, approved_user_list):
+    """Функция рассылки почты при создании задания"""
+    number_id = TaskModel.objects.get(task_number=obj.task_number).id
+    #  Отправка сообщения автору
+    email_author = EmailMessage(f'Задание {obj.task_number} отредактировано',
+                                f'Задание {obj.task_number} создано, посмотрите {HOST}/details/{number_id}',
+                                to=[obj.author.user.email])
+    email_author.send()
+
+    #  Отправка сообщения согласователям
+    for approve_user_id in approved_user_list:
+        email_approve = EmailMessage(f'Согласование задания {obj.task_number}.',
+                                     f'{Employee.objects.get(id=approve_user_id)}, задание {obj.task_number} отредактировано. Прошу рассмотреть и согласовать его. \n Посмотрите {HOST}/approve_details/{number_id}',
+                                     to=[Employee.objects.get(id=approve_user_id).user.email])
+        email_approve.send()
+
+    #  Отправка письма первому руководителю
+    email_first_sign = EmailMessage(f'Подписание задания {obj.task_number}.',
+                                    f'{obj.first_sign_user}, задание {obj.task_number} отредактировано. Прошу рассмотреть и подписать его. \n Посмотрите {HOST}/details_to_sign/{number_id}',
+                                    to=[obj.first_sign_user.user.email])
+    email_first_sign.send()
+
+    #  Отправка сообщения второму руководителю
+    email_second_sign = EmailMessage(f'Подписание задания {obj.task_number}.',
+                                     f'{obj.second_sign_user}. задание {obj.task_number} зарегистрировано в системе. Прошу рассмотреть и подписать его. \n Посмотрите {HOST}/details_to_sign/{number_id}',
+                                     to=[obj.second_sign_user.user.email])
+    email_second_sign.send()
+
+
+def email_add_approver(pk):
+
+    pass

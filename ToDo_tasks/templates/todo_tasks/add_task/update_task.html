@@ -16,9 +16,9 @@
                 <div class="col-5">
                     {% csrf_token %}
 
+                    Здание:
                     <br>
-
-
+                    {{ form.task_building }}
                     Текст задания:
                     {{ form.text_task }}
                     <br>
@@ -26,8 +26,6 @@
                 </div>
             </div>
 
-
-            <br>
             {#        <h2 class="m-3, text-center">Выдать задание</h2>#}
 
             {#        {% csrf_token %}#}

@@ -21,13 +21,16 @@
         {{ formset.worker_user }}
         <br>
         <figure class="text-center">
-            <button class="btn btn-success" type="submit" hx-target="worker_list">Подкинуть работенку</button>
+            <button class="btn btn-success" type="submit" hx-target="worker_list">Назначить исполнителя</button>
         </figure>
     </form>
 
     <div id="worker_list">
         {% include 'todo_tasks/htmx/workers.html' %}
     </div>
+
+    <br>
+    <br>
 
     <script>
         document.body.addEventListener('htmx:configRequest', (event) => {

@@ -16,7 +16,7 @@
                     {% if obj.first_sign_user == user %}
 
                         {% if obj.first_sign_status == False %}
-                            <input type="submit" class="btn btn-success" name="sign1" value="Подписать 1">
+                            <input type="submit" class="btn btn-success" name="sign1" value="Подписать">
                         {% else %}
                             <input type="submit" class="btn btn-secondary" name="cancel1" value="Отменить подпись">
                         {% endif %}
@@ -24,7 +24,7 @@
 
                     {% if obj.second_sign_user == user %}
                         {% if obj.second_sign_status == False %}
-                            <input type="submit" class="btn btn-success" name="sign2" value="Подписать 2">
+                            <input type="submit" class="btn btn-success" name="sign2" value="Подписать">
                         {% else %}
                             <input type="submit" class="btn btn-secondary" name="cancel2" value="Отменить подпись">
                         {% endif %}
@@ -68,6 +68,11 @@
                     </div>
                     <div class="modal-body">
                         <textarea class="form-control" rows="4" name="back_modal_text"></textarea>
+                        <input class="form-check-input" type="checkbox" name="checkbox" value="need_edit" id="flexCheckDefault">
+                        <label class="form-check-label" for="flexCheckDefault">
+                            Требуется редактирования
+                        </label>
+                        <p><small>(Ставя галочку, учтите, после этого действия автору придется собирать все подписи с самого начала)</small></p>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
@@ -88,6 +93,7 @@
                     </div>
                     <div class="modal-body">
                         <textarea class="form-control" rows="4" name="comment_modal_text"></textarea>
+
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>

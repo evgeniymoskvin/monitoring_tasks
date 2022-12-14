@@ -17,7 +17,9 @@
         {% endif %}
 
 
-
+    {% if change_work_flag == True %}
+        <li><a class="dropdown-item" href="{% url "change_workers" pk=obj.id %}">Редактировать исполнителей</a></li>
+    {% endif %}
 
 
         {% if obj.task_status == 2 or obj.task_status == 3  and obj.department_number.id == user.department.id %}
@@ -30,9 +32,7 @@
 
     {% endif %}
 
-    {% if change_work_flag == True %}
-        <li><a class="dropdown-item" href="{% url "change_workers" pk=obj.id %}">Редактировать исполнителей</a></li>
-    {% endif %}
+
 
 
 </ul>

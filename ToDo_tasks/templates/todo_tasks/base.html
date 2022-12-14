@@ -31,14 +31,15 @@
     <div class="container d-flex flex-wrap">
         <ul class="nav me-auto">
             <li class="nav-item">
-                <a href="{% url 'index' %}" class="nav-link link-dark px-2 active" aria-current="page">Главная</a>
+                <a class="nav-link text-black navbar-text" href="{% url 'index' %}">{{ user }}</a>
+
             </li>
         </ul>
 
         <ul class="nav">
-            <li class="nav-item dropdown text-light">
-                <a class="nav-link text-black navbar-text">{{ user }}</a>
-            </li>
+{#            <li class="nav-item dropdown text-light">#}
+{#                <a class="nav-link text-black navbar-text">{{ user }}</a>#}
+{#            </li>#}
 
 
             <div class="dropdown">
@@ -78,7 +79,7 @@
                         {{ user }}
                     </a>
                     <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
-                        <li><a class="dropdown-item" href="#">Профиль</a></li>
+                        <li><a class="dropdown-item" href="{% url 'profile' %}">Профиль</a></li>
                         <li>
                             <hr class="dropdown-divider">
                         </li>

@@ -177,11 +177,12 @@ class TaskEditForm(ModelForm):
             'task_contract',
             'task_stage',
             'task_type_work',
-            "task_building",
             'incoming_employee',
             "cpe_sign_user"
         ]
-        widgets = {"text_task": Textarea(attrs={"placeholder": "Введите текст задания",
+        widgets = {"task_building": TextInput(attrs={"class": "form-control",
+                                                     "aria-label": "Здание"}),
+                    "text_task": Textarea(attrs={"placeholder": "Введите текст задания",
                                                 "class": "form-control"}),
                    "first_sign_user": Select(attrs={"class": "form-select",
                                                     "aria-label": "Первый руководитель"}),
@@ -315,7 +316,7 @@ class FilesUploadForm(ModelForm):
 
 
 class ApproveFormForSave(ModelForm):
-    """Форма для """
+    """Форма для добавления согласователей """
 
     class Meta:
         model = ApproveModel
@@ -330,5 +331,41 @@ class ApproveFormForSave(ModelForm):
         }
 
 
-# WorkerFormSet = modelformset_factory(WorkerModel, fields=("worker_user",), extra=1, can_delete=False)
-WorkerFormSet = modelformset_factory(WorkerModel, form=WorkerForm)
+class UserProfileForm(ModelForm):
+    """Форма с данными пользователя"""
+
+    class Meta:
+        model = Employee
+        exclude = ['user',
+                   'right_to_sign',
+                   'check_edit',
+                   'can_make_task',
+                   'cpe_flag',
+                   ]
+        widgets = {
+            # 'user': Select(attrs={"class": "form-control",
+            #                       "aria-label": "Имя пользователя",
+            #                       "readonly": True,
+            #                       'disable': True}),
+            'last_name': TextInput(attrs={"class": "form-control",
+                                          "aria-label": "Фамилия"
+                                          }),
+            'first_name': TextInput(attrs={"class": "form-control",
+                                           "aria-label": "Имя"
+                                           }),
+            'middle_name': TextInput(attrs={"class": "form-control",
+                                            "aria-label": "Отчество"
+                                            }),
+            "job_title": Select(attrs={"class": "form-select",
+                                       "aria-label": "Должность"}),
+            "department_group": Select(attrs={"class": "form-select",
+                                              "aria-label": "Управление"}),
+            "department": Select(attrs={"class": "form-select",
+                                        "aria-label": "Управление"}),
+            'user_phone': TextInput(attrs={"class": "form-control",
+                                            "aria-label": "Отчество"
+                                            }),
+        }
+
+    # WorkerFormSet = modelformset_factory(WorkerModel, fields=("worker_user",), extra=1, can_delete=False)
+    WorkerFormSet = modelformset_factory(WorkerModel, form=WorkerForm)

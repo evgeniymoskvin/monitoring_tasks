@@ -5,6 +5,7 @@ import os.path
 from django.shortcuts import render, redirect
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.utils.decorators import method_decorator
 from django.utils.encoding import escape_uri_path
 from django.views import View
@@ -15,13 +16,13 @@ from django.http import HttpResponse, Http404
 from .models import Employee, TaskModel, ContractModel, ObjectModel, StageModel, TaskNumbersModel, CommandNumberModel, \
     CpeModel, CanAcceptModel, WorkerModel, ApproveModel, AttachmentFilesModel
 from .forms import TaskForm, TaskEditForm, SearchForm, WorkerForm, WorkersEditForm, \
-    TaskFormForSave, ApproveForm, FilesUploadForm
+    TaskFormForSave, ApproveForm, FilesUploadForm, UserProfileForm
 from .functions import get_data_for_detail, get_list_to_sign, get_task_edit_form, \
     get_list_to_sign_cpe, get_list_incoming_tasks_to_sign, get_list_incoming_tasks_to_workers, save_to_worker_list, \
     get_list_to_change_workers, is_valid_queryparam
 from .pdf_making import pdf_gen
 from .email_functions import email_create_task, check_and_send_to_cpe, email_after_cpe_sign, delete_worker_email, \
-    incoming_not_sign_email, email_not_sign
+    incoming_not_sign_email, email_not_sign, email_change_task
 
 
 class IndexView(View):
@@ -35,12 +36,14 @@ class IndexView(View):
         """
 
         # Получаем информацию о пользователе из таблицы Employee на основании request
-        user = Employee.objects.get(user=request.user)
-        content = {
-            'user': user,
-        }
-        # send_mail('текст', 'текст2', 'tttestttsait@yandex.ru', ['tttestttsait@yandex.ru'], fail_silently=False)
-        return render(request, 'todo_tasks/index.html', content)
+        try:
+            user = Employee.objects.get(user=request.user)
+            content = {
+                'user': user,
+            }
+            return render(request, 'todo_tasks/index.html', content)
+        except:
+            return redirect('edit_profile')
 
     def post(self, request):
         """post запрос со страницы поиска"""
@@ -258,10 +261,10 @@ class EditTaskView(View):
             # Присваиваем вручную новые данные из формы, почему только так работает, сказать не могу
             # Номер задания и автор остаются исходными
             obj.text_task = form.data['text_task']
-            print(form.data['first_sign_user'])
             obj.first_sign_user_id = form.data['first_sign_user']
             obj.second_sign_user_id = form.data['second_sign_user']
             obj.incoming_dep_id = form.data['incoming_dep']
+            obj.task_building = form.data['task_building']
             # На случай, если задание было возвращено, обнуляем значения подписей и флаг back_to_change
             obj.first_sign_status = 0
             obj.second_sign_status = 0
@@ -272,11 +275,11 @@ class EditTaskView(View):
             obj.save()
             #  Получаем список согласователей для аннулирования статуса
             approve_emp = ApproveModel.objects.get_queryset().filter(approve_task_id=pk)
+            email_change_task(obj, approve_emp)
             for emp in approve_emp:
                 # Аннулируем статус согласованности
                 emp.approve_status = False
                 emp.save()
-            print(f"сработал пост{pk}")
             return redirect(f'/details/{pk}')
 
 
@@ -512,9 +515,13 @@ class ToSignDetailView(View):
             return redirect('incoming_to_sign')
         elif 'back_modal_button' in request.POST:
             print(request.POST.get('back_modal_text'))
-            obj.back_to_change = True
-            obj.save()
-            email_not_sign(pk, request.POST.get('back_modal_text'))
+            if request.POST.get("checkbox") == 'need_edit':
+                print(request.POST.get("checkbox"))
+                obj.back_to_change = True
+                obj.save()
+                email_not_sign(pk, request.POST.get('back_modal_text'), True)
+            else:
+                email_not_sign(pk, request.POST.get('back_modal_text'))
             # obj =
         elif 'comment_modal_button' in request.POST:
             obj.cpe_sign_status = True
@@ -568,22 +575,25 @@ class IncomingSignDetails(View):
         print(request)
         obj = TaskModel.objects.get(pk=pk)
         if 'sign_incoming' in request.POST:
-            print(pk, ' sign_incoming')
-            user = Employee.objects.get(user=request.user)
-            obj.incoming_employee = user
+            # Принимающий подписал
+            user = Employee.objects.get(user=request.user)  # Логинимся
+            obj.incoming_employee = user  # Присваиваем пользователя, который подписал
             obj.incoming_date = timezone.now()
-            obj.incoming_status = True
-            obj.task_status = 2
+            obj.incoming_status = True  # Статус подписания
+            obj.task_status = 2  # Статус задания "Актуально"
             obj.save()
-            return redirect('details_to_add_workers', pk=pk)
+            return redirect('details_to_add_workers', pk=pk)  # редирект на страницу добавления работников
         elif 'not_incoming_button' in request.POST:
-            incoming_not_sign_email(pk, Employee.objects.get(user=request.user), request.POST.get("comment_modal_text"))
-            print(pk, 'not_sign_incoming')
-            print(request.POST.get("comment_modal_text"))
+            #  Если отказался подписывать
             if request.POST.get("checkbox") == 'need_edit':
-                print(request.POST.get("checkbox"))
+                # Если есть галочка, то ставим статус требует редактирования
+                incoming_not_sign_email(pk, Employee.objects.get(user=request.user),
+                                        request.POST.get("comment_modal_text"), True)
                 obj.back_to_change = True
                 obj.save()
+            else:
+                incoming_not_sign_email(pk, Employee.objects.get(user=request.user),
+                                        request.POST.get("comment_modal_text"), False)
             return redirect('incoming_to_sign')
 
 
@@ -934,3 +944,32 @@ class DownloadBlankView(View):
                 response['Content-Disposition'] = "inline; filename=" + escape_uri_path(f'{task_inf.task_number}.pdf')
                 return response
         raise Http404
+
+class UserProfileView(View):
+    """Страница просмотра профиля"""
+    def get(self, request):
+        user = Employee.objects.get(user=request.user)
+        form = UserProfileForm(instance=user)
+        content = {'form': form,
+                   "user": user}
+        return render(request, 'todo_tasks/system_user/user_profile.html', content)
+
+class EditProfileUserView(View):
+    """Страница редактирования профиля"""
+    def get(self, request):
+        try:
+            user = Employee.objects.get(user=request.user)
+            form = UserProfileForm(instance=user)
+        except:
+            form = UserProfileForm()
+        content = {'form': form,
+                   "user": request.user}
+        return render(request, 'todo_tasks/system_user/edit_user_profile.html', content)
+
+    def post(self, request):
+        form = UserProfileForm(request.POST)
+        if form.is_valid():
+            employee = form.save(commit=False)
+            employee.user = User.objects.get(username=request.user)
+            employee.save()
+        return redirect('profile')

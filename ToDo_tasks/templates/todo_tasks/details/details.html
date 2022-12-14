@@ -18,8 +18,9 @@
             <div class="col">
                 <div class="d-flex justify-content-end">
                     <h4>
-                        <a href="{% url 'download_blank' obj.id %}"><img src="{% static 'todo_tasks/icons/file-earmark-pdf.svg' %}" data-toggle="tooltip"
-                             title="Скачать бланк"></a>
+                        <a href="{% url 'download_blank' obj.id %}"><img
+                                src="{% static 'todo_tasks/icons/file-earmark-pdf.svg' %}" data-toggle="tooltip"
+                                title="Скачать бланк"></a>
                         {% if flag == True and user.department == obj.department_number or user.department == obj.incoming_dep %}
                             <a href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
                                aria-expanded="false">
@@ -196,7 +197,7 @@
         {% if approve_users %}
             <div>
                 <br>
-                <h5>Назначены согласователи</h5>
+                <h5>Согласователи:</h5>
                 <ul class="list-group">
                     {% for user in approve_users %}
                         {% if user.approve_status %}
@@ -219,7 +220,7 @@
         {% if workers %}
 
             <br>
-            <h5>Назначены исполнители</h5>
+            <h5>Исполнители:</h5>
             <ul class="list-group">
                 {% for worker in workers %}
                     <li class="list-group-item d-flex justify-content-between align-items-center">
@@ -292,7 +293,7 @@
             </div>
 
         {% endif %}
-
+        <br>
 
         {#<span data-toggle="tooltip" title="другой текст подсказки">некоторый текст</span>#}
         <script>
