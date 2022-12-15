@@ -112,13 +112,14 @@ def incoming_not_sign_email(pk, incoming_signer, comment, need_edit=False):
     email_to_author.send()
 
 
-def email_not_sign(pk, comment, need_edit=False):
+def email_not_sign(pk, comment, user, need_edit=False,):
     task = TaskModel.objects.get(id=pk)
+    sign_user = Employee.objects.get(user=user)
     str_need_edit = 'не требуется'
     if need_edit is True:
         str_need_edit = 'требуется'
     email_to_author = EmailMessage(f'Отказ в подписании задания {task.task_number}.',
-                                   f'{task.task_number} не подписано.'
+                                   f'{sign_user} не подписал(а) задание {task.task_number}.'
                                    f'\nКомментарий: {comment}.'
                                    f'\nРедактирование задания {str_need_edit}.'
                                    f'\nПосмотрите {HOST}/details/{task.id}',
@@ -138,7 +139,7 @@ def email_change_task(obj, approved_user_list):
     #  Отправка сообщения согласователям
     for approve_user_id in approved_user_list:
         email_approve = EmailMessage(f'Согласование задания {obj.task_number}.',
-                                     f'{Employee.objects.get(id=approve_user_id)}, задание {obj.task_number} отредактировано. Прошу рассмотреть и согласовать его. \n Посмотрите {HOST}/approve_details/{number_id}',
+                                     f'{Employee.objects.get(id=approve_user_id)}, задание {obj.task_number} отредактировано. Прошу рассмотреть и согласовать его. \n Посмотрите {HOST}/details/{number_id}',
                                      to=[Employee.objects.get(id=approve_user_id).user.email])
         email_approve.send()
 
@@ -158,3 +159,15 @@ def email_change_task(obj, approved_user_list):
 def email_add_approver(pk):
 
     pass
+
+def approve_give_comment_email(pk, user, text_comment):
+    obj = TaskModel.objects.get(id=pk)
+    email_to_author = EmailMessage(f'Согласователь прислал комментарий к заданию {obj.task_number}.',
+                                     f'{obj.author}. '
+                                     f'\n{Employee.objects.get(user=user)} прислал комментарий к заданию  {obj.task_number} '
+                                     f'\nКомментарий: {text_comment}'
+                                     f'\nПосмотрите {HOST}/details_to_sign/{obj.id}',
+                                     to=[obj.author.user.email])
+    email_to_author.send()
+
+

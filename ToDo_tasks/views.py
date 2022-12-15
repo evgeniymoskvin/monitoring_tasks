@@ -22,7 +22,7 @@ from .functions import get_data_for_detail, get_list_to_sign, get_task_edit_form
     get_list_to_change_workers, is_valid_queryparam
 from .pdf_making import pdf_gen
 from .email_functions import email_create_task, check_and_send_to_cpe, email_after_cpe_sign, delete_worker_email, \
-    incoming_not_sign_email, email_not_sign, email_change_task
+    incoming_not_sign_email, email_not_sign, email_change_task, approve_give_comment_email
 
 
 class IndexView(View):
@@ -442,7 +442,9 @@ class ToSignListView(View):
         sign_user = Employee.objects.get(user=request.user)  # получаем пользователя
         # получаем список заданий
         if sign_user.cpe_flag == True:
-            sign_list = get_list_to_sign_cpe(sign_user)
+            sign_list_1 = get_list_to_sign_cpe(sign_user)
+            sign_list_2 = get_list_to_sign(sign_user)
+            sign_list = sign_list_1 + sign_list_2
         else:
             sign_list = get_list_to_sign(sign_user)
         content = {
@@ -519,9 +521,9 @@ class ToSignDetailView(View):
                 print(request.POST.get("checkbox"))
                 obj.back_to_change = True
                 obj.save()
-                email_not_sign(pk, request.POST.get('back_modal_text'), True)
+                email_not_sign(pk, request.POST.get('back_modal_text'), request.user, True)
             else:
-                email_not_sign(pk, request.POST.get('back_modal_text'))
+                email_not_sign(pk, request.POST.get('back_modal_text'), request.user)
             # obj =
         elif 'comment_modal_button' in request.POST:
             obj.cpe_sign_status = True
@@ -769,6 +771,8 @@ class ApproveDetailView(View):
                 obj_task.task_approved = True
                 obj_task.save()
                 check_and_send_to_cpe(pk)
+        if 'modal_text' in request.POST:
+            approve_give_comment_email(pk, request.user, request.POST.get('modal_text'))
         return redirect(request.META['HTTP_REFERER'])
 
 
@@ -945,8 +949,10 @@ class DownloadBlankView(View):
                 return response
         raise Http404
 
+
 class UserProfileView(View):
     """Страница просмотра профиля"""
+
     def get(self, request):
         user = Employee.objects.get(user=request.user)
         form = UserProfileForm(instance=user)
@@ -954,8 +960,10 @@ class UserProfileView(View):
                    "user": user}
         return render(request, 'todo_tasks/system_user/user_profile.html', content)
 
+
 class EditProfileUserView(View):
     """Страница редактирования профиля"""
+
     def get(self, request):
         try:
             user = Employee.objects.get(user=request.user)
@@ -971,5 +979,8 @@ class EditProfileUserView(View):
         if form.is_valid():
             employee = form.save(commit=False)
             employee.user = User.objects.get(username=request.user)
-            employee.save()
+            try:
+                employee.id = Employee.objects.get(user=request.user).id
+            finally:
+                employee.save()
         return redirect('profile')

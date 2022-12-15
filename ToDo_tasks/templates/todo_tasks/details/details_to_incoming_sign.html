@@ -6,63 +6,66 @@
 {% block buttons %}
     <br>
     <form method="POST">
+        {% if obj.back_to_change == False %}
+            {% csrf_token %}
+            <div class="row justify-content-center">
+                <div class="col">
 
-        {% csrf_token %}
-        <div class="row justify-content-center">
-            <div class="col">
+                    <figure class="text-center">
 
-                <figure class="text-center">
-
-                    {% if can_sign == True and obj.incoming_status != True %}
-                        <button type="button" class="btn btn-danger" data-bs-toggle="modal"
-                                data-bs-target="#back_modal"
-                                data-toggle="tooltip"
-                                title="Отказаться подписывать и направить комментарий автору задания">
-                            Отказаться подписывать
-                        </button>
-                        <input type="submit" class="btn btn-success" name="sign_incoming" value="Принять задание"
-                               data-toggle="tooltip" title="Подписать и запустить в работу">
+                        {% if can_sign == True and obj.incoming_status != True %}
+                            <button type="button" class="btn btn-danger" data-bs-toggle="modal"
+                                    data-bs-target="#back_modal"
+                                    data-toggle="tooltip"
+                                    title="Отказаться подписывать и направить комментарий автору задания">
+                                Отказаться подписывать
+                            </button>
+                            <input type="submit" class="btn btn-success" name="sign_incoming" value="Принять задание"
+                                   data-toggle="tooltip" title="Подписать и запустить в работу">
 
 
 
-                        {#                        <input type="submit" class="btn btn-danger" name="not_sign_incoming" value="Вернуть"#}
-                        {#                               data-toggle="tooltip" title="Вернуть">#}
+                            {#                        <input type="submit" class="btn btn-danger" name="not_sign_incoming" value="Вернуть"#}
+                            {#                               data-toggle="tooltip" title="Вернуть">#}
 
-                    {% endif %}
-                </figure>
+                        {% endif %}
+                    </figure>
+                </div>
             </div>
-        </div>
-        {#    </form>#}
+            {#    </form>#}
 
 
-        <!-- Модальное окно комментария -->
-        <div class="modal fade" id="back_modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-             aria-labelledby="staticBackdropLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="staticBackdropLabel">Укажите причину отказа</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
-                    </div>
-                    <div class="modal-body">
-                        <textarea class="form-control" rows="4" name="comment_modal_text"></textarea>
-                        <input class="form-check-input" type="checkbox" name="checkbox" value="need_edit" id="flexCheckDefault">
-                        <label class="form-check-label" for="flexCheckDefault">
-                            Требуется редактирования
-                        </label>
-                        <p><small>(Ставя галочку, учтите, после этого действия автору придется собирать все подписи с самого начала)</small></p>
-                    </div>
+            <!-- Модальное окно комментария -->
+            <div class="modal fade" id="back_modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+                 aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="staticBackdropLabel">Укажите причину отказа</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Закрыть"></button>
+                        </div>
+                        <div class="modal-body">
+                            <textarea class="form-control" rows="4" name="comment_modal_text"></textarea>
+                            <input class="form-check-input" type="checkbox" name="checkbox" value="need_edit"
+                                   id="flexCheckDefault">
+                            <label class="form-check-label" for="flexCheckDefault">
+                                Требуется редактирования
+                            </label>
+                            <p><small>(Ставя галочку, учтите, после этого действия автору придется собирать все подписи
+                                с самого начала)</small></p>
+                        </div>
 
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
-                        <input type="submit" class="btn btn-danger" name="not_incoming_button" value="Отправить">
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                            <input type="submit" class="btn btn-danger" name="not_incoming_button" value="Отправить">
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-    </form>
-
+            </form>
+        {% endif %}
     <script>
         // после загрузки страницы
         $(function () {
