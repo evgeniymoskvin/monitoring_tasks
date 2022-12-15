@@ -444,7 +444,9 @@ class ToSignListView(View):
         if sign_user.cpe_flag == True:
             sign_list_1 = get_list_to_sign_cpe(sign_user)
             sign_list_2 = get_list_to_sign(sign_user)
-            sign_list = sign_list_1 + sign_list_2
+            sign_list__1 = [i for i in sign_list_1]
+            sign_list = sign_list__1 + sign_list_2
+
         else:
             sign_list = get_list_to_sign(sign_user)
         content = {
