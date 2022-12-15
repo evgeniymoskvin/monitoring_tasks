@@ -6,7 +6,7 @@ import datetime
 from os import path
 from django.conf import settings
 
-COMAND_CHOICES = [(000, "000 - Не указан"), (201, "201 - Строительный первый"), (202, "202 - Строительный второй")]
+# COMAND_CHOICES = [(000, "000 - Не указан"), (201, "201 - Строительный первый"), (202, "202 - Строительный второй")]
 
 
 class JobTitleModel(models.Model):
@@ -35,15 +35,27 @@ class CommandNumberModel(models.Model):
         verbose_name_plural = _("номера отделов")
 
 
+class GroupDepartmentModel(models.Model):
+    """Список управлений"""
+    group_dep_abr = models.CharField("Сокращенное название управления", max_length=10)
+    group_dep_name = models.CharField("Полное название управления", max_length=250)
+
+    def __str__(self):
+        return f'{self.group_dep_abr}, {self.group_dep_name}'
+
+    class Meta:
+        verbose_name = _("управление")
+        verbose_name_plural = _("управления")
+
 class Employee(models.Model):
     """
     Дополнительные параметры пользователей
     """
 
-    class GroupDepartment(models.IntegerChoices):
-        """Выбор управление"""
-        UASP = 1, _("УАСП")
-        USP = 2, _("УСП")
+    # class GroupDepartment(models.IntegerChoices):
+    #     """Выбор управление"""
+    #     UASP = 1, _("УАСП")
+    #     USP = 2, _("УСП")
 
     user = models.OneToOneField(User, models.PROTECT, verbose_name="Пользователь")
     last_name = models.CharField("Фамилия", max_length=150)
@@ -52,7 +64,7 @@ class Employee(models.Model):
     job_title = models.ForeignKey(JobTitleModel, on_delete=models.PROTECT, null=True, verbose_name="Должность")
     department = models.ForeignKey(CommandNumberModel, on_delete=models.PROTECT, null=True, verbose_name="№ отдела")
     user_phone = models.IntegerField("№ телефона")
-    department_group = models.IntegerField(verbose_name="Управление", default=None, choices=GroupDepartment.choices)
+    department_group = models.ForeignKey(GroupDepartmentModel, on_delete=models.SET_NULL, default=None, null=True, verbose_name="Управление")
     right_to_sign = models.BooleanField(verbose_name="Право подписывать", default=False)
     check_edit = models.BooleanField("Возможность редактирования", default=False)
     can_make_task = models.BooleanField("Возможность выдавать задания", default=True)

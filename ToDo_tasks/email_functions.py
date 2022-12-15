@@ -156,9 +156,16 @@ def email_change_task(obj, approved_user_list):
     email_second_sign.send()
 
 
-def email_add_approver(pk):
+def email_add_approver(pk, approve_user_id):
+    task = TaskModel.objects.get(id=pk)
+    emp_approve = Employee.objects.get(id=approve_user_id)
+    email_to_approver = EmailMessage(f'Согласование задания {task.task_number}',
+                                     f'{emp_approve}, задание {task.task_number} ждет вашего согласования.'
+                                     f'\nПосмотрите {HOST}/approve_details/{task.id}',
+                                     to=[emp_approve.user.email]
+                                     )
+    email_to_approver.send()
 
-    pass
 
 def approve_give_comment_email(pk, user, text_comment):
     obj = TaskModel.objects.get(id=pk)

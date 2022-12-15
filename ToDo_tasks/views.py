@@ -16,13 +16,13 @@ from django.http import HttpResponse, Http404
 from .models import Employee, TaskModel, ContractModel, ObjectModel, StageModel, TaskNumbersModel, CommandNumberModel, \
     CpeModel, CanAcceptModel, WorkerModel, ApproveModel, AttachmentFilesModel
 from .forms import TaskForm, TaskEditForm, SearchForm, WorkerForm, WorkersEditForm, \
-    TaskFormForSave, ApproveForm, FilesUploadForm, UserProfileForm
+    TaskFormForSave, ApproveForm, FilesUploadForm, UserProfileForm, ApproveEditForm
 from .functions import get_data_for_detail, get_list_to_sign, get_task_edit_form, \
     get_list_to_sign_cpe, get_list_incoming_tasks_to_sign, get_list_incoming_tasks_to_workers, save_to_worker_list, \
     get_list_to_change_workers, is_valid_queryparam
 from .pdf_making import pdf_gen
 from .email_functions import email_create_task, check_and_send_to_cpe, email_after_cpe_sign, delete_worker_email, \
-    incoming_not_sign_email, email_not_sign, email_change_task, approve_give_comment_email
+    incoming_not_sign_email, email_not_sign, email_change_task, approve_give_comment_email, email_add_approver
 
 
 class IndexView(View):
@@ -675,7 +675,9 @@ class EditWorkerListView(View):
         data_all = WorkerModel.objects.get_queryset().filter(task_id=task)  # Получаем список по данному заданию
         formset = WorkerForm()  # получаем форму сотрудников
         # Фильтруем сотрудников своего отдела todo на сотрудников управления
-        formset.fields['worker_user'].queryset = Employee.objects.filter(department=user.department)
+        sign_user_departments= CanAcceptModel.objects.get_queryset().filter(user_accept=user)
+        sign_user_departments_list = [obj.dep_accept for obj in sign_user_departments]
+        formset.fields['worker_user'].queryset = Employee.objects.filter(department__in=sign_user_departments_list)
         content = {"data_all": data_all,
                    "task": task,
                    'formset': formset}
@@ -691,7 +693,9 @@ class EditWorkersDetailView(View):
         obj = TaskModel.objects.get(id=pk)
         data_all = WorkerModel.objects.get_queryset().filter(task_id=pk)
         formset = WorkerForm()
-        formset.fields['worker_user'].queryset = Employee.objects.filter(department=user.department)
+        sign_user_departments= CanAcceptModel.objects.get_queryset().filter(user_accept=user)
+        sign_user_departments_list = [obj.dep_accept for obj in sign_user_departments]
+        formset.fields['worker_user'].queryset = Employee.objects.filter(department__in=sign_user_departments_list)
         content = {"data_all": data_all,
                    'user': user,
                    "obj": obj,
@@ -706,7 +710,9 @@ class EditWorkersDetailView(View):
         save_to_worker_list(request, pk)  # отправляем пользователя и pk в функцию сохраняющую значения в WorkersModel
 
         formset = WorkerForm()
-        formset.fields['worker_user'].queryset = Employee.objects.filter(department=user.department)
+        sign_user_departments= CanAcceptModel.objects.get_queryset().filter(user_accept=user)
+        sign_user_departments_list = [obj.dep_accept for obj in sign_user_departments]
+        formset.fields['worker_user'].queryset = Employee.objects.filter(department__in=sign_user_departments_list)
         # Обновляем список исполнителей к данному заданию
         data_all = WorkerModel.objects.get_queryset().filter(task_id=pk)
         content = {"data_all": data_all,
@@ -857,19 +863,16 @@ class AdvancedSearchView(View):
                    "search_result": queryset}
         return render(request, 'todo_tasks/search/advanced_search.html', content)
 
-    # def post(self, request):
-    #     form = SearchForm(request.POST)
-    #     print(form.data)
-    #     return redirect(request.META['HTTP_REFERER'])
 
-
-class TestView(View):
-    def get(self, request):
-        content = {}
-        print(type(request.user))
-        # print(vars(request))
-
-        return render(request, 'todo_tasks/test_cancel.html', content)
+# class TestView(View):
+#     def get(self, request):
+#         user = Employee.objects.get(user=request.user)
+#
+#         content = {'user': user}
+#         print(type(request.user))
+#         # print(vars(request))
+#
+#         return render(request, 'todo_tasks/test_cancel.html', content)
 
 
 #
@@ -885,6 +888,43 @@ class TestView(View):
 #         content = {"data_all": data_all}
 #         return render(request, 'todo_tasks/htmx/workers.html', content)
 
+class EditApproveUserView(View):
+
+    @method_decorator(login_required(login_url='login'))
+    def get(self, request, pk):
+        user = Employee.objects.get(user=request.user)
+        obj = TaskModel.objects.get(id=pk)
+        form = ApproveEditForm()
+        old_approve = ApproveModel.objects.get_queryset().filter(approve_task_id=pk)
+        content = {'user': user,
+                   'old_approve': old_approve,
+                   'obj': obj,
+                   'form': form}
+        return render(request, 'todo_tasks/approve_user/change_approve_user.html', content)
+
+    def post(self, request, pk):
+        print(request.POST.get('approve_user'))
+        new_approve_emp = ApproveModel()
+        new_approve_emp.approve_user_id = int(request.POST.get('approve_user'))
+        new_approve_emp.approve_task_id = pk
+        new_approve_emp.save()
+        email_add_approver(pk, int(request.POST.get('approve_user')))
+        old_approve = ApproveModel.objects.get_queryset().filter(approve_task_id=pk)
+        content = {
+                   'old_approve': old_approve,
+                   }
+        return render(request, 'todo_tasks/htmx/list_approve.html', content)
+
+    def delete(self, request, pk):
+        print(pk)
+        pk2 = ApproveModel.objects.get(id=pk).approve_task_id
+        approve_id = ApproveModel.objects.get(id=pk)
+        approve_id.delete()
+        old_approve = ApproveModel.objects.get_queryset().filter(approve_task_id=pk2)
+        content = {
+                   'old_approve': old_approve,
+                   }
+        return render(request, 'todo_tasks/htmx/list_approve.html', content)
 
 class ObjectTasksListView(View):
     "Получение списка по объектам ГИП-а"

@@ -1,0 +1,22 @@
+{% if old_approve %}
+
+    {% load static %}
+    {% load task_tags %}
+    <br>
+    <ul class="list-group">
+        <div id="approve_old">
+            {% for approve in old_approve %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                        {{ approve.approve_user }}
+                    {% csrf_token %}
+                    <form id="form-3" data-method="delete" hx-delete={% url 'edit_approve' approve.id %} hx-target="#approve_old"
+                          hx-swap="innerHTML">
+                        <button class="btn btn-outline-danger btn-sm" hx-target="files_old" type="submit">
+                            Удалить
+                        </button>
+                    </form>
+                </li>
+            {% endfor %}
+        </div>
+    </ul>
+{% endif %}

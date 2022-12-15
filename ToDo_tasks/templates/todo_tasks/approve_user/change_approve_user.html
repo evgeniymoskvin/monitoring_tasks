@@ -1,0 +1,47 @@
+{% extends "todo_tasks/base.html" %}
+{#{% extends 'todo_tasks/details/details.html' %}#}
+
+{% block title %}
+    Добавить/удалить файлы к заданию {{ obj.task_number }}
+{% endblock %}
+{% load static %}
+
+{% block css_stuff %}
+    <script type="text/javascript" src="{% static 'todo_tasks/htmx/htmx.min.js' %}"></script>
+{% endblock %}
+{% block content %}
+    <br>
+
+    <h4>Добавить/удалить файлы к заданию {{ obj.task_number }}</h4>
+
+
+    <form id="form-container" enctype="multipart/form-data" method="POST"
+          hx-post={% url 'edit_approve' pk=obj.id %} hx-target="#task_approve">
+        {% csrf_token %}
+        <p>Выберете сотрудников для согласования.</p>
+
+        {{ form.approve_user }}
+        <br>
+        <figure class="text-center">
+            <button class="btn btn-success" type="submit" hx-target="task_approve">Добавить</button>
+        </figure>
+    </form>
+
+    <div id="task_approve">
+        {% include 'todo_tasks/htmx/list_approve.html' %}
+    </div>
+
+{% endblock %}
+
+{% block js_stuff %}
+
+    <script>
+        document.body.addEventListener('htmx:configRequest', (event) => {
+            event.detail.headers['X-CSRFToken'] = '{{ csrf_token }}';
+        })
+    </script>
+
+{% endblock %}
+
+
+

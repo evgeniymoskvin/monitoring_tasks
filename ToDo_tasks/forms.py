@@ -182,7 +182,7 @@ class TaskEditForm(ModelForm):
         ]
         widgets = {"task_building": TextInput(attrs={"class": "form-control",
                                                      "aria-label": "Здание"}),
-                    "text_task": Textarea(attrs={"placeholder": "Введите текст задания",
+                   "text_task": Textarea(attrs={"placeholder": "Введите текст задания",
                                                 "class": "form-control"}),
                    "first_sign_user": Select(attrs={"class": "form-select",
                                                     "aria-label": "Первый руководитель"}),
@@ -315,6 +315,17 @@ class FilesUploadForm(ModelForm):
         }
 
 
+class ApproveEditForm(ModelForm):
+    class Meta:
+        model = ApproveModel
+        fields = ['approve_user']
+
+        widgets = {
+            'approve_user': Select(attrs={"class": "form-select",
+                                          "aria-label": "Первый руководитель"}),
+        }
+
+
 class ApproveFormForSave(ModelForm):
     """Форма для добавления согласователей """
 
@@ -363,8 +374,8 @@ class UserProfileForm(ModelForm):
             "department": Select(attrs={"class": "form-select",
                                         "aria-label": "Управление"}),
             'user_phone': TextInput(attrs={"class": "form-control",
-                                            "aria-label": "Отчество"
-                                            }),
+                                           "aria-label": "Отчество"
+                                           }),
         }
 
     # WorkerFormSet = modelformset_factory(WorkerModel, fields=("worker_user",), extra=1, can_delete=False)

@@ -10,7 +10,7 @@
     <br>
     <p>ФИО: {{ user }} <small>({{ user.user }})</small></p>
     <p>Должность: {{ user.job_title }}</p>
-    <p>Управление: {{ user.get_department_group_display }}</p>
+    <p>Управление: {{ user.department_group }}</p>
     <p>Отдел: {{ user.department }}</p>
     <p>Номер телефона: {{ user.user_phone }}</p>
     <p>Пароль: ********* <a href="{% url 'change_password' %}">(изменить)</a></p>

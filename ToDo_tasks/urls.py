@@ -34,7 +34,7 @@ urlpatterns = [
     path('temp_to_delete_worker/<int:pk>', views.ToAddWorkersDetailView.as_view(), name='delete_worker'),
     path('edit_workers/', views.EditWorkerListView.as_view(), name='edit_workers'),
     path('edit_workers_add/<int:pk>', views.EditWorkersDetailView.as_view(), name='edit_workers_add'),
-    path('test_view/', views.TestView.as_view(), name='test_view'),
+    # path('test_view/', views.TestView.as_view(), name='test_view'),
     path('approve_list_to_sign/', views.ApproveListView.as_view(), name='approve_list_to_sign'),
     path('approve_details/<int:pk>', views.ApproveDetailView.as_view(), name='approve_details'),
     path('download_file/<int:pk>', views.DownloadFileView.as_view(), name='download_file'),
@@ -42,6 +42,7 @@ urlpatterns = [
     path('change_workers/<int:pk>', views.EditWorkersDetailView.as_view(), name='change_workers'),
     path('profile', views.UserProfileView.as_view(), name='profile'),
     path('edit_profile', views.EditProfileUserView.as_view(), name='edit_profile'),
+    path('edit_approve/<int:pk>', views.EditApproveUserView.as_view(), name='edit_approve'),
 
 
 
