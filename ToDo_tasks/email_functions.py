@@ -98,6 +98,14 @@ def delete_worker_email(pk):
     email_to_worker.send()
 
 
+def incoming_sign_email(task, incoming_signer):
+    email_to_author = EmailMessage(f'Задание {task.task_number} подписано принимающим отделом.',
+                                   f'{incoming_signer} подписал Ваше задание {task.task_number} и направил в работу в {task.incoming_dep}.'
+                                   f'\nПосмотрите {HOST}/details/{task.id}',
+                                   to=[task.author.user.email])
+    email_to_author.send()
+
+
 def incoming_not_sign_email(pk, incoming_signer, comment, need_edit=False):
     task = TaskModel.objects.get(id=pk)
     str_need_edit = 'не требуется'

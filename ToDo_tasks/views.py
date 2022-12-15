@@ -22,7 +22,8 @@ from .functions import get_data_for_detail, get_list_to_sign, get_task_edit_form
     get_list_to_change_workers, is_valid_queryparam
 from .pdf_making import pdf_gen
 from .email_functions import email_create_task, check_and_send_to_cpe, email_after_cpe_sign, delete_worker_email, \
-    incoming_not_sign_email, email_not_sign, email_change_task, approve_give_comment_email, email_add_approver
+    incoming_not_sign_email, email_not_sign, email_change_task, approve_give_comment_email, email_add_approver, \
+    incoming_sign_email
 
 
 class IndexView(View):
@@ -56,6 +57,7 @@ class IndexView(View):
 class IssuedTasksView(View):
     """Страница выданных заданий отдела, уже всеми подписаны, принятых принимающим"""
 
+    @method_decorator(login_required(login_url='login'))
     def get(self, request):
         user = Employee.objects.get(user=request.user)
         data_all = TaskModel.objects.get_queryset().filter(department_number=user.department).filter(
@@ -586,6 +588,7 @@ class IncomingSignDetails(View):
             obj.incoming_status = True  # Статус подписания
             obj.task_status = 2  # Статус задания "Актуально"
             obj.save()
+            incoming_sign_email(obj, user)
             return redirect('details_to_add_workers', pk=pk)  # редирект на страницу добавления работников
         elif 'not_incoming_button' in request.POST:
             #  Если отказался подписывать
@@ -675,7 +678,7 @@ class EditWorkerListView(View):
         data_all = WorkerModel.objects.get_queryset().filter(task_id=task)  # Получаем список по данному заданию
         formset = WorkerForm()  # получаем форму сотрудников
         # Фильтруем сотрудников своего отдела todo на сотрудников управления
-        sign_user_departments= CanAcceptModel.objects.get_queryset().filter(user_accept=user)
+        sign_user_departments = CanAcceptModel.objects.get_queryset().filter(user_accept=user)
         sign_user_departments_list = [obj.dep_accept for obj in sign_user_departments]
         formset.fields['worker_user'].queryset = Employee.objects.filter(department__in=sign_user_departments_list)
         content = {"data_all": data_all,
@@ -688,12 +691,13 @@ class EditWorkersDetailView(View):
     """View для обработки POST и DELETE запросов добавления/удаления сотрудников
     на странице редактирования ответственных """
 
+    @method_decorator(login_required(login_url='login'))
     def get(self, request, pk):
         user = Employee.objects.get(user=request.user)
         obj = TaskModel.objects.get(id=pk)
         data_all = WorkerModel.objects.get_queryset().filter(task_id=pk)
         formset = WorkerForm()
-        sign_user_departments= CanAcceptModel.objects.get_queryset().filter(user_accept=user)
+        sign_user_departments = CanAcceptModel.objects.get_queryset().filter(user_accept=user)
         sign_user_departments_list = [obj.dep_accept for obj in sign_user_departments]
         formset.fields['worker_user'].queryset = Employee.objects.filter(department__in=sign_user_departments_list)
         content = {"data_all": data_all,
@@ -710,7 +714,7 @@ class EditWorkersDetailView(View):
         save_to_worker_list(request, pk)  # отправляем пользователя и pk в функцию сохраняющую значения в WorkersModel
 
         formset = WorkerForm()
-        sign_user_departments= CanAcceptModel.objects.get_queryset().filter(user_accept=user)
+        sign_user_departments = CanAcceptModel.objects.get_queryset().filter(user_accept=user)
         sign_user_departments_list = [obj.dep_accept for obj in sign_user_departments]
         formset.fields['worker_user'].queryset = Employee.objects.filter(department__in=sign_user_departments_list)
         # Обновляем список исполнителей к данному заданию
@@ -754,6 +758,7 @@ class ApproveListView(View):
 class ApproveDetailView(View):
     """Подпись согласователя"""
 
+    @method_decorator(login_required(login_url='login'))
     def get(self, request, pk):
         sign_user = Employee.objects.get(user=request.user)  # получаем пользователя
         content = get_data_for_detail(request, pk)
@@ -803,6 +808,7 @@ class SearchView(View):
 class AdvancedSearchView(View):
     """Подробный поиск"""
 
+    @method_decorator(login_required(login_url='login'))
     def get(self, request):
         queryset = TaskModel.objects
         user = Employee.objects.get(user=request.user)
@@ -911,8 +917,8 @@ class EditApproveUserView(View):
         email_add_approver(pk, int(request.POST.get('approve_user')))
         old_approve = ApproveModel.objects.get_queryset().filter(approve_task_id=pk)
         content = {
-                   'old_approve': old_approve,
-                   }
+            'old_approve': old_approve,
+        }
         return render(request, 'todo_tasks/htmx/list_approve.html', content)
 
     def delete(self, request, pk):
@@ -922,9 +928,10 @@ class EditApproveUserView(View):
         approve_id.delete()
         old_approve = ApproveModel.objects.get_queryset().filter(approve_task_id=pk2)
         content = {
-                   'old_approve': old_approve,
-                   }
+            'old_approve': old_approve,
+        }
         return render(request, 'todo_tasks/htmx/list_approve.html', content)
+
 
 class ObjectTasksListView(View):
     "Получение списка по объектам ГИП-а"
@@ -977,6 +984,7 @@ class DownloadFileView(View):
 
 
 class DownloadBlankView(View):
+    @method_decorator(login_required(login_url='login'))
     def get(self, request, pk):
         pdf_gen(pk)
         task_inf = TaskModel.objects.get(id=pk)
@@ -995,6 +1003,7 @@ class DownloadBlankView(View):
 class UserProfileView(View):
     """Страница просмотра профиля"""
 
+    @method_decorator(login_required(login_url='login'))
     def get(self, request):
         user = Employee.objects.get(user=request.user)
         form = UserProfileForm(instance=user)
@@ -1006,6 +1015,7 @@ class UserProfileView(View):
 class EditProfileUserView(View):
     """Страница редактирования профиля"""
 
+    @method_decorator(login_required(login_url='login'))
     def get(self, request):
         try:
             user = Employee.objects.get(user=request.user)
