@@ -1,6 +1,6 @@
 from django.contrib import admin
 from .models import TaskModel, Employee, OrdersModel, ObjectModel, ContractModel, StageModel, JobTitleModel, CpeModel, \
-    CanAcceptModel, CommandNumberModel, TaskNumbersModel
+    CanAcceptModel, CommandNumberModel, TaskNumbersModel, GroupDepartmentModel
 
 
 class TaskAdmin(admin.ModelAdmin):
@@ -35,3 +35,4 @@ admin.site.register(CpeModel)
 admin.site.register(CanAcceptModel)
 admin.site.register(CommandNumberModel)
 admin.site.register(TaskNumbersModel)
+admin.site.register(GroupDepartmentModel)
