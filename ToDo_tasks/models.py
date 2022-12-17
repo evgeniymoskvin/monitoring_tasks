@@ -241,7 +241,7 @@ class TaskNumbersModel(models.Model):
 
     command_number = models.ForeignKey(CommandNumberModel, on_delete=models.PROTECT)
     year_of_task = models.IntegerField("Год выдачи заданий", default=datetime.datetime.today().year)
-    count_of_task = models.IntegerField("Счетчик заданий", default=1)
+    count_of_task = models.IntegerField("Счетчик заданий", default=0)
 
     def __str__(self):
         return f'Отдел {self.command_number} в {self.year_of_task} году выдал {self.count_of_task}'
