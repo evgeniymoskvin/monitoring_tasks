@@ -155,6 +155,19 @@ class CpeModel(models.Model):
         return f'{self.cpe_user}, {self.cpe_object}'
 
 
+class MarkDocModel(models.Model):
+    """Таблица марок документации"""
+    mark_doc = models.CharField("Краткое название марки", max_length=5)
+    mark_doc_full_name = models.CharField("Полное название", max_length=150)
+
+    class Meta:
+        verbose_name = _("марка документации")
+        verbose_name_plural = _("марки документации")
+
+    def __str__(self):
+        return f'{self.mark_doc} - {self.mark_doc_full_name}'
+
+
 class TaskModel(models.Model):
     """    Таблица заданий    """
 
@@ -177,6 +190,7 @@ class TaskModel(models.Model):
     department_number = models.ForeignKey(CommandNumberModel, verbose_name="Номер отдела", on_delete=models.PROTECT,
                                           null=True)
     task_type_work = models.IntegerField("Вид документации:", choices=TypeWorkTask.choices, default=0)
+    task_mark_doc = models.ForeignKey(MarkDocModel, verbose_name="Марка документации", on_delete=models.PROTECT, null=True)
     task_order = models.ForeignKey(OrdersModel, on_delete=models.PROTECT, verbose_name="Номер заказа")
     task_object = models.ForeignKey(ObjectModel, on_delete=models.PROTECT, verbose_name="Наименование объекта")
     task_contract = models.ForeignKey(ContractModel, on_delete=models.PROTECT, verbose_name="Номер контракта")

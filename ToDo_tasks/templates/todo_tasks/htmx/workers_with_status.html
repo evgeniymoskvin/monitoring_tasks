@@ -15,7 +15,7 @@
         {% endif %}
         {% csrf_token %}
          <form id="form-2" data-method="delete" hx-delete={% url 'delete_worker' data.id %} hx-target="#test" hx-swap="innerHTML" >
-            <button class="btn btn-outline-danger btn-sm"  hx-target="test" type="submit">Больше не ответственный</button>
+            <button class="btn btn-outline-danger btn-sm"  hx-target="test" type="submit">Снять задачу</button>
         </form>
     </li>
 {% endfor %}

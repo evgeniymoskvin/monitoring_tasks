@@ -49,6 +49,7 @@ def get_data_for_form(obj) -> dict:
         "incoming_dep": str(obj.incoming_dep),
         "task_building": str(obj.task_building),
         "task_type_work": str(obj.get_task_type_work_display()),
+        "task_mark_doc": str(obj.task_mark_doc),
     }
     return data
 

@@ -100,7 +100,7 @@ def delete_worker_email(pk):
 
 def incoming_sign_email(task, incoming_signer):
     email_to_author = EmailMessage(f'Задание {task.task_number} подписано принимающим отделом.',
-                                   f'{incoming_signer} подписал Ваше задание {task.task_number} и направил в работу в {task.incoming_dep}.'
+                                   f'{incoming_signer} принял(а) Ваше задание {task.task_number} в отдел {task.incoming_dep}.'
                                    f'\nПосмотрите {HOST}/details/{task.id}',
                                    to=[task.author.user.email])
     email_to_author.send()

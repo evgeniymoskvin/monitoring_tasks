@@ -48,6 +48,8 @@ class TaskForm(ModelForm):
                                                     "aria-label": "Первый руководитель"}),
                    "second_sign_user": Select(attrs={"class": "form-select",
                                                      "aria-label": "Второй руководитель"}),
+                   "task_mark_doc": Select(attrs={"class": "form-select",
+                                                  "aria-label": "Марка документации"}),
                    # "cpe_sign_user": Select(attrs={"class": "form-select",
                    #                                "aria-label": "ГИП"}),
                    "incoming_dep": SelectMultiple(attrs={"class": "form-select",
@@ -106,6 +108,8 @@ class TaskFormForSave(ModelForm):
                                                 "class": "form-control"}),
                    "task_type_work": Select(attrs={"class": "form-select",
                                                    "aria-label": "Вид документации"}),
+                   "task_mark_doc": Select(attrs={"class": "form-select",
+                                                  "aria-label": "Марка документации"}),
                    "first_sign_user": Select(attrs={"class": "form-select",
                                                     "aria-label": "Первый руководитель"}),
                    "second_sign_user": Select(attrs={"class": "form-select",
@@ -146,6 +150,9 @@ class TaskCheckForm(ModelForm):
                                                      "readonly": True}),
                    "task_type_work": TextInput(attrs={"class": "form-select",
                                                       "disabled": True}),
+                   "task_mark_doc": TextInput(attrs={"class": "form-control",
+                                                     "aria-label": "Марка документации",
+                                                     "disabled": True}),
                    }
 
 

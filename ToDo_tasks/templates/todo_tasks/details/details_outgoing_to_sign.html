@@ -9,99 +9,118 @@
 
         {% csrf_token %}
         {% if obj.back_to_change == False %}
-        <div class="row justify-content-center">
-            <div class="col">
+            <div class="row justify-content-center">
+                <div class="col">
 
-                <figure class="text-center">
-                    {% if obj.first_sign_user == user %}
+                    <figure class="text-center">
+                        {% if obj.first_sign_user == user %}
 
-                        {% if obj.first_sign_status == False %}
-                            <input type="submit" class="btn btn-success" name="sign1" value="Подписать">
-                        {% else %}
-                            <input type="submit" class="btn btn-secondary" name="cancel1" value="Отменить подпись">
+                            {% if obj.first_sign_status == False %}
+                                <input type="submit" class="btn btn-success" name="sign1" value="Подписать">
+                                <button type="button" class="btn btn-warning" data-bs-toggle="modal"
+                                        data-bs-target="#back_modal"
+                                        data-toggle="tooltip" title="Вернуть задание на исправление">
+                                    Вернуть
+                                </button>
+                            {% else %}
+                                <input type="submit" class="btn btn-secondary" name="cancel1" value="Отменить подпись">
+                            {% endif %}
                         {% endif %}
-                    {% endif %}
 
-                    {% if obj.second_sign_user == user %}
-                        {% if obj.second_sign_status == False %}
-                            <input type="submit" class="btn btn-success" name="sign2" value="Подписать">
-                        {% else %}
-                            <input type="submit" class="btn btn-secondary" name="cancel2" value="Отменить подпись">
+                        {% if obj.second_sign_user == user %}
+                            {% if obj.second_sign_status == False %}
+                                <input type="submit" class="btn btn-success" name="sign2" value="Подписать">
+                                <button type="button" class="btn btn-warning" data-bs-toggle="modal"
+                                        data-bs-target="#back_modal"
+                                        data-toggle="tooltip" title="Вернуть задание на исправление">
+                                    Вернуть
+                                </button>
+                            {% else %}
+                                <input type="submit" class="btn btn-secondary" name="cancel2" value="Отменить подпись">
+                            {% endif %}
                         {% endif %}
-                    {% endif %}
-                    {% if cpe_flag == True %}
+                        {% if cpe_flag == True %}
 
-                        {% if obj.cpe_sign_status == False %}
-                            <button type="button" class="btn btn-primary" data-bs-toggle="modal"
-                                    data-bs-target="#comment_modal"
-                                    data-toggle="tooltip" title="Оставить комментарий и подписать задание">
-                                Оставить комментарий и подписать
-                            </button>
-                            <input type="submit" class="btn btn-success" name="sign3" value="Подписать"
-                                   data-toggle="tooltip" title="Подписать без комментария">
-                        {% else %}
-                            <input type="submit" class="btn btn-secondary" name="cancel3" value="Отменить подпись">
+                            {% if obj.cpe_sign_status == False %}
+                                <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                        data-bs-target="#comment_modal"
+                                        data-toggle="tooltip" title="Оставить комментарий и подписать задание">
+                                    Оставить комментарий и подписать
+                                </button>
+                                <input type="submit" class="btn btn-success" name="sign3" value="Подписать"
+                                       data-toggle="tooltip" title="Подписать без комментария">
+                                <button type="button" class="btn btn-warning" data-bs-toggle="modal"
+                                        data-bs-target="#back_modal"
+                                        data-toggle="tooltip" title="Вернуть задание на исправление">
+                                    Вернуть
+                                </button>
+                            {% else %}
+                                <input type="submit" class="btn btn-secondary" name="cancel3" value="Отменить подпись">
+                            {% endif %}
                         {% endif %}
-                    {% endif %}
-                <!-- Исчезновение кнопки вернуть, после подписи ГИП-а-->
-                    {% if obj.cpe_sign_status == False %}
-                        <button type="button" class="btn btn-warning" data-bs-toggle="modal"
-                                data-bs-target="#back_modal"
-                                data-toggle="tooltip" title="Вернуть задание на исправление">
-                            Вернуть
-                        </button>
-                    {% endif %}
-                </figure>
+{#                        <!-- Исчезновение кнопки вернуть, после подписи ГИП-а-->#}
+{#                        {% if obj.cpe_sign_status == False %}#}
+{#                            <button type="button" class="btn btn-warning" data-bs-toggle="modal"#}
+{#                                    data-bs-target="#back_modal"#}
+{#                                    data-toggle="tooltip" title="Вернуть задание на исправление">#}
+{#                                Вернуть#}
+{#                            </button>#}
+{#                        {% endif %}#}
+                    </figure>
+                </div>
             </div>
-        </div>
-        {#    </form>#}
+            {#    </form>#}
 
 
-        <!-- Модальное окно -->
-        <div class="modal fade" id="back_modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-             aria-labelledby="staticBackdropLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="staticBackdropLabel">Вернуть задание на исправление</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
-                    </div>
-                    <div class="modal-body">
-                        <textarea class="form-control" rows="4" name="back_modal_text"></textarea>
-                        <input class="form-check-input" type="checkbox" name="checkbox" value="need_edit" id="flexCheckDefault">
-                        <label class="form-check-label" for="flexCheckDefault">
-                            Требуется редактирования
-                        </label>
-                        <p><small>(Ставя галочку, учтите, после этого действия автору придется собирать все подписи с самого начала)</small></p>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
-                        <input type="submit" class="btn btn-danger" name="back_modal_button" value="Вернуть">
+            <!-- Модальное окно -->
+            <div class="modal fade" id="back_modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+                 aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="staticBackdropLabel">Вернуть задание на исправление</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Закрыть"></button>
+                        </div>
+                        <div class="modal-body">
+                            <textarea class="form-control" rows="4" name="back_modal_text"></textarea>
+                            <input class="form-check-input" type="checkbox" name="checkbox" value="need_edit"
+                                   id="flexCheckDefault">
+                            <label class="form-check-label" for="flexCheckDefault">
+                                Требуется редактирования
+                            </label>
+                            <p><small>(Ставя галочку, учтите, после этого действия автору придется собирать все подписи
+                                с самого начала)</small></p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                            <input type="submit" class="btn btn-danger" name="back_modal_button" value="Вернуть">
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Модальное окно комментария -->
-        <div class="modal fade" id="comment_modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-             aria-labelledby="staticBackdropLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="staticBackdropLabel">Добавить комментарий к заданию</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
-                    </div>
-                    <div class="modal-body">
-                        <textarea class="form-control" rows="4" name="comment_modal_text"></textarea>
+            <!-- Модальное окно комментария -->
+            <div class="modal fade" id="comment_modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+                 aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="staticBackdropLabel">Добавить комментарий к заданию</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Закрыть"></button>
+                        </div>
+                        <div class="modal-body">
+                            <textarea class="form-control" rows="4" name="comment_modal_text"></textarea>
 
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
-                        <input type="submit" class="btn btn-success" name="comment_modal_button" value="Подписать">
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                            <input type="submit" class="btn btn-success" name="comment_modal_button" value="Подписать">
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
         {% endif %}
     </form>
 
