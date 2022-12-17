@@ -22,7 +22,7 @@ def pdf_gen(pk):
     contract = task_from_model.task_contract.contract_name
     contract_stage = task_from_model.task_stage.stage_name
     kind = task_from_model.task_type_work
-    mark = 'ТХ',  # Марка документации
+    mark = task_from_model.task_mark_doc.mark_doc  # Марка документации
     task = task_from_model.task_number
     content = task_from_model.text_task
 
