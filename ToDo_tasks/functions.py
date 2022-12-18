@@ -142,7 +142,7 @@ def get_list_incoming_tasks_to_sign(sign_user):
         list_departments.append(dep.dep_accept_id)
     # Формируем queryset этих заданий: отдел в списке, ГИП подписал, статус принятия False
     return TaskModel.objects.get_queryset().filter(incoming_dep_id__in=list_departments).filter(
-        cpe_sign_status=True).filter(incoming_status=False)
+        cpe_sign_status=True).filter(incoming_status=False).filter(back_to_change=False)
 
 
 def get_list_incoming_tasks_to_workers(sign_user):

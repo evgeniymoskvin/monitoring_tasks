@@ -579,7 +579,7 @@ class IncomingSignDetails(View):
             content['can_sign'] = True
         else:
             content['can_sign'] = False
-            # content['cpe_flag'] = False
+
         return render(request, 'todo_tasks/details/details_to_incoming_sign.html', content)
 
     def post(self, request, pk):

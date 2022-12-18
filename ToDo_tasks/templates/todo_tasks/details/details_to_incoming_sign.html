@@ -13,7 +13,7 @@
 
                     <figure class="text-center">
 
-                        {% if can_sign == True and obj.incoming_status != True %}
+                        {% if can_sign == True and obj.incoming_status == 0 %}
                             <button type="button" class="btn btn-danger" data-bs-toggle="modal"
                                     data-bs-target="#back_modal"
                                     data-toggle="tooltip"
