@@ -186,8 +186,15 @@ class AddTaskView(View):
         for dep in incoming_deps_list:
             # Меняем значение отдела, на нужное нам из списка
             temp_req['incoming_dep'] = int(dep)
+            if temp_req['task_contract'] == '0':
+                temp_req['task_contract'] = ''
+            if temp_req['task_stage'] == '0':
+                temp_req['task_stage'] = ''
             # Грузим в форму для сохранения
             form = TaskFormForSave(temp_req)
+            # print(form.data)
+            # if form.task_stage:
+            #     print('asd')
 
             if form.is_valid():
                 new_post = form.save(commit=False)  # отменяем отправку form в базу
@@ -210,6 +217,7 @@ class AddTaskView(View):
 
                 new_post.task_number = f'ЗД-{new_post.department_number.command_number}-{last_number.count_of_task}-{str(today_year)[2:4]}'
                 new_post.task_change_number = 0  # номер изменения присваиваем 0
+                print(new_post.task_order)
                 # print(new_post.task_number)
                 form.save()  # сохраняем форму в бд
                 # Получаем id номер созданного задания

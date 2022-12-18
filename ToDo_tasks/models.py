@@ -191,10 +191,10 @@ class TaskModel(models.Model):
                                           null=True)
     task_type_work = models.IntegerField("Вид документации:", choices=TypeWorkTask.choices, default=0)
     task_mark_doc = models.ForeignKey(MarkDocModel, verbose_name="Марка документации", on_delete=models.PROTECT, null=True)
-    task_order = models.ForeignKey(OrdersModel, on_delete=models.PROTECT, verbose_name="Номер заказа")
+    task_order = models.ForeignKey(OrdersModel, on_delete=models.PROTECT, verbose_name="Номер заказа", null=True, blank=True)
     task_object = models.ForeignKey(ObjectModel, on_delete=models.PROTECT, verbose_name="Наименование объекта")
-    task_contract = models.ForeignKey(ContractModel, on_delete=models.PROTECT, verbose_name="Номер контракта")
-    task_stage = models.ForeignKey(StageModel, on_delete=models.PROTECT, verbose_name="Этап договора")
+    task_contract = models.ForeignKey(ContractModel, on_delete=models.PROTECT, verbose_name="Номер контракта", null=True, blank=True)
+    task_stage = models.ForeignKey(StageModel, on_delete=models.PROTECT, verbose_name="Этап договора", null=True, blank=True)
     task_building = models.CharField("Здание", max_length=150, null=True)
     task_change_number = models.IntegerField("Номер изменения", default=0, null=True)
     first_sign_user = models.ForeignKey(Employee, on_delete=models.PROTECT, null=True,
