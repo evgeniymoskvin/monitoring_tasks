@@ -325,8 +325,13 @@ class EditTaskFiles(View):
                 obj = AttachmentFilesModel(file=f, task_id=pk)
                 obj.save()
         old_files = AttachmentFilesModel.objects.get_queryset().filter(task_id=pk)
+        obj = TaskModel.objects.get(pk=pk)
+        obj.first_sign_status = False
+        obj.second_sign_status = False
+        obj.save()
         #  Получаем список согласователей
         approve_emp = ApproveModel.objects.get_queryset().filter(approve_task_id=pk)
+        email_change_task(obj, approve_emp)
         for emp in approve_emp:
             # Аннулируем статус согласованности
             emp.approve_status = False

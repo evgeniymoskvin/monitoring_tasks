@@ -140,7 +140,7 @@ def email_change_task(obj, approved_user_list):
     number_id = TaskModel.objects.get(task_number=obj.task_number).id
     #  Отправка сообщения автору
     email_author = EmailMessage(f'Задание {obj.task_number} отредактировано',
-                                f'Задание {obj.task_number} создано, посмотрите {HOST}/details/{number_id}',
+                                f'Задание {obj.task_number} отредактировано, посмотрите {HOST}/details/{number_id}',
                                 to=[obj.author.user.email])
     email_author.send()
 
