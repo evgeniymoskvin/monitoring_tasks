@@ -631,7 +631,7 @@ class ToAddWorkersDetailView(View):
         sign_user = Employee.objects.get(user=request.user)
         content = get_data_for_detail(request, pk)
         formset = WorkerForm()
-        formset.fields['worker_user'].queryset = Employee.objects.filter(department=sign_user.department)
+        formset.fields['worker_user'].queryset = Employee.objects.filter(department_group=sign_user.department_group)
         content['data_all'] = WorkerModel.objects.get_queryset().filter(task=pk)
         content["formset"] = formset
         return render(request, 'todo_tasks/workers/details_to_add_workers.html', content)
