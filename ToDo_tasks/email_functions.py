@@ -147,8 +147,8 @@ def email_change_task(obj, approved_user_list):
     #  Отправка сообщения согласователям
     for approve_user_id in approved_user_list:
         email_approve = EmailMessage(f'Согласование задания {obj.task_number}.',
-                                     f'{Employee.objects.get(id=approve_user_id)}, задание {obj.task_number} отредактировано. Прошу рассмотреть и согласовать его. \n Посмотрите {HOST}/details/{number_id}',
-                                     to=[Employee.objects.get(id=approve_user_id).user.email])
+                                     f'{approve_user_id.approve_user}, задание {obj.task_number} отредактировано. Прошу рассмотреть и согласовать его. \n Посмотрите {HOST}/details/{number_id}',
+                                     to=[approve_user_id.approve_user.user.email])
         email_approve.send()
 
     #  Отправка письма первому руководителю
@@ -159,7 +159,7 @@ def email_change_task(obj, approved_user_list):
 
     #  Отправка сообщения второму руководителю
     email_second_sign = EmailMessage(f'Подписание задания {obj.task_number}.',
-                                     f'{obj.second_sign_user}. задание {obj.task_number} зарегистрировано в системе. Прошу рассмотреть и подписать его. \n Посмотрите {HOST}/details_to_sign/{number_id}',
+                                     f'{obj.second_sign_user}. задание {obj.task_number} отредактировано. Прошу рассмотреть и подписать его. \n Посмотрите {HOST}/details_to_sign/{number_id}',
                                      to=[obj.second_sign_user.user.email])
     email_second_sign.send()
 
@@ -181,7 +181,7 @@ def approve_give_comment_email(pk, user, text_comment):
                                      f'{obj.author}. '
                                      f'\n{Employee.objects.get(user=user)} прислал комментарий к заданию  {obj.task_number} '
                                      f'\nКомментарий: {text_comment}'
-                                     f'\nПосмотрите {HOST}/details_to_sign/{obj.id}',
+                                     f'\nПосмотрите {HOST}/details/{obj.id}',
                                      to=[obj.author.user.email])
     email_to_author.send()
 

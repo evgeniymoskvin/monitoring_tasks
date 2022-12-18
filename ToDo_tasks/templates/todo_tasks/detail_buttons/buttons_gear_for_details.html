@@ -1,7 +1,7 @@
 <ul class="dropdown-menu dropdown-menu-start" aria-labelledby="navbarDropdown">
 
     {% if obj.department_number == user.department %}
-        {% if obj.author.user == user and obj.task_status == 1 and obj.cpe_sign_status == False or obj.back_to_change == True %}
+        {% if obj.author.user_id == user.id and obj.task_status == 1 and obj.cpe_sign_status == False or obj.back_to_change == True %}
             <li><a class="dropdown-item" href="{% url "change" pk=obj.id %}">Редактировать</a></li>
             <li><a class="dropdown-item" href="{% url "change_files" pk=obj.id %}">Отредактировать вложения</a></li>
             <li><a class="dropdown-item" href="{% url "edit_approve" pk=obj.id %}">Отредактировать согласователей</a>
