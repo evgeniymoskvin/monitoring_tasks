@@ -43,21 +43,26 @@ def get_data_for_form(obj) -> dict:
         "text_task": obj.text_task,
         "author": f'{obj.author}',
         "task_object": str(obj.task_object),
-        "task_order": str(obj.task_order),
+        # "task_order": str(obj.task_order),
         # "task_contract": str(obj.task_contract.contract_name),
         # "task_stage": str(obj.task_stage),
         "incoming_dep": str(obj.incoming_dep),
         "task_building": str(obj.task_building),
         "task_type_work": str(obj.get_task_type_work_display()),
         "task_mark_doc": str(obj.task_mark_doc),
+
     }
+    try:
+        data["task_order"] = str(obj.task_order)
+    except:
+        data["task_order"] = str(None)
     try:
         data['task_contract'] = str(obj.task_contract.contract_name)
     except:
         data['task_contract'] = str(None)
 
     try:
-        data['task_stage'] = str(obj.task_stage)
+        data['task_stage'] = str(obj.task_stage.stage_name)
     except:
         data['task_stage'] = str(None)
 

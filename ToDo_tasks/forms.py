@@ -130,7 +130,7 @@ class TaskCheckForm(ModelForm):
         model = TaskModel
         exclude = ['department_number', 'task_number', 'task_change_number', "first_sign_status",
                    "second_sign_status", "cpe_sign_status", "back_to_change", 'incoming_employee']
-        widgets = {"task_order": Select(attrs={"class": "form-select",
+        widgets = {"task_order": TextInput(attrs={"class": "form-select",
                                                "disabled": True}),
                    "author": TextInput(attrs={"class": "form-control",
                                               "readonly": True}),
