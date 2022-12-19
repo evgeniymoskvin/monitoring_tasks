@@ -55,16 +55,16 @@ def get_data_for_form(obj) -> dict:
     try:
         data["task_order"] = str(obj.task_order)
     except:
-        data["task_order"] = str(None)
+        data["task_order"] = str('-----')
     try:
         data['task_contract'] = str(obj.task_contract.contract_name)
     except:
-        data['task_contract'] = str(None)
+        data['task_contract'] = str('-----')
 
     try:
         data['task_stage'] = str(obj.task_stage.stage_name)
     except:
-        data['task_stage'] = str(None)
+        data['task_stage'] = str('-----')
 
     return data
 

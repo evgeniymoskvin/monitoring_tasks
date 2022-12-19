@@ -1,9 +1,13 @@
+import os
+
 from django.core.mail import EmailMessage
 
 from .models import Employee, TaskModel, ContractModel, ObjectModel, StageModel, TaskNumbersModel, CommandNumberModel, \
     CpeModel, CanAcceptModel, WorkerModel, ApproveModel, AttachmentFilesModel
+from dotenv import load_dotenv
 
-HOST = 'http://194.87.99.84'
+load_dotenv()
+LINK_FOR_EMAIL = os.getenv('LINK_FOR_EMAIL')
 
 
 def email_create_task(new_post, approved_user_list):
@@ -11,7 +15,7 @@ def email_create_task(new_post, approved_user_list):
     number_id = TaskModel.objects.get(task_number=new_post.task_number).id
     #  Отправка сообщения автору
     email_author = EmailMessage(f'Задание {new_post.task_number} создано',
-                                f'Задание {new_post.task_number} создано, посмотрите {HOST}/details/{number_id}',
+                                f'Задание {new_post.task_number} создано, посмотрите {LINK_FOR_EMAIL}/details/{number_id}',
                                 to=[new_post.author.user.email])
     try:
         email_author.send()
@@ -21,7 +25,7 @@ def email_create_task(new_post, approved_user_list):
     #  Отправка сообщения согласователям
     for approve_user_id in approved_user_list:
         email_approve = EmailMessage(f'Согласование задания {new_post.task_number}.',
-                                     f'{Employee.objects.get(id=approve_user_id)}, задание {new_post.task_number} зарегистрировано в системе. Прошу рассмотреть и согласовать его. \n Посмотрите {HOST}/approve_details/{number_id}',
+                                     f'{Employee.objects.get(id=approve_user_id)}, задание {new_post.task_number} зарегистрировано в системе. Прошу рассмотреть и согласовать его. \n Посмотрите {LINK_FOR_EMAIL}/approve_details/{number_id}',
                                      to=[Employee.objects.get(id=approve_user_id).user.email])
         try:
             email_approve.send()
@@ -30,7 +34,7 @@ def email_create_task(new_post, approved_user_list):
 
     #  Отправка письма первому руководителю
     email_first_sign = EmailMessage(f'Подписание задания {new_post.task_number}.',
-                                    f'{new_post.first_sign_user}, задание {new_post.task_number} зарегистрировано в системе. Прошу рассмотреть и подписать его. \n Посмотрите {HOST}/details_to_sign/{number_id}',
+                                    f'{new_post.first_sign_user}, задание {new_post.task_number} зарегистрировано в системе. Прошу рассмотреть и подписать его. \n Посмотрите {LINK_FOR_EMAIL}/details_to_sign/{number_id}',
                                     to=[new_post.first_sign_user.user.email])
     try:
         email_first_sign.send()
@@ -39,7 +43,7 @@ def email_create_task(new_post, approved_user_list):
 
     #  Отправка сообщения второму руководителю
     email_second_sign = EmailMessage(f'Подписание задания {new_post.task_number}.',
-                                     f'{new_post.second_sign_user}. задание {new_post.task_number} зарегистрировано в системе. Прошу рассмотреть и подписать его. \n Посмотрите {HOST}/details_to_sign/{number_id}',
+                                     f'{new_post.second_sign_user}. задание {new_post.task_number} зарегистрировано в системе. Прошу рассмотреть и подписать его. \n Посмотрите {LINK_FOR_EMAIL}/details_to_sign/{number_id}',
                                      to=[new_post.second_sign_user.user.email])
     try:
         email_second_sign.send()
@@ -57,7 +61,7 @@ def check_and_send_to_cpe(pk):
             cpe_list.append(cpe_.cpe_user)
         for cpe_for_email in cpe_list:
             email_cpe = EmailMessage(f'Подписание задания {task.task_number}.',
-                                     f'{cpe_for_email}. задание {task.task_number} зарегистрировано в системе. Прошу рассмотреть и подписать его. \n Посмотрите {HOST}/details_to_sign/{task.id}',
+                                     f'{cpe_for_email}. задание {task.task_number} зарегистрировано в системе. Прошу рассмотреть и подписать его. \n Посмотрите {LINK_FOR_EMAIL}/details_to_sign/{task.id}',
                                      to=[cpe_for_email.user.email])
             try:
                 email_cpe.send()
@@ -78,11 +82,11 @@ def email_after_cpe_sign(pk):
             # Отправка сообщения всем, кто может подписывать задание в отделе
             if task.cpe_comment:
                 email_incoming = EmailMessage(f'Направлено задание  {task.task_number}.',
-                                              f'{incoming_user}, Вам направлено задание {task.task_number}. Прошу рассмотреть и принять в работу. \n Посмотрите {HOST}/incoming_to_sign_details/{task.id}. \nКомментарий ГИп-а {task.cpe_comment}',
+                                              f'{incoming_user}, Вам направлено задание {task.task_number}. Прошу рассмотреть и принять в работу. \n Посмотрите {LINK_FOR_EMAIL}/incoming_to_sign_details/{task.id}. \nКомментарий ГИп-а {task.cpe_comment}',
                                               to=[incoming_user.user.email])
             else:
                 email_incoming = EmailMessage(f'Направлено задание  {task.task_number}.',
-                                              f'{incoming_user}, Вам направлено задание {task.task_number}. Прошу рассмотреть и принять в работу. \n Посмотрите {HOST}/incoming_to_sign_details/{task.id}.',
+                                              f'{incoming_user}, Вам направлено задание {task.task_number}. Прошу рассмотреть и принять в работу. \n Посмотрите {LINK_FOR_EMAIL}/incoming_to_sign_details/{task.id}.',
                                               to=[incoming_user.user.email])
             try:
                 email_incoming.send()
@@ -91,7 +95,7 @@ def email_after_cpe_sign(pk):
 
         # Отправка сообщения автору, о том что все подписано
         email_author = EmailMessage(f'Задание {task.task_number} подписано',
-                                    f'Задание {task.task_number} подписано. \nПосмотрите {HOST}/details/{task.id}',
+                                    f'Задание {task.task_number} подписано. \nПосмотрите {LINK_FOR_EMAIL}/details/{task.id}',
                                     to=[task.author.user.email])
         try:
             email_author.send()
@@ -104,7 +108,7 @@ def add_worker_email(pk, worker_id):
     worker = Employee.objects.get(id=worker_id)
     email_to_worker = EmailMessage(f'Направлено задание  {task.task_number}.',
                                    f'{worker}, Вы назначены ответственным исполнителем по заданию {task.task_number}. Прошу принять в работу. '
-                                   f'\nПосмотрите {HOST}/details/{task.id}. \nКомментарий ГИп-а: {task.cpe_comment}',
+                                   f'\nПосмотрите {LINK_FOR_EMAIL}/details/{task.id}. \nКомментарий ГИп-а: {task.cpe_comment}',
                                    to=[worker.user.email])
     try:
         email_to_worker.send()
@@ -117,7 +121,7 @@ def delete_worker_email(pk):
     task = worker.task
     email_to_worker = EmailMessage(f'Больше не ответственный по заданию {task.task_number}.',
                                    f'{worker.worker_user}, Вы больше не ответственный исполнитель по заданию {task.task_number}.'
-                                   f'\nПосмотрите {HOST}/details/{task.id}',
+                                   f'\nПосмотрите {LINK_FOR_EMAIL}/details/{task.id}',
                                    to=[worker.worker_user.user.email])
     try:
         email_to_worker.send()
@@ -128,7 +132,7 @@ def delete_worker_email(pk):
 def incoming_sign_email(task, incoming_signer):
     email_to_author = EmailMessage(f'Задание {task.task_number} подписано принимающим отделом.',
                                    f'{incoming_signer} принял(а) Ваше задание {task.task_number} в отдел {task.incoming_dep}.'
-                                   f'\nПосмотрите {HOST}/details/{task.id}',
+                                   f'\nПосмотрите {LINK_FOR_EMAIL}/details/{task.id}',
                                    to=[task.author.user.email])
     try:
         email_to_author.send()
@@ -145,7 +149,7 @@ def incoming_not_sign_email(pk, incoming_signer, comment, need_edit=False):
                                    f'{task.task_number} не подписано.'
                                    f'\n{incoming_signer}: {comment}.'
                                    f'\nРедактирование задания {str_need_edit}.'
-                                   f'\nПосмотрите {HOST}/details/{task.id}',
+                                   f'\nПосмотрите {LINK_FOR_EMAIL}/details/{task.id}',
                                    to=[task.author.user.email])
     try:
         email_to_author.send()
@@ -163,7 +167,7 @@ def email_not_sign(pk, comment, user, need_edit=False,):
                                    f'{sign_user} не подписал(а) задание {task.task_number}.'
                                    f'\nКомментарий: {comment}.'
                                    f'\nРедактирование задания {str_need_edit}.'
-                                   f'\nПосмотрите {HOST}/details/{task.id}',
+                                   f'\nПосмотрите {LINK_FOR_EMAIL}/details/{task.id}',
                                    to=[task.author.user.email])
     try:
         email_to_author.send()
@@ -176,7 +180,7 @@ def email_change_task(obj, approved_user_list):
     number_id = TaskModel.objects.get(task_number=obj.task_number).id
     #  Отправка сообщения автору
     email_author = EmailMessage(f'Задание {obj.task_number} отредактировано',
-                                f'Задание {obj.task_number} отредактировано, посмотрите {HOST}/details/{number_id}',
+                                f'Задание {obj.task_number} отредактировано, посмотрите {LINK_FOR_EMAIL}/details/{number_id}',
                                 to=[obj.author.user.email])
     try:
         email_author.send()
@@ -186,7 +190,7 @@ def email_change_task(obj, approved_user_list):
     #  Отправка сообщения согласователям
     for approve_user_id in approved_user_list:
         email_approve = EmailMessage(f'Согласование задания {obj.task_number}.',
-                                     f'{approve_user_id.approve_user}, задание {obj.task_number} отредактировано. Прошу рассмотреть и согласовать его. \n Посмотрите {HOST}/approve_details/{number_id}',
+                                     f'{approve_user_id.approve_user}, задание {obj.task_number} отредактировано. Прошу рассмотреть и согласовать его. \n Посмотрите {LINK_FOR_EMAIL}/approve_details/{number_id}',
                                      to=[approve_user_id.approve_user.user.email])
         try:
             email_approve.send()
@@ -195,7 +199,7 @@ def email_change_task(obj, approved_user_list):
 
     #  Отправка письма первому руководителю
     email_first_sign = EmailMessage(f'Подписание задания {obj.task_number}.',
-                                    f'{obj.first_sign_user}, задание {obj.task_number} отредактировано. Прошу рассмотреть и подписать его. \n Посмотрите {HOST}/details_to_sign/{number_id}',
+                                    f'{obj.first_sign_user}, задание {obj.task_number} отредактировано. Прошу рассмотреть и подписать его. \n Посмотрите {LINK_FOR_EMAIL}/details_to_sign/{number_id}',
                                     to=[obj.first_sign_user.user.email])
     try:
         email_first_sign.send()
@@ -204,7 +208,7 @@ def email_change_task(obj, approved_user_list):
 
     #  Отправка сообщения второму руководителю
     email_second_sign = EmailMessage(f'Подписание задания {obj.task_number}.',
-                                     f'{obj.second_sign_user}. задание {obj.task_number} отредактировано. Прошу рассмотреть и подписать его. \n Посмотрите {HOST}/details_to_sign/{number_id}',
+                                     f'{obj.second_sign_user}. задание {obj.task_number} отредактировано. Прошу рассмотреть и подписать его. \n Посмотрите {LINK_FOR_EMAIL}/details_to_sign/{number_id}',
                                      to=[obj.second_sign_user.user.email])
     try:
         email_second_sign.send()
@@ -217,7 +221,7 @@ def email_add_approver(pk, approve_user_id):
     emp_approve = Employee.objects.get(id=approve_user_id)
     email_to_approver = EmailMessage(f'Согласование задания {task.task_number}',
                                      f'{emp_approve}, задание {task.task_number} ждет вашего согласования.'
-                                     f'\nПосмотрите {HOST}/approve_details/{task.id}',
+                                     f'\nПосмотрите {LINK_FOR_EMAIL}/approve_details/{task.id}',
                                      to=[emp_approve.user.email]
                                      )
     try:
@@ -232,8 +236,8 @@ def approve_give_comment_email(pk, user, text_comment):
                                      f'{obj.author}. '
                                      f'\n{Employee.objects.get(user=user)} прислал комментарий к заданию  {obj.task_number} '
                                      f'\nКомментарий: {text_comment}'
-                                     f'\nПосмотрите {HOST}/details/{obj.id}',
-                                     to=[obj.author.user.email])
+                                     f'\nПосмотрите {LINK_FOR_EMAIL}/details/{obj.id}',
+                                   to=[obj.author.user.email])
     try:
         email_to_author.send()
     except:
