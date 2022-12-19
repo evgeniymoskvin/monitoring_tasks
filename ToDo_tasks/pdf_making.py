@@ -19,8 +19,14 @@ def pdf_gen(pk):
     obj = task_from_model.task_object
     order = task_from_model.task_order
     building = task_from_model.task_building
-    contract = task_from_model.task_contract.contract_name
-    contract_stage = task_from_model.task_stage.stage_name
+    try:
+        contract = task_from_model.task_contract.contract_name
+    except:
+        contract = '-----'
+    try:
+        contract_stage = task_from_model.task_stage.stage_name
+    except:
+        contract_stage = '----'
     kind = task_from_model.task_type_work
     mark = task_from_model.task_mark_doc.mark_doc  # Марка документации
     task = task_from_model.task_number
