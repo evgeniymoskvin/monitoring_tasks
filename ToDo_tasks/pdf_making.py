@@ -28,7 +28,10 @@ def pdf_gen(pk):
     except:
         contract_stage = '----'
     kind = task_from_model.task_type_work
-    mark = task_from_model.task_mark_doc.mark_doc  # Марка документации
+    try:
+        mark = task_from_model.task_mark_doc.mark_doc  # Марка документации
+    except:
+        mark = 'Марка'
     task = task_from_model.task_number
     content = task_from_model.text_task
 
