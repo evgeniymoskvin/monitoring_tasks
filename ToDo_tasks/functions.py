@@ -66,6 +66,9 @@ def get_data_for_form(obj) -> dict:
     except:
         data['task_stage'] = str('-----')
 
+    if obj.task_order is None:
+        data['task_order'] = str('-----')
+
     return data
 
 

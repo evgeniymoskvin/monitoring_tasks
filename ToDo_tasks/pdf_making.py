@@ -17,7 +17,10 @@ def pdf_gen(pk):
     ovz = task_from_model.department_number.command_number
     opz = task_from_model.incoming_dep.command_number
     obj = task_from_model.task_object
-    order = task_from_model.task_order
+    if task_from_model.task_order is None:
+        order = '-----'
+    else:
+        order = task_from_model.task_order
     building = task_from_model.task_building
     try:
         contract = task_from_model.task_contract.contract_name
