@@ -390,7 +390,9 @@ class AddChangeTaskView(View):
         new_task_with_change.task_change_number = changing_task.task_change_number + 1
         # Копируем данные со старого задания
         new_task_with_change.task_order = changing_task.task_order
+        new_task_with_change.task_building = changing_task.task_building
         new_task_with_change.task_object = changing_task.task_object
+        new_task_with_change.task_mark_doc = changing_task.task_mark_doc
         new_task_with_change.task_contract = changing_task.task_contract
         new_task_with_change.task_stage = changing_task.task_stage
         new_task_with_change.department_number = changing_task.department_number
