@@ -1,9 +1,10 @@
 from django.urls import path
 from . import views
-from django.contrib.auth.views import PasswordChangeView
+from django.contrib.auth.views import PasswordChangeView, LoginView
 
 urlpatterns = [
-    path('', views.IndexView.as_view(), name='index'),
+    path('', views.AboutView.as_view(), name='about'),
+    path('index/', views.IndexView.as_view(), name='index'),
     path('my_outgoing_tasks/', views.UserTaskView.as_view(), name='my_tasks'),
     path('inbox', views.MyInboxListView.as_view(), name='inbox'),
     path('my_tasks_on_sign/', views.UserTaskOnSignView.as_view(), name='my_tasks_on_sign'),
@@ -43,7 +44,6 @@ urlpatterns = [
     path('profile', views.UserProfileView.as_view(), name='profile'),
     path('edit_profile', views.EditProfileUserView.as_view(), name='edit_profile'),
     path('edit_approve/<int:pk>', views.EditApproveUserView.as_view(), name='edit_approve'),
-
-
+    path('modal-login', LoginView.as_view(), name='login-modal'),
 
 ]

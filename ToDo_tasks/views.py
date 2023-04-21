@@ -12,11 +12,12 @@ from django.views import View
 from django.db.models import Q
 from django.conf import settings
 from django.http import HttpResponse, Http404
+from django.contrib.auth import authenticate, login
 
 from .models import Employee, TaskModel, ContractModel, ObjectModel, StageModel, TaskNumbersModel, CommandNumberModel, \
     CpeModel, CanAcceptModel, WorkerModel, ApproveModel, AttachmentFilesModel
 from .forms import TaskForm, TaskEditForm, SearchForm, WorkerForm, WorkersEditForm, \
-    TaskFormForSave, ApproveForm, FilesUploadForm, UserProfileForm, ApproveEditForm
+    TaskFormForSave, ApproveForm, FilesUploadForm, UserProfileForm, ApproveEditForm, LoginForm
 from .functions import get_data_for_detail, get_list_to_sign, get_task_edit_form, \
     get_list_to_sign_cpe, get_list_incoming_tasks_to_sign, get_list_incoming_tasks_to_workers, save_to_worker_list, \
     get_list_to_change_workers, is_valid_queryparam
@@ -24,6 +25,36 @@ from .pdf_making import pdf_gen
 from .email_functions import email_create_task, check_and_send_to_cpe, email_after_cpe_sign, delete_worker_email, \
     incoming_not_sign_email, email_not_sign, email_change_task, approve_give_comment_email, email_add_approver, \
     incoming_sign_email
+
+
+class AboutView(View):
+    def get(self, request):
+        if request.user.is_authenticated:
+            return redirect('index')
+        form_login = LoginForm()
+        content = {
+            "login_form": form_login,
+        }
+        return render(request, 'todo_tasks/about.html', content)
+
+    def post(self, request):
+        print(request.POST)
+        if User.objects.filter(username=request.POST['username']).exists():
+            user = authenticate(username=request.POST['username'], password=request.POST['password'])
+            try:
+                login(request, user)
+                return redirect('index')
+            except:
+                return redirect('login')
+        else:
+            return redirect('login')
+        return redirect('about')
+
+        # form_login = LoginForm(request.POST)
+        # print(form_login)
+        # content = {
+        #     "login_form": form_login,
+        # }
 
 
 class IndexView(View):

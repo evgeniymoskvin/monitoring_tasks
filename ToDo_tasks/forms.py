@@ -1,8 +1,9 @@
 from .models import TaskModel, ObjectModel, ContractModel, StageModel, OrdersModel, Employee, CanAcceptModel, \
     WorkerModel, ApproveModel, AttachmentFilesModel, CommandNumberModel
-from django.forms import ModelForm, TextInput, Textarea, CheckboxInput, Select, ChoiceField, Form, \
+from django.forms import ModelForm, TextInput, Textarea, CheckboxInput, Select, ChoiceField, Form, PasswordInput, \
     CharField, ModelChoiceField, modelformset_factory, ModelMultipleChoiceField, MultipleChoiceField, SelectMultiple, \
     FileField, ClearableFileInput, FileInput, DateTimeField, DateTimeInput
+from django.contrib.auth.forms import AuthenticationForm, UsernameField
 
 from django.views import View
 
@@ -387,3 +388,16 @@ class UserProfileForm(ModelForm):
 
     # WorkerFormSet = modelformset_factory(WorkerModel, fields=("worker_user",), extra=1, can_delete=False)
     WorkerFormSet = modelformset_factory(WorkerModel, form=WorkerForm)
+
+class LoginForm(AuthenticationForm):
+    username = UsernameField(
+        widget=TextInput(
+            attrs={"autofocus": True, "class": "form-control", 'id': 'floatingInput',
+                   'placeholder': 'Имя пользователя'}))
+    password = CharField(
+        label=("Password"),
+        strip=False,
+        widget=PasswordInput(
+            attrs={"autocomplete": "current-password", "class": "form-control", 'id': 'floatingPassword',
+                   'placeholder': 'Пароль'}),
+    )
