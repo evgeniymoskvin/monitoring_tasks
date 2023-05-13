@@ -127,6 +127,13 @@
     text-transform: uppercase;
 }
 
+.text-menu-sidebar {
+    font-family: "p22_underground_cy_probook", serif;
+    font-size: 12px;
+    transition: .05s ease-in-out;
+    text-transform: uppercase;
+}
+
 .text-index-book-p {
     font-family: "p22_underground_cy_probook", serif;
     font-size: 30px;
@@ -183,46 +190,6 @@
 
 
 
-table {
-    font-family: "p22_underground_cy_probook", serif;
-    clear: both;
-    width: 30%;
-    border: 1px solid #dcdcff;
-    border-radius: 3px;
-    border-collapse: collapse;
-    color: #444;
-}
-
-td {
-    font-family: "p22_underground_cy_probook", serif;
-    height: 48px;
-    text-align: center;
-    vertical-align: middle;
-    border-right: 1px solid #dcdcff;
-    border-top: 1px solid #dcdcff;
-    width: 14.28571429%;
-}
-
-td.not-current {
-    font-family: "p22_underground_cy_probook", serif;
-    color: #c0c0c0;
-}
-
-td.today {
-    font-family: "p22_underground_cy_probook", serif;
-    font-weight: 700;
-    color: #28283b;
-    font-size: 1.5em;
-}
-
-thead td {
-    font-family: "p22_underground_cy_probook", serif;
-    border: none;
-    color: #28283b;
-    text-transform: uppercase;
-    font-size: 1.5em;
-}
-
 .center-screen {
   display: flex;
   flex-direction: column;
@@ -231,3 +198,36 @@ thead td {
 
   min-height: 100vh;
 }
+
+
+.loader{
+      display: block;
+      position: relative;
+      height: 12px;
+      width: 100%;
+      border: 1px solid #fff;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .loader::after {
+      content: '';
+      width: 40%;
+      height: 100%;
+      background: #F23030;
+      position: absolute;
+      top: 0;
+      left: 0;
+      box-sizing: border-box;
+      animation: animloader 2s linear infinite;
+    }
+
+    @keyframes animloader {
+      0% {
+        left: 0;
+        transform: translateX(-100%);
+      }
+      100% {
+        left: 100%;
+        transform: translateX(0%);
+      }
+    }

@@ -8,6 +8,25 @@
 
 {% block css_stuff %}
     <script type="text/javascript" src="{% static 'todo_tasks/htmx/htmx.min.js' %}"></script>
+    <script>
+        function showloader() {
+            spinloader = document.getElementById('loaderspin')
+            console.log(spinloader)
+            spinloader.style.display = 'block'
+
+            buttonadd = document.getElementById('button_add')
+            buttonadd.style.visibility = 'hidden'
+        }
+
+        function hideloader() {
+            spinloader = document.getElementById('loaderspin')
+            console.log(spinloader)
+            spinloader.style.display = 'none'
+
+            buttonadd = document.getElementById('button_add')
+            buttonadd.style.visibility = 'visible'
+        }
+    </script>
 {% endblock %}
 {% block content %}
     <br>
@@ -23,9 +42,16 @@
         {{ file_form.file }}
         <br>
         <figure class="text-center">
-            <button class="btn btn-success" type="submit" hx-target="task_files">Добавить</button>
+            <button class="btn btn-success" type="submit" onclick="showloader()" hx-target="task_files" id="button_add">
+                Добавить
+            </button>
+            <div style="display: none;" id="loaderspin">
+                <span class="loader"></span>
+            </div>
         </figure>
     </form>
+
+
 
     <div id="task_files">
         {% include 'todo_tasks/htmx/list_files.html' %}

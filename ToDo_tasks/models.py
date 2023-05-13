@@ -118,7 +118,7 @@ class ObjectModel(models.Model):
 
 class ContractModel(models.Model):
     """Таблица договоров"""
-    contract_object = models.ForeignKey(ObjectModel, on_delete=models.PROTECT, verbose_name="Номер договора", default=1)
+    contract_object = models.ForeignKey(ObjectModel, on_delete=models.PROTECT, verbose_name="Объект", default=1)
     contract_name = models.CharField(max_length=250, verbose_name="Номер договора")
 
     class Meta:
@@ -211,7 +211,7 @@ class TaskModel(models.Model):
                                       verbose_name="Главный инженер проекта", related_name="cpe_sign_user_employee")
     cpe_sign_date = models.DateTimeField("Дата и время подписи первого подписанта", default=None, null=True)
     cpe_sign_status = models.BooleanField("Подпись ГИП-а", default=False)
-    cpe_comment = models.TextField("Текст задания", max_length=5000, null=True, default=None)
+    cpe_comment = models.TextField("Текст комментария", max_length=5000, null=True, default=None)
     back_to_change = models.BooleanField("Возвращено на доработку", default=False)
     task_status = models.IntegerField("Статус задания", choices=StatusTaskChoice.choices,
                                       default=StatusTaskChoice.ON_SIGN)
@@ -273,11 +273,19 @@ class ApproveModel(models.Model):
     approve_status = models.BooleanField("Статус подписи", default=False)
     approve_date = models.DateTimeField("Дата подписания", default=None, null=True)
 
+    class Meta:
+        verbose_name = _("согласователь задания")
+        verbose_name_plural = _("согласователи заданий")
+
 
 class BackCommentModel(models.Model):
     """Таблица заданий возвраты"""
     task = models.ForeignKey(TaskModel, on_delete=models.CASCADE, verbose_name="Задание", null=True)
-    bad_comment = models.TextField("Текст задания", max_length=5000, null=True, default=None)
+    bad_comment = models.TextField("Текст комментария", max_length=5000, null=True, default=None)
+
+    class Meta:
+        verbose_name = _("комментарий при отказе")
+        verbose_name_plural = _("комментарии при отказах")
 
 
 def upload_to(instance, filename):
@@ -290,6 +298,7 @@ def upload_to(instance, filename):
 
 
 class AttachmentFilesModel(models.Model):
+    """Таблица приложенных файлов"""
     task = models.ForeignKey(TaskModel, on_delete=models.CASCADE, verbose_name="Задание", null=True)
     file = models.FileField(storage=FileSystemStorage(), verbose_name="Файл", null=True, blank=True,
                             upload_to=upload_to)

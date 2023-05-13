@@ -924,7 +924,7 @@ class AdvancedSearchView(View):
 #         print(type(request.user))
 #         # print(vars(request))
 #
-#         return render(request, 'todo_tasks/test_cancel.html', content)
+#         return render(request, 'todo_tasks/sidebar.html', content)
 
 
 #

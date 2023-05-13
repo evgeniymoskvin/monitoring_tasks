@@ -10,6 +10,7 @@
 
     <link rel="stylesheet" type="text/css" href="{% static 'todo_tasks/Bootstrap-5-5.1.3/css/bootstrap.css' %}"/>
     <link rel="stylesheet" type="text/css" href="{% static 'todo_tasks/css/tasks.css' %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'todo_tasks/css/style_sidebar.css' %}"/>
     <link rel="stylesheet" type="text/css"
           href="{% static 'todo_tasks/DataTables-1.12.1/css/dataTables.bootstrap5.css' %}"/>
     <script type="text/javascript" src="{% static 'todo_tasks/Bootstrap-5-5.1.3/js/bootstrap.bundle.js' %}"></script>
@@ -26,7 +27,9 @@
 
 </head>
 
-<body>
+<body class="content-fade">
+
+{% include "todo_tasks/sidebar.html" %}
 
 <nav class="py-2 my-nav">
     <div class="container d-flex flex-wrap">
@@ -38,11 +41,6 @@
         </ul>
 
         <ul class="nav">
-{#            <li class="nav-item dropdown text-light">#}
-{#                <a class="nav-link text-black navbar-text">{{ user }}</a>#}
-{#            </li>#}
-
-
             <div class="dropdown">
                 <a class="nav-link text-3-menu" type="button" data-bs-toggle="offcanvas"
                    data-bs-target="#offcanvasScrolling"
@@ -69,8 +67,8 @@
                 {% endif %}
                 <a class="dropdown-item" href="{% url 'advanced_search' %}">Расширенный поиск</a>
                 <hr class="dropdown-divider">
-                {#                <a class="dropdown-item" href="{% url 'change_password' %}">Сменить пароль</a>#}
-                {#                <a class="dropdown-item" href="{% url 'logout' %}">Выйти</a>#}
+                                <a class="dropdown-item" href="{% url 'change_password' %}">Сменить пароль</a>
+                                <a class="dropdown-item" href="{% url 'logout' %}">Выйти</a>
 
 
                 <div class="dropdown">

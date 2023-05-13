@@ -5,6 +5,17 @@
 {% block css_stuff %}
     <link href="{% static 'todo_tasks/select2/select2.min.css' %}" rel="stylesheet"/>
     <script src="{% static 'todo_tasks/select2/select2.min.js' %}"></script>
+
+    <script>
+        function showloader() {
+            spinloader = document.getElementById('loaderspin')
+            console.log(spinloader)
+            spinloader.style.display = 'block'
+
+            formadd = document.getElementById('formadd')
+            formadd.style.display = 'none'
+        }
+    </script>
 {% endblock %}
 
 
@@ -18,116 +29,119 @@
     <br>
     <h3 class="text-center display-6">Выдать задание</h3>
     <br>
-    <form id="formAdd" method="post" enctype="multipart/form-data" data-contracts-url="{% url 'ajax_load_contracts' %}"
-          data-stages-url="{% url 'ajax_load_stages' %}" data-incoming-emp-url="{% url 'ajax_load_inc_emp' %}">
-        <div class="container">
+    <div id="formadd">
+        <form id="formAdd" method="post" enctype="multipart/form-data"
+              data-contracts-url="{% url 'ajax_load_contracts' %}"
+              data-stages-url="{% url 'ajax_load_stages' %}" data-incoming-emp-url="{% url 'ajax_load_inc_emp' %}">
+            <div class="container">
 
-            <div class="row">
-                <div class="col">
-                    {% csrf_token %}
+                <div class="row">
+                    <div class="col">
+                        {% csrf_token %}
 
-                    Объект:
-                    {{ form.task_object }}
-                    Номер договора:
-                    {{ form.task_contract }}
-                    Этап:
-                    {{ form.task_stage }}
-                    Номер заказа:
-                    {{ form.task_order }}
-                    Вид документации:
-                    {{ form.task_type_work }}
-                    Марка документации:
-                    {{ form.task_mark_doc }}
-                    Здание:
-                    {{ form.task_building }}
+                        Объект:
+                        {{ form.task_object }}
+                        Номер договора:
+                        {{ form.task_contract }}
+                        Этап:
+                        {{ form.task_stage }}
+                        Номер заказа:
+                        {{ form.task_order }}
+                        Вид документации:
+                        {{ form.task_type_work }}
+                        Марка документации:
+                        {{ form.task_mark_doc }}
+                        Здание:
+                        {{ form.task_building }}
 
+                    </div>
+                    <div class="col">
+                        Текст задания:
+                        {{ form.text_task }}
+                        <br>
+                        {#                    Здесь должно быть поле для загрузки файла#}
+                    </div>
                 </div>
-                <div class="col">
-                    Текст задания:
-                    {{ form.text_task }}
-                    <br>
-                    {#                    Здесь должно быть поле для загрузки файла#}
-                </div>
-            </div>
 
-            <br>
+                <br>
 
-            <div class="row justify-content-center">
-                <div class="col-2">
-                    Первый руководитель:
-                </div>
-                <div class="col-3">
-                    {{ form.first_sign_user }}
-                </div>
-            </div>
-            <br>
-            <div class="row justify-content-center">
-                <div class="col-2">
-                    Второй руководитель:
-                </div>
-                <div class="col-3">
-                    {{ form.second_sign_user }}
-                </div>
-            </div>
-            <br>
-
-            <div class="row justify-content-center">
-                <div class="col-2">
-                    Принимающий отдел:
-                </div>
-                <div class="col-3">
-                    {{ form.incoming_dep }}
-                </div>
-            </div>
-            <br>
-
-            <div>
                 <div class="row justify-content-center">
                     <div class="col-2">
-                        Добавьте файлы:
+                        Первый руководитель:
                     </div>
                     <div class="col-3">
-                        {{ file_form.file }}
+                        {{ form.first_sign_user }}
                     </div>
                 </div>
-            </div>
-            <br>
-
-            <div class="row justify-content-center">
-                <div class="col-2">
-                    Требуются ли согласователи?:
-                </div>
-                <div class="col-3">
-                    {{ form.task_need_approve }}
-                </div>
-            </div>
-            <br>
-
-            <div id="approve" style="display: none">
+                <br>
                 <div class="row justify-content-center">
                     <div class="col-2">
-                        Выберете согласователей:
+                        Второй руководитель:
                     </div>
                     <div class="col-3">
-                        {{ approve_form.approve_user }}
+                        {{ form.second_sign_user }}
+                    </div>
+                </div>
+                <br>
+
+                <div class="row justify-content-center">
+                    <div class="col-2">
+                        Принимающий отдел:
+                    </div>
+                    <div class="col-3">
+                        {{ form.incoming_dep }}
+                    </div>
+                </div>
+                <br>
+
+                <div>
+                    <div class="row justify-content-center">
+                        <div class="col-2">
+                            Добавьте файлы:
+                        </div>
+                        <div class="col-3">
+                            {{ file_form.file }}
+                        </div>
+                    </div>
+                </div>
+                <br>
+
+                <div class="row justify-content-center">
+                    <div class="col-2">
+                        Требуются ли согласователи?:
+                    </div>
+                    <div class="col-3">
+                        {{ form.task_need_approve }}
+                    </div>
+                </div>
+                <br>
+
+                <div id="approve" style="display: none">
+                    <div class="row justify-content-center">
+                        <div class="col-2">
+                            Выберете согласователей:
+                        </div>
+                        <div class="col-3">
+                            {{ approve_form.approve_user }}
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="row justify-content-center">
+                    <div class="col">
+                        <figure class="text-center">
+                            <a class="btn btn-outline-secondary" href="{% url 'index' %}" role="button">Отмена</a>
+                            <button class="btn btn-outline-success" type="submit" onclick="showloader()">Выдать задание</button>
+                        </figure>
                     </div>
                 </div>
             </div>
-
-
-
-            <div class="row justify-content-center">
-                <div class="col">
-                    <figure class="text-center">
-                        <a class="btn btn-outline-secondary" href="{% url 'index' %}" role="button">Отмена</a>
-                        <button class="btn btn-outline-success" type="submit">Выдать задание</button>
-                    </figure>
-                </div>
-            </div>
-        </div>
-
-
-    </form>
+        </form>
+    </div>
+    <div style="display: none;" id="loaderspin">
+        <span class="loader"></span>
+    </div>
 
 
 
