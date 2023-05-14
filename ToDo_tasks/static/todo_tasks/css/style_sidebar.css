@@ -15,7 +15,6 @@
     font-size: 20px;
 }
 
-
 .main-menu:hover, nav.main-menu.expanded {
     /*left: calc(100% - 250px);*/
     width: 250px;
@@ -88,6 +87,16 @@
     /*font-family: 'Titillium Web', sans-serif;*/
 }
 
+.main-menu .nav-text-small {
+    position: relative;
+    display: table-cell;
+    vertical-align: middle;
+    margin-top: 15px;
+    width: 190px;
+    font-size: 12px;
+    /*font-family: 'Titillium Web', sans-serif;*/
+}
+
 .main-menu > ul.logout {
     position: absolute;
     left: 0;
@@ -135,6 +144,22 @@ nav ul, nav li {
 }
 
 
+.numberCircle {
+    border-radius: 50%;
+    width: 15px;
+    height: 15px;
+    padding: 3px;
+
+    background: red;
+    /*border: 2px solid #666;*/
+    color: white;
+    text-align: center;
+    font-size: 11px;
+
+    font-family: "p22_underground_cy_probook", serif;
+}
+
+
 .icon-home {
     background-image: url('../icons/house-solid_white.svg');
     background-position: center center;
@@ -144,7 +169,113 @@ nav ul, nav li {
 }
 
 .icon-handshake-regular {
-    background-image: url('../icons/handshake-regular.svg');
+    background-image: url('../icons/handshake-angle-solid.svg');
+    background-position: center center;
+    background-repeat: no-repeat;
+    height: 21px;
+    padding-left: 16px; /* Or size of icon + spacing */
+}
+
+
+.icon-gear-menu {
+    background-image: url('../icons/gear_menu.svg');
+    background-position: center center;
+    background-repeat: no-repeat;
+    height: 21px;
+    padding-left: 16px; /* Or size of icon + spacing */
+}
+
+.icon-pen-menu {
+    background-image: url('../icons/pen-to-square-solid.svg');
+    background-position: center center;
+    background-repeat: no-repeat;
+    height: 21px;
+    padding-left: 16px; /* Or size of icon + spacing */
+}
+
+
+.icon-user-menu {
+    background-image: url('../icons/user-gear-solid.svg');
+    background-position: center center;
+    background-repeat: no-repeat;
+    height: 21px;
+    padding-left: 16px; /* Or size of icon + spacing */
+}
+
+.icon-search-menu {
+    background-image: url('../icons/magnifying-glass-solid.svg');
+    background-position: center center;
+    background-repeat: no-repeat;
+    height: 21px;
+    padding-left: 16px; /* Or size of icon + spacing */
+}
+
+.icon-outgoing_to_sign-menu {
+    background-image: url('../icons/paper-plane-solid.svg');
+    background-position: center center;
+    background-repeat: no-repeat;
+    height: 21px;
+    padding-left: 16px; /* Or size of icon + spacing */
+}
+
+.icon-people-pulling-solid-menu {
+    background-image: url('../icons/people-pulling-solid.svg');
+    background-position: center center;
+    background-repeat: no-repeat;
+    height: 21px;
+    padding-left: 16px; /* Or size of icon + spacing */
+}
+
+.icon-arrows-down-to-people-solid-menu {
+    background-image: url('../icons/arrows-down-to-people-solid.svg');
+    background-position: center center;
+    background-repeat: no-repeat;
+    height: 21px;
+    padding-left: 16px; /* Or size of icon + spacing */
+}
+
+.icon-right-to-bracket-solid-menu {
+    background-image: url('../icons/signature-solid.svg');
+    background-position: center center;
+    background-repeat: no-repeat;
+    height: 21px;
+    padding-left: 16px; /* Or size of icon + spacing */
+}
+
+.icon-box-menu {
+    background-image: url('../icons/box-solid.svg');
+    background-position: center center;
+    background-repeat: no-repeat;
+    height: 21px;
+    padding-left: 16px; /* Or size of icon + spacing */
+}
+
+.icon-boxes-menu {
+    background-image: url('../icons/people-group-solid.svg');
+    background-position: center center;
+    background-repeat: no-repeat;
+    height: 21px;
+    padding-left: 16px; /* Or size of icon + spacing */
+}
+
+.icon-angles-up-solid-menu {
+    background-image: url('../icons/angles-up-solid.svg');
+    background-position: center center;
+    background-repeat: no-repeat;
+    height: 21px;
+    padding-left: 16px; /* Or size of icon + spacing */
+}
+
+.icon-angle-up-solid-menu {
+    background-image: url('../icons/angle-up-solid.svg');
+    background-position: center center;
+    background-repeat: no-repeat;
+    height: 21px;
+    padding-left: 16px; /* Or size of icon + spacing */
+}
+
+.icon-angles-down-solid-menu {
+    background-image: url('../icons/angles-down-solid.svg');
     background-position: center center;
     background-repeat: no-repeat;
     height: 21px;

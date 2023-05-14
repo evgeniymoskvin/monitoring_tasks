@@ -293,8 +293,10 @@ class EditTaskView(View):
     def post(self, request, pk):
         """Обновляем данные базы данных"""
         if 'delete_number' in request.POST:
+            obj = TaskModel.objects.get(pk=pk)
+            obj.delete()
             print(pk, ' delete')
-            return redirect(f'index')
+            return redirect(f'my_tasks_on_sign')
         else:
             form = TaskEditForm(request.POST)
             # if form.is_valid():

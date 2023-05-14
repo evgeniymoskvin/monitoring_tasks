@@ -1,100 +1,332 @@
 {% load static %}
-<nav class="main-menu">
-    <ul>
-        <li>
-            <a href="{% url 'index' %}" style="vertical-align: top">
+{% load task_tags %}
 
-                <i class="fa">
-                    <div class="icon-home"></div>
-                </i>
+<script>
+
+    function onclickmytasks() {
+        var my_tasks = document.getElementById('my_tasks')
+        var my_tasks_on_sign = document.getElementById('my_tasks_on_sign')
+        var my_inbox = document.getElementById('my_inbox')
+        var group_inbox = document.getElementById('group_inbox')
+        var group_outbox = document.getElementById('group_outbox')
+        var group_on_sign = document.getElementById('group_on_sign')
+
+        group_inbox.style.display = 'none'
+        group_outbox.style.display = 'none'
+        group_on_sign.style.display = 'none'
+
+        if (my_tasks.style.display == 'none') {
+            my_tasks_on_sign.style.opacity = '0'
+            my_tasks_on_sign.style.display = 'block'
+            my_tasks.style.opacity = '0'
+            my_tasks.style.display = 'block'
+            my_inbox.style.opacity = '0'
+            my_inbox.style.display = 'block'
+            var op = 0;
+            while (op <= 1) {
+                (function (_op) {
+                    setTimeout(function () {
+                        my_tasks.style.opacity = _op;
+                    }, 100 + op * 380);
+                    setTimeout(function () {
+                        my_tasks_on_sign.style.opacity = _op;
+                    }, 100 + op * 380);
+                    setTimeout(function () {
+                        my_inbox.style.opacity = _op;
+                    }, 100 + op * 380);
+                })(op);
+                op += 0.1;
+            }
+        } else {
+            my_tasks_on_sign.style.display = 'none'
+            my_tasks.style.display = 'none'
+            my_inbox.style.display = 'none'
+        }
+    }
+
+    function onclickgrouptasks() {
+        var my_tasks = document.getElementById('my_tasks')
+        var my_tasks_on_sign = document.getElementById('my_tasks_on_sign')
+        var my_inbox = document.getElementById('my_inbox')
+        var group_inbox = document.getElementById('group_inbox')
+        var group_outbox = document.getElementById('group_outbox')
+        var group_on_sign = document.getElementById('group_on_sign')
+
+        my_tasks.style.display = 'none'
+        my_tasks_on_sign.style.display = 'none'
+        my_inbox.style.display = 'none'
+
+        if (group_outbox.style.display == 'none') {
+            group_inbox.style.opacity = '0'
+            group_inbox.style.display = 'block'
+            group_outbox.style.opacity = '0'
+            group_outbox.style.display = 'block'
+            group_on_sign.style.opacity = '0'
+            group_on_sign.style.display = 'block'
+            var op = 0;
+            while (op <= 1) {
+                (function (_op) {
+                    setTimeout(function () {
+                        group_on_sign.style.opacity = _op;
+                    }, 100 + op * 380);
+                    setTimeout(function () {
+                        group_outbox.style.opacity = _op;
+                    }, 100 + op * 380);
+                    setTimeout(function () {
+                        group_inbox.style.opacity = _op;
+                    }, 100 + op * 380);
+                })(op);
+                op += 0.1;
+            }
+        } else {
+            group_inbox.style.display = 'none'
+            group_outbox.style.display = 'none'
+            group_on_sign.style.display = 'none'
+        }
+    }
 
 
-                <span class="nav-text text-menu-sidebar" style="text-transform: uppercase">
+    function hidecircle() {
+        const outgoing_num = document.getElementById('outgoing_num')
+        const approve_num = document.getElementById('approve_num')
+        const incoming_to_sign_num = document.getElementById('incoming_to_sign_num')
+        const workers_to_sign_num = document.getElementById('workers_to_sign_num')
+
+        if (!(outgoing_num.innerText === '')) {
+            outgoing_num.style.display = 'block'
+        }
+        if (!(approve_num.innerText === '')) {
+            outgoing_num.style.display = 'block'
+        }
+        if (!(incoming_to_sign_num.innerText === '')) {
+            incoming_to_sign_num.style.display = 'block'
+        }
+        if (!(workers_to_sign_num.innerText === '')) {
+            workers_to_sign_num.style.display = 'block'
+        }
+    }
+
+
+</script>
+<div>
+
+    <nav class="main-menu">
+        <ul>
+            <li>
+                <a href="{% url 'index' %}" style="vertical-align: top">
+
+                    <i class="fa">
+                        <div class="icon-home"></div>
+                    </i>
+
+                    <span class="nav-text text-menu-sidebar" style="text-transform: uppercase">
                            Главная страница
                         </span>
-            </a>
+                </a>
 
-        </li>
-        <li class="has-subnav">
-            <a href="#">
-                <i class="fa fa-globe fa-2x"></i>
-                <span class="nav-text text-menu-sidebar" style="text-transform: uppercase">
-                            Global Surveyors
-                        </span>
-            </a>
+            </li>
 
-        </li>
-        <li class="has-subnav">
-            <a href="#">
-                <i class="fa">
-                    <div class="icon-handshake-regular"></div>
-                </i>
-                <span class="nav-text text-menu-sidebar" style="text-transform: uppercase">
-                            Согласовать задание
-                        </span>
-            </a>
+            <!-- Для руководителей-->
+            {% if user.right_to_sign == True and user.cpe_flag == False %}
+                {% include "todo_tasks/offcanvas/offcanvas_can_sign.html" %}
+            {% elif user.cpe_flag == True %}
+                {% include "todo_tasks/offcanvas/offcanvas_cpe.html" %}
+            {% else %}
+                {% include "todo_tasks/offcanvas/offcanvas_worker.html" %}
+            {% endif %}
 
-        </li>
-        <li class="has-subnav">
-            <a href="#">
-                <i class="fa fa-camera-retro fa-2x"></i>
-                <span class="nav-text text-menu-sidebar" style="text-transform: uppercase">
-                            Подписать исходящее
-                        </span>
-            </a>
+{#            <li class="has-subnav">#}
+{#                <a href="{% url 'add_task' %}">#}
+{#                    <i class="fa">#}
+{#                        <div class="icon-pen-menu"></div>#}
+{#                    </i>#}
+{#                    <span class="nav-text text-menu-sidebar" style="text-transform: uppercase">#}
+{#                            Выдать задание#}
+{#                        </span>#}
+{#                </a>#}
+{##}
+{#            </li>#}
+{##}
+{#            <li class="has-subnav">#}
+{#                <a href="{% url 'approve_list_to_sign' %}">#}
+{#                    <i class="fa">#}
+{#                        <div class="icon-handshake-regular">#}
+{#                            <p class="text-menu-sidebar numberCircle" id="approve_num"#}
+{#                               style="display: none">{% need_approve user %}</p>#}
+{#                        </div>#}
+{#                    </i>#}
+{#                    <span class="nav-text text-menu-sidebar" style="text-transform: uppercase">#}
+{#                            Согласовать задание#}
+{#                        </span>#}
+{#                </a>#}
+{#            </li>#}
+{##}
+{#            <li class="has-subnav">#}
+{#                <a href="{% url 'outgoing_to_sign' %}">#}
+{#                    <i class="fa">#}
+{#                        <div class="icon-outgoing_to_sign-menu">#}
+{#                            <p class="text-menu-sidebar numberCircle" id="outgoing_num"#}
+{#                               style="display: none">{% get_count_task_to_sign user %}</p>#}
+{#                        </div>#}
+{#                    </i>#}
+{#                    <span class="nav-text text-menu-sidebar" style="text-transform: uppercase">#}
+{#                            Подписать исходящее#}
+{#                        </span>#}
+{#                </a>#}
+{##}
+{#            </li>#}
+{#            <li>#}
+{#                <a href="{% url 'incoming_to_sign' %}">#}
+{#                    <i class="fa">#}
+{#                        <div class="icon-right-to-bracket-solid-menu">#}
+{#                            <p class="text-menu-sidebar numberCircle" id="incoming_to_sign_num"#}
+{#                               style="display: none">{% get_count_task_incoming_to_sign user %}</p>#}
+{#                        </div>#}
+{#                    </i>#}
+{##}
+{#                    <span class="nav-text text-menu-sidebar" style="text-transform: uppercase">#}
+{#                            Подписать входящее#}
+{#                        </span>#}
+{#                </a>#}
+{#            </li>#}
+{#            <li>#}
+{#                <a href="{% url 'incoming_to_workers' %}">#}
+{#                    <i class="fa">#}
+{#                        <div class="icon-arrows-down-to-people-solid-menu">#}
+{#                            <p class="text-menu-sidebar numberCircle" id="workers_to_sign_num"#}
+{#                               style="display: none">{% get_count_task_workers_to_sign user %}</p>#}
+{#                        </div>#}
+{#                    </i>#}
+{##}
+{#                    <span class="nav-text text-menu-sidebar" style="text-transform: uppercase">#}
+{#                           Назначить исполнителей#}
+{#                        </span>#}
+{#                </a>#}
+{#            </li>#}
+{##}
+{#            <li>#}
+{#                <a href="{% url 'edit_workers' %}">#}
+{#                    <i class="fa">#}
+{#                        <div class="icon-people-pulling-solid-menu"></div>#}
+{#                    </i>#}
+{#                    <span class="nav-text text-menu-sidebar" style="text-transform: uppercase">#}
+{#                            Переназначить ответственных#}
+{#                        </span>#}
+{#                </a>#}
+{#            </li>#}
+{##}
+{#            <!-- Мои задания -->#}
+{#            <li class="has-subnav" onclick="onclickmytasks()">#}
+{#                <a href="#">#}
+{#                    <i class="fa">#}
+{#                        <div class="icon-box-menu"></div>#}
+{#                    </i>#}
+{#                    <span class="nav-text text-menu-sidebar" style="text-transform: uppercase">#}
+{#                            Мои задания#}
+{#                        </span>#}
+{#                </a>#}
+{#            </li>#}
+{#            <li class="has-subnav" id="my_tasks" style="display: none">#}
+{#                <a href="{% url 'my_tasks' %}">#}
+{#                    <i class="fa"></i>#}
+{#                    <span class="nav-text text-menu-sidebar" style="text-transform: uppercase">#}
+{#                            Мои выданные задания#}
+{#                        </span>#}
+{#                </a>#}
+{#            </li>#}
+{##}
+{#            <li class="has-subnav" id="my_tasks_on_sign" style="display: none">#}
+{#                <a href="{% url 'my_tasks_on_sign' %}">#}
+{#                    <i class="fa"></i>#}
+{#                    <span class="nav-text text-menu-sidebar" style="text-transform: uppercase">#}
+{#                            Мои задания на подписи#}
+{#                        </span>#}
+{#                </a>#}
+{#            </li>#}
+{##}
+{#            <li class="has-subnav" id="my_inbox" style="display: none">#}
+{#                <a href="{% url 'inbox' %}">#}
+{#                    <i class="fa"></i>#}
+{#                    <span class="nav-text text-menu-sidebar" style="text-transform: uppercase">#}
+{#                            Мои входящие задания#}
+{#                        </span>#}
+{#                </a>#}
+{#            </li>#}
+{##}
+{#            <!-- Задания отдела -->#}
+{#            <li class="has-subnav" onclick="onclickgrouptasks()">#}
+{#                <a href="#">#}
+{#                    <i class="fa">#}
+{#                        <div class="icon-boxes-menu"></div>#}
+{#                    </i>#}
+{#                    <span class="nav-text text-menu-sidebar" style="text-transform: uppercase">#}
+{#                            Задания отдела {{ user.department.command_number }}#}
+{#                        </span>#}
+{#                </a>#}
+{#            </li>#}
+{#            <li class="has-subnav" id="group_inbox" style="display: none">#}
+{#                <a href="{% url 'incoming_to_dep' %}">#}
+{#                    <i class="fa"></i>#}
+{#                    <span class="nav-text text-menu-sidebar" style="text-transform: uppercase">#}
+{#                            Входящие задания#}
+{#                        </span>#}
+{#                </a>#}
+{#            </li>#}
+{##}
+{#            <li class="has-subnav" id="group_outbox" style="display: none">#}
+{#                <a href="{% url 'issued_tasks' %}">#}
+{#                    <i class="fa"></i>#}
+{#                    <span class="nav-text text-menu-sidebar" style="text-transform: uppercase">#}
+{#                            Выданные задания#}
+{#                        </span>#}
+{#                </a>#}
+{#            </li>#}
+{##}
+{#            <li class="has-subnav" id="group_on_sign" style="display: none">#}
+{#                <a href="{% url 'outgoing_tasks' %}">#}
+{#                    <i class="fa"></i>#}
+{#                    <span class="nav-text text-menu-sidebar" style="text-transform: uppercase">#}
+{#                            Исходящие задания#}
+{#                        </span>#}
+{#                </a>#}
+{#            </li>#}
 
-        </li>
-        <li>
-            <a href="#">
-                <i class="fa fa-film fa-2x"></i>
-                <span class="nav-text text-menu-sidebar" style="text-transform: uppercase">
-                            Подписать входящее
-                        </span>
-            </a>
-        </li>
-        <li>
-            <a href="#">
-                <i class="fa fa-book fa-2x"></i>
-                <span class="nav-text text-menu-sidebar" style="text-transform: uppercase">
-                           Назначить исполнителей
-                        </span>
-            </a>
-        </li>
 
-        <li>
-            <a href="#">
-                <i class="fa fa-map-marker fa-2x"></i>
-                <span class="nav-text text-menu-sidebar" style="text-transform: uppercase">
-                            Переназначить ответственных
+            <li>
+                <a href="{% url 'advanced_search' %}">
+                    <i class="fa">
+                        <div class="icon-search-menu"></div>
+                    </i>
+                    <span class="nav-text text-menu-sidebar" style="text-transform: uppercase">
+                            Расширенный поиск
                         </span>
-            </a>
-        </li>
-        <li>
-            <a href="#">
-                <i class="fa fa-info fa-2x"></i>
-                <span class="nav-text">
-                            Documentation
-                        </span>
-            </a>
-        </li>
-    </ul>
+                </a>
+            </li>
+        </ul>
 
-    <ul class="logout">
-        <li>
-            <a href="{% url 'profile' %}">
-                <i class="fa fa-cogs fa-2x"></i>
-                <span class="nav-text text-menu-sidebar" style="text-transform: uppercase">
-                            Настройки
+
+        <ul class="logout">
+            <li>
+                <a href="{% url 'profile' %}">
+                    <i class="fa">
+                        <div class="icon-user-menu"></div>
+                    </i>
+                    <span class="nav-text text-menu-sidebar" style="text-transform: uppercase">
+                            {{ user.last_name }} {{ user.first_name|slice:"0:1" }}.{{ user.middle_name|slice:"0:1" }}.
                         </span>
-            </a>
-        </li>
-        <li>
-            <a href="#">
-                <i class="fa fa-power-off fa-2x"></i>
-                <span class="nav-text text-menu-sidebar" style="text-transform: uppercase">
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'logout' %}">
+                    <i class="fa fa-power-off fa-2x"></i>
+                    <span class="nav-text text-menu-sidebar" style="text-transform: uppercase">
                             Выйти
                         </span>
-            </a>
-        </li>
-    </ul>
-</nav>
+                </a>
+            </li>
+        </ul>
+    </nav>
+    <script type="text/javascript">
+        hidecircle()
+    </script>
+</div>

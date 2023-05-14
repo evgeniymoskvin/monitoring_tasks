@@ -1,24 +1,138 @@
 {% load task_tags %}
-<a class="dropdown-item" href="{% url 'add_task' %}">Выдать задание</a>
-<hr>
-<a class="dropdown-item" href="{% url 'outgoing_to_sign' %}">Подписать исходящие {% get_count_task_to_sign user %}</a>
-<hr>
+{#<a class="dropdown-item" href="{% url 'add_task' %}">Выдать задание</a>#}
+{#<hr>#}
+{#<a class="dropdown-item" href="{% url 'outgoing_to_sign' %}">Подписать исходящие {% get_count_task_to_sign user %}</a>#}
+{#<hr>#}
+{##}
+{#<a class="dropdown-item" href="#submenu2" data-bs-toggle="collapse">Мои задания</a>#}
+{#<ul class="collapse nav flex-column ms-1" id="submenu2" data-bs-parent="#menu">#}
+{#    <a class="dropdown-item" href="{% url 'my_tasks' %}">Мои выданные задания</a>#}
+{#    <a class="dropdown-item" href="{% url 'my_tasks_on_sign' %}">Мои задания на подписи</a>#}
+{#</ul>#}
+{#<a class="dropdown-item" href="#submenu3" data-bs-toggle="collapse">Задания#}
+{#    отдела {{ user.department.command_number }}</a>#}
+{#<ul class="collapse nav flex-column ms-1" id="submenu3" data-bs-parent="#menu">#}
+{#    <li class="w-100">#}
+{#        <a class="dropdown-item" href="{% url 'incoming_to_dep' %}"> - Входящие</a>#}
+{#    </li>#}
+{#    <li class="w-100">#}
+{#        <a class="dropdown-item" href=" {% url 'issued_tasks' %}"> - Выданные</a>#}
+{#    </li>#}
+{#    <li>#}
+{#        <a class="dropdown-item" href=" {% url 'outgoing_tasks' %}"> - Исходящие</a>#}
+{#    </li>#}
+{#</ul>#}
 
-<a class="dropdown-item" href="#submenu2" data-bs-toggle="collapse">Мои задания</a>
-<ul class="collapse nav flex-column ms-1" id="submenu2" data-bs-parent="#menu">
-    <a class="dropdown-item" href="{% url 'my_tasks' %}">Мои выданные задания</a>
-    <a class="dropdown-item" href="{% url 'my_tasks_on_sign' %}">Мои задания на подписи</a>
-</ul>
-<a class="dropdown-item" href="#submenu3" data-bs-toggle="collapse">Задания
-    отдела {{ user.department.command_number }}</a>
-<ul class="collapse nav flex-column ms-1" id="submenu3" data-bs-parent="#menu">
-    {#    <li class="w-100">#}
-    {#        <a class="dropdown-item" href="{% url 'incoming_to_dep' %}"> - Входящие</a>#}
-    {#    </li>#}
-    <li class="w-100">
-        <a class="dropdown-item" href=" {% url 'issued_tasks' %}"> - Выданные</a>
-    </li>
-    <li>
-        <a class="dropdown-item" href=" {% url 'outgoing_tasks' %}"> - Исходящие</a>
-    </li>
-</ul>
+
+<li class="has-subnav">
+    <a href="{% url 'add_task' %}">
+        <i class="fa">
+            <div class="icon-pen-menu"></div>
+        </i>
+        <span class="nav-text text-menu-sidebar" style="text-transform: uppercase">
+                            Выдать задание
+                        </span>
+    </a>
+
+</li>
+
+<li class="has-subnav">
+    <a href="{% url 'outgoing_to_sign' %}">
+        <i class="fa">
+            <div class="icon-outgoing_to_sign-menu">
+                <p class="text-menu-sidebar numberCircle" id="outgoing_num"
+                   style="display: none">{% get_count_task_to_sign user %}</p>
+            </div>
+        </i>
+        <span class="nav-text text-menu-sidebar" style="text-transform: uppercase">
+                            Подписать исходящее
+                        </span>
+    </a>
+
+</li>
+<!-- Мои задания -->
+<li class="has-subnav" onclick="onclickmytasks()">
+    <a href="#">
+        <i class="fa">
+            <div class="icon-box-menu"></div>
+        </i>
+        <span class="nav-text text-menu-sidebar" style="text-transform: uppercase">
+                            Мои задания
+                        </span>
+    </a>
+</li>
+<li class="has-subnav" id="my_tasks" style="display: none">
+    <a href="{% url 'my_tasks' %}">
+        <i class="fa">
+            <div class="icon-angles-up-solid-menu"></div>
+        </i>
+        <span class="nav-text text-menu-sidebar" style="text-transform: uppercase">
+                            Мои выданные задания
+                        </span>
+    </a>
+</li>
+
+<li class="has-subnav" id="my_tasks_on_sign" style="display: none">
+    <a href="{% url 'my_tasks_on_sign' %}">
+        <i class="fa">
+            <div class="icon-angle-up-solid-menu"></div>
+        </i>
+        <span class="nav-text text-menu-sidebar" style="text-transform: uppercase">
+                            Мои задания на подписи
+                        </span>
+    </a>
+</li>
+
+<li class="has-subnav" id="my_inbox" style="display: none">
+    <a href="{% url 'inbox' %}">
+                <i class="fa">
+            <div class="icon-angles-down-solid-menu"></div>
+        </i>
+        <span class="nav-text text-menu-sidebar" style="text-transform: uppercase">
+                            Мои входящие задания
+                        </span>
+    </a>
+</li>
+
+<!-- Задания отдела -->
+<li class="has-subnav" onclick="onclickgrouptasks()">
+    <a href="#">
+        <i class="fa">
+            <div class="icon-boxes-menu"></div>
+        </i>
+        <span class="nav-text text-menu-sidebar" style="text-transform: uppercase">
+                            Задания отдела {{ user.department.command_number }}
+                        </span>
+    </a>
+<li class="has-subnav" id="group_inbox" style="display: none">
+    <a href="{% url 'incoming_to_dep' %}">
+        <i class="fa">
+            <div class="icon-angles-down-solid-menu"></div>
+        </i>
+        <span class="nav-text text-menu-sidebar" style="text-transform: uppercase">
+            Входящие задания
+        </span>
+    </a>
+</li>
+
+<li class="has-subnav" id="group_outbox" style="display: none">
+    <a href="{% url 'issued_tasks' %}">
+        <i class="fa">
+            <div class="icon-angles-up-solid-menu"></div>
+        </i>
+        <span class="nav-text text-menu-sidebar" style="text-transform: uppercase">
+            Выданные задания
+        </span>
+    </a>
+</li>
+
+<li class="has-subnav" id="group_on_sign" style="display: none">
+    <a href="{% url 'outgoing_tasks' %}">
+        <i class="fa">
+            <div class="icon-angle-up-solid-menu"></div>
+        </i>
+        <span class="nav-text text-menu-sidebar" style="text-transform: uppercase">
+                Исходящие задания
+        </span>
+    </a>
+</li>

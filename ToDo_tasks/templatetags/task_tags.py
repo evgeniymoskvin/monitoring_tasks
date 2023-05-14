@@ -19,11 +19,11 @@ def get_count_task_to_sign(user):
     if user.right_to_sign is True and user.cpe_flag is False:
         count_tasks = len(get_list_to_sign(user))
         if count_tasks > 0:
-            count_task_to_sign = f'({count_tasks})'
+            count_task_to_sign = f'{count_tasks}'
     if user.cpe_flag is True:
         count_tasks = get_list_to_sign_cpe(user).count()
         if count_tasks > 0:
-            count_task_to_sign = f'({count_tasks})'
+            count_task_to_sign = f'{count_tasks}'
     return count_task_to_sign
 
 
@@ -33,7 +33,7 @@ def get_count_task_incoming_to_sign(user):
     if user.right_to_sign is True and user.cpe_flag is False:
         count_tasks = get_list_incoming_tasks_to_sign(user).count()
         if count_tasks > 0:
-            count_task_incoming_to_sign = f'({count_tasks})'
+            count_task_incoming_to_sign = f'{count_tasks}'
     return count_task_incoming_to_sign
 
 @register.simple_tag()
@@ -62,7 +62,7 @@ def need_approve(user):
     tasks_to_approve = ApproveModel.objects.get_queryset().filter(approve_user_id=user.id).filter(approve_status=False).count()
 
     if tasks_to_approve > 0:
-        count_unread = f'({tasks_to_approve})'
+        count_unread = f'{tasks_to_approve}'
     return count_unread
 
 @register.simple_tag()
