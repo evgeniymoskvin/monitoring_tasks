@@ -6,25 +6,43 @@
 {% endblock %}
 {% block content %}
     <form method="POST">
-        <div class="container vh-100 d-flex justify-content-center align-items-center">
+        <div class="centered_div">
             {% csrf_token %}
-            <div class="row">
-                <div class="col-5">
-                    <span data-toggle="tooltip" title="Привет">
-                        <h1 class="display-6">{{ user }}, давайте что-нибудь поищем</h1></span>
-                </div>
-                <div class="col-7 justify-content-center align-self-center">
-                    <br>
-                    <span data-toggle="tooltip" title="Чувствителен к регистру">
-                    <div class="input-group mb-3">
-                        <input type="text" class="form-control" placeholder="Пишите вот сюда" name="search_field">
-                        <input type="submit" class="btn btn-secondary" name="search_button" value="Найти">
-                    </div>
-                    </span>
-
-                </div>
-                <p  href="{% url 'advanced_search' %}">Или перейдем в расширенный <a class="text-black" href="{% url 'advanced_search' %}">поиск</a></p>
+            <div class="row" style="margin-top: -350px">
+                <h1 class="text-index" id="ed_reestr" style="font-size: 15px">еДиный Реестр</h1>
+                <h1 class="text-index" style="margin-top: -5px; font-size: 15px" id="obmen_zadan">Обмена ЗаДаниями</h1>
+                <p class="text-index-book" style="margin-top: -5px">«ДРОЗД»</p>
             </div>
+            <div class="row">
+                <div class="col-12">
+                    <h1 class="text-main-page-demi">{{ user }}</h1>
+                    <h1 class="text-main-page" style="margin-top: -10px">давайте что-нибудь поищем</h1></div>
+            </div>
+            <div class="row" style="margin-top: 20px">
+                <div class="col-11">
+                    <input type="search" class="input-search" placeholder="НАЙДЕТСЯ ВСЁ" name="search_field"
+                           id="search_field">
+                </div>
+                <div class="col-1">
+                    <div class="close-btn">
+                        <button class="button-search" type="submit">Найти</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row text-main-page-small" style="margin-top: 20px">
+                <div class="col-12" id="registr-check" style="opacity: 0; transition-duration: 0.5s">
+                    <p>Чувствителен к регистру</p>
+                </div>
+            </div>
+
+            <div class="row text-main-page-small" style="margin-top: 0px">
+
+                <p href="{% url 'advanced_search' %}">Или перейдем в расширенный <a
+                        href="{% url 'advanced_search' %}">поиск</a>
+            </div>
+            </p>
+        </div>
 
         </div>
     </form>
@@ -39,5 +57,32 @@
             // инициализации подсказок для всех элементов на странице, имеющих атрибут data-toggle="tooltip"
             $('[data-toggle="tooltip"]').tooltip();
         });
+
+
+        $(".input-search").focus(function () {
+            $(".close-btn").addClass("active");
+            {#document.getElementById('body').style.background = '#808080'#}
+            {#document.getElementById('search_field')[0].placeholder = 'Чувствителен к регистру'#}
+            {#$('search_field:text').attr('placeholder','Some New Text');#}
+            document.getElementById('registr-check').style.opacity = '1'
+
+
+        });
+
+        $(".input-search").focusout(function () {
+            document.getElementById('registr-check').style.opacity = '0'
+            $(".close-btn").removeClass("active");
+            {#document.getElementById('body').style.background = 'white'#}
+        });
+
+        window.onload = function () {
+            var ed_reestr = document.getElementById('ed_reestr')
+            ed_reestr.innerHTML = ed_reestr.innerHTML.replace('Д', '<span style="color: #D92525;">Д</span>')
+            ed_reestr.innerHTML = ed_reestr.innerHTML.replace('Р', '<span style="color: #D92525;">Р</span>')
+            var obmen_zadan = document.getElementById('obmen_zadan')
+            obmen_zadan.innerHTML = obmen_zadan.innerHTML.replace('О', '<span style="color: #D92525;">О</span>')
+            obmen_zadan.innerHTML = obmen_zadan.innerHTML.replace('З', '<span style="color: #D92525;">З</span>')
+            obmen_zadan.innerHTML = obmen_zadan.innerHTML.replace('Д', '<span style="color: #D92525;">Д</span>')
+        }
     </script>
 {% endblock %}

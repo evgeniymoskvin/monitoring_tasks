@@ -8,7 +8,7 @@
         <ul class="list-group">
             <div id="files_old">
                 {% for file in old_files %}
-                    <li class="list-group-item d-flex justify-content-start align-items-center">
+                    <li class="list-group-item d-flex justify-content-start align-items-center hover-mouse">
                         <img src="{% static 'todo_tasks/icons/file-arrow-down.svg' %}">
                         <a href="{% url 'download_file' file.id %}"
                            class="nav-link text-black">{% split_filename file.file %}</a>

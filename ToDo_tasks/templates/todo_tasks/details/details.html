@@ -18,14 +18,14 @@
             <div class="col">
                 <div class="d-flex justify-content-end">
                     <h4>
-                        <a href="{% url 'download_blank' obj.id %}"><img
+                        <a href="{% url 'download_blank' obj.id %}"><img class="hover-mouse-icon"
                                 src="{% static 'todo_tasks/icons/file-earmark-pdf.svg' %}" data-toggle="tooltip"
                                 title="Скачать бланк"></a>
                         {% if flag == True and user.department == obj.department_number or user.department == obj.incoming_dep %}
                             <a href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
                                aria-expanded="false">
                                 <img src="{% static 'todo_tasks/icons/list.svg' %}" data-toggle="tooltip"
-                                     title="Действия">
+                                     title="Действия" class="hover-mouse-icon">
                                 {% include 'todo_tasks/detail_buttons/buttons_gear_for_details.html' %}
                             </a>
                             </h4>
@@ -184,10 +184,10 @@
             <h5>Приложенные файлы:</h5>
             <ul class="list-group">
                 {% for file in files %}
-                    <li class="list-group-item d-flex justify-content-start align-items-center">
+                    <li class="list-group-item d-flex justify-content-start align-items-center hover-mouse ">
                         <img src="{% static 'todo_tasks/icons/file-arrow-down.svg' %}">
                         <a href="{% url 'download_file' file.id %}"
-                           class="nav-link text-black">{% split_filename file.file %}</a>
+                           class="nav-link text-black" download>{% split_filename file.file %}</a>
                     </li>
                 {% endfor %}
             </ul>
@@ -225,7 +225,7 @@
             <h5>Исполнители:</h5>
             <ul class="list-group">
                 {% for worker in workers %}
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <li class="list-group-item d-flex justify-content-between align-items-center hover-mouse">
                         {{ worker.worker_user }} <small class="text-muted">
                         ({{ worker.worker_user.job_title }}, {{ worker.worker_user.department }},
                         тел. {{ worker.worker_user.user_phone }})</small>
