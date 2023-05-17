@@ -1,8 +1,17 @@
-@import url(https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css);
+/*@import url(https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css);*/
 
 
 .fa-2x {
     font-size: 2em;
+}
+
+.fa {
+  display: inline-block;
+  font: normal normal normal 14px/1 FontAwesome;
+  font-size: inherit;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 .fa {
@@ -38,7 +47,7 @@
     width: 60px;
     overflow: hidden;
     -webkit-transition: width .05s linear;
-    transition: width .05s linear;
+    transition: width 0.5s ease-in-out;
     -webkit-transform: translateZ(0) scale(1, 1);
     z-index: 1;
 }
@@ -276,6 +285,14 @@ nav ul, nav li {
 
 .icon-angles-down-solid-menu {
     background-image: url('../icons/angles-down-solid.svg');
+    background-position: center center;
+    background-repeat: no-repeat;
+    height: 21px;
+    padding-left: 16px; /* Or size of icon + spacing */
+}
+
+.icon-power-off-menu {
+    background-image: url('../icons/power-off-solid.svg');
     background-position: center center;
     background-repeat: no-repeat;
     height: 21px;

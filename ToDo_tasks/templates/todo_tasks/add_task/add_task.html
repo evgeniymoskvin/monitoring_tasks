@@ -27,7 +27,7 @@
 
 
     <br>
-    <h3 class="text-center display-6">Выдать задание</h3>
+    <h3 class="text-1-task" style="margin-top: 25px">Выдать задание</h3>
     <br>
     <div id="formadd">
         <form id="formAdd" method="post" enctype="multipart/form-data"
@@ -39,101 +39,107 @@
                     <div class="col">
                         {% csrf_token %}
 
-                        Объект:
+                        <span class="text-3" style="display: inline-block; text-transform: uppercase; margin-top: 10px">Объект:</span>
                         {{ form.task_object }}
-                        Номер договора:
+                        <span class="text-3" style="display: inline-block; text-transform: uppercase; margin-top: 10px">Номер договора:</span>
                         {{ form.task_contract }}
-                        Этап:
+                        <span class="text-3" style="display: inline-block; text-transform: uppercase; margin-top: 10px">Этап:</span>
                         {{ form.task_stage }}
-                        Номер заказа:
+                        <span class="text-3" style="display: inline-block; text-transform: uppercase; margin-top: 10px">Номер заказа:</span>
                         {{ form.task_order }}
-                        Вид документации:
+                        <span class="text-3" style="display: inline-block; text-transform: uppercase; margin-top: 10px">Вид документации:</span>
                         {{ form.task_type_work }}
-                        Марка документации:
+                        <span class="text-3" style="display: inline-block; text-transform: uppercase; margin-top: 10px">Марка документации:</span>
                         {{ form.task_mark_doc }}
-                        Здание:
+                        <span class="text-3" style="display: inline-block; text-transform: uppercase; margin-top: 10px">Здание:</span>
                         {{ form.task_building }}
 
                     </div>
                     <div class="col">
-                        Текст задания:
+                        <span class="text-3" style="display: inline-block; text-transform: uppercase; margin-top: 10px">Текст задания:</span>
                         {{ form.text_task }}
-                        <br>
-                        {#                    Здесь должно быть поле для загрузки файла#}
                     </div>
                 </div>
 
                 <br>
-
-                <div class="row justify-content-center">
-                    <div class="col-2">
-                        Первый руководитель:
-                    </div>
-                    <div class="col-3">
-                        {{ form.first_sign_user }}
-                    </div>
-                </div>
-                <br>
-                <div class="row justify-content-center">
-                    <div class="col-2">
-                        Второй руководитель:
-                    </div>
-                    <div class="col-3">
-                        {{ form.second_sign_user }}
-                    </div>
-                </div>
-                <br>
-
-                <div class="row justify-content-center">
-                    <div class="col-2">
-                        Принимающий отдел:
-                    </div>
-                    <div class="col-3">
-                        {{ form.incoming_dep }}
-                    </div>
-                </div>
-                <br>
-
-                <div>
+                <div style="justify-content: center; align-items: center; margin-left: -150px">
                     <div class="row justify-content-center">
                         <div class="col-2">
-                            Добавьте файлы:
+                            <span class="text-4-book-left">Первый руководитель:</span>
                         </div>
                         <div class="col-3">
-                            {{ file_form.file }}
+                            {#                            <span class="text-4-book-left" style="display: inline;"> </span>#}
+                            {{ form.first_sign_user }}
                         </div>
                     </div>
-                </div>
-                <br>
-
-                <div class="row justify-content-center">
-                    <div class="col-2">
-                        Требуются ли согласователи?:
-                    </div>
-                    <div class="col-3">
-                        {{ form.task_need_approve }}
-                    </div>
-                </div>
-                <br>
-
-                <div id="approve" style="display: none">
-                    <div class="row justify-content-center">
+                    <div class="row justify-content-center" style="margin-top: 15px">
                         <div class="col-2">
-                            Выберете согласователей:
+                            <span class="text-4-book-left">Второй руководитель:</span>
                         </div>
                         <div class="col-3">
-                            {{ approve_form.approve_user }}
+                            {{ form.second_sign_user }}
                         </div>
                     </div>
+
+                    <div class="row justify-content-center" style="margin-top: 15px">
+                        <div class="col-2">
+                            <span class="text-4-book-left">Принимающий отдел:</span>
+                        </div>
+                        <div class="col-3">
+                            {{ form.incoming_dep }}
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="row justify-content-center" style="margin-top: 15px">
+                            <div class="col-2">
+                                <span class="text-4-book-left">Добавьте файлы:</span>
+
+                            </div>
+                            <div class="col-3">
+                                {{ file_form.file }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row justify-content-center" style="margin-top: 15px">
+                        <div class="col-2">
+                            <span class="text-4-book-left">Требуются согласователи?:</span>
+
+                        </div>
+
+                        <div class="col-3" style="margin-top: 10px">
+                            {{ form.task_need_approve }}
+                        </div>
+
+                    </div>
+
+
+                    <div id="approve" style="display: none; margin-top: 15px; margin-left: 6px">
+                        <div class="row justify-content-center">
+                            <div class="col-2">
+                                <span class="text-4-book-left">Выберете согласователей:</span>
+
+                            </div>
+
+                            <div class="col-3">
+                                {{ approve_form.approve_user }}
+                            </div>
+                            <
+                        </div>
+                    </div>
+
                 </div>
-
-
-                <div class="row justify-content-center">
-                    <div class="col">
-                        <figure class="text-center">
-                            <a class="btn btn-outline-secondary" href="{% url 'index' %}" role="button">Отмена</a>
-                            <button class="btn btn-outline-success" type="submit" onclick="showloader()">Выдать задание</button>
-                        </figure>
+                <div style="margin-top: 15px">
+                    <div class="row justify-content-center; ">
+                        <div class="col">
+                            <figure class="text-center">
+                                <a class="btn btn-outline-secondary" href="{% url 'index' %}" role="button">Отмена</a>
+                                <button class="btn btn-outline-success" type="submit" onclick="showloader()">Выдать
+                                    задание
+                                </button>
+                            </figure>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -156,7 +162,7 @@
         // JS для поля выбора отделов
         $(document).ready(function () {
             $('#id_incoming_dep').select2({
-                placeholder: 'Выберите отдел/отделы'
+                placeholder: 'Выберите отдел/отделы',
             });
             $('#id_first_sign_user').select2({
                 placeholder: 'Выберите руководителя'
@@ -190,9 +196,9 @@
 
         function toggle() {
             var div = document.getElementById('approve');
-            if (this.checked)
+            if (this.checked) {
                 div.style.display = 'block';
-            else
+            } else
                 div.style.display = 'none'
         }
 

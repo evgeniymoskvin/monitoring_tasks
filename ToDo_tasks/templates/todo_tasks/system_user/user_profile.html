@@ -5,16 +5,53 @@
 {% endblock %}
 
 {% block content %}
-    <br>
-    <h4>Ваш профиль</h4>
-    <br>
-    <p>ФИО: {{ user }} <small>({{ user.user }})</small></p>
-    <p>Должность: {{ user.job_title }}</p>
-    <p>Управление: {{ user.department_group }}</p>
-    <p>Отдел: {{ user.department }}</p>
-    <p>Номер телефона: {{ user.user_phone }}</p>
-    <p>Пароль: ********* <a href="{% url 'change_password' %}">(изменить)</a></p>
-    <a href="{% url 'edit_profile' %}" class="btn btn-primary" role="button">Редактировать</a>
+    <div style="margin-top: 75px">
+        <h4 class="text-1-not-inline" style="text-transform: uppercase;">Ваш профиль</h4>
+        <p>
+            <span class="text-3" style="display: inline; margin-top: 150px">ФИО:</span>
+            <span class="text-4-book-left" style="display: inline;"> {{ user }} </span>
+        </p>
 
-{#    {{ form.as_table }}#}
+        <p>
+            <span class="text-3"
+                  style="display: inline; text-transform: uppercase;">Должность:</span>
+            <span class="text-4-book-left"> {{ user.job_title }} </span>
+        </p>
+        <p>
+            <span class="text-3" style="display: inline; text-transform: uppercase;">Управление:</span>
+            <span class="text-4-book-left"> {{ user.department_group }} </span>
+        </p>
+        <p>
+            <span class="text-3" style="display: inline; text-transform: uppercase;">Отдел:</span>
+            <span class="text-4-book-left"> {{ user.department }} </span>
+        </p>
+
+        <p>
+            <span class="text-3" style="display: inline; text-transform: uppercase;">Номер телефона:</span>
+            <span class="text-4-book-left"> {{ user.user_phone }} </span>
+        </p>
+
+        <p>
+            <span class="text-3" style="display: inline; text-transform: uppercase;">Login:</span>
+            <span class="text-4-book-left"> {{ user.user }} </span>
+        </p>
+
+        <p>
+            <span class="text-3" style="display: inline; text-transform: uppercase;">Пароль:</span>
+            <span class="text-4-book-left"> ********* </span>
+        </p>
+        <div>
+            <form action="{% url 'change_password' %}">
+                <button class="button-edit-profile" type="submit">Изменить пароль</button>
+            </form>
+        </div>
+        <div style="margin-top: 10px">
+            <form action="{% url 'edit_profile' %}">
+                <button class="button-edit-profile" type="submit">Редактировать профиль</button>
+            </form>
+        </div>
+        {#        <a href="{% url 'edit_profile' %}" class="btn btn-primary" role="button">Редактировать</a>#}
+    </div>
+
+    {#    {{ form.as_table }}#}
 {% endblock %}

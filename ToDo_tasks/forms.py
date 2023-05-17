@@ -36,25 +36,30 @@ class TaskForm(ModelForm):
         widgets = {"task_order": Select(attrs={"class": "form-select",
                                                "aria-label": "Номер заказа"}),
                    "task_object": Select(attrs={"class": "form-select",
-                                                "aria-label": "Наименование объекта"}),
+                                                "aria-label": "Наименование объекта",
+                                                "style": "height: 125px;"}),
                    "task_contract": Select(attrs={"class": "form-select",
                                                   "aria-label": "Номер контракта"}),
                    "task_stage": Select(attrs={"class": "form-select",
                                                "aria-label": "Этап договора"}),
                    "text_task": Textarea(attrs={"placeholder": "Введите текст задания",
-                                                "class": "form-control"}),
+                                                "class": "form-control",
+                                                "style": "height:410px;"}),
                    "task_type_work": Select(attrs={"class": "form-select",
                                                    "aria-label": "Вид документации"}),
                    "first_sign_user": Select(attrs={"class": "form-select",
-                                                    "aria-label": "Первый руководитель"}),
+                                                    "aria-label": "Первый руководитель",
+                                                    "style": "width: 500px;"}),
                    "second_sign_user": Select(attrs={"class": "form-select",
-                                                     "aria-label": "Второй руководитель"}),
+                                                     "aria-label": "Второй руководитель",
+                                                     "style": "width: 500px;"}),
                    "task_mark_doc": Select(attrs={"class": "form-select",
                                                   "aria-label": "Марка документации"}),
                    # "cpe_sign_user": Select(attrs={"class": "form-select",
                    #                                "aria-label": "ГИП"}),
                    "incoming_dep": SelectMultiple(attrs={"class": "form-select",
-                                                         "aria-label": "Отдел принимающий задание"}),
+                                                         "aria-label": "Отдел принимающий задание",
+                                                         "style": "width: 500px;"}),
                    "task_building": TextInput(attrs={"class": "form-control",
                                                      "aria-label": "Здание"}),
                    "task_need_approve": CheckboxInput()
@@ -132,7 +137,7 @@ class TaskCheckForm(ModelForm):
         exclude = ['department_number', 'task_number', 'task_change_number', "first_sign_status",
                    "second_sign_status", "cpe_sign_status", "back_to_change", 'incoming_employee']
         widgets = {"task_order": TextInput(attrs={"class": "form-select",
-                                               "disabled": True}),
+                                                  "disabled": True}),
                    "author": TextInput(attrs={"class": "form-control",
                                               "readonly": True}),
                    "task_object": TextInput(attrs={"class": "form-select",
@@ -309,7 +314,8 @@ class ApproveForm(ModelForm):
         ]
         widgets = {
             "approve_user": SelectMultiple(attrs={"class": "form-select",
-                                                  "aria-label": "Согласователь"}),
+                                                  "aria-label": "Согласователь",
+                                                  "style": "width: 500px"}),
         }
 
 
@@ -388,6 +394,7 @@ class UserProfileForm(ModelForm):
 
     # WorkerFormSet = modelformset_factory(WorkerModel, fields=("worker_user",), extra=1, can_delete=False)
     WorkerFormSet = modelformset_factory(WorkerModel, form=WorkerForm)
+
 
 class LoginForm(AuthenticationForm):
     username = UsernameField(
