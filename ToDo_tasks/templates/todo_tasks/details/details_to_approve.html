@@ -15,13 +15,13 @@
 
 
                     {% if approve_flag is True %}
-                        <input type="submit" class="btn btn-success" name="approve_sign" value="Подписать"
-                               data-toggle="tooltip" title="Подписать">
-                        <button type="button" class="btn btn-warning" data-bs-toggle="modal"
+                        <button type="button" class="button-warning" data-bs-toggle="modal"
                                 data-bs-target="#comment_modal"
                                 data-toggle="tooltip" title="Отправить замечание автору на почту">
                             Замечание
                         </button>
+                        <input type="submit" class="button-success" name="approve_sign" value="Подписать"
+                               data-toggle="tooltip" title="Подписать">
                     {% endif %}
                 </figure>
             </div>

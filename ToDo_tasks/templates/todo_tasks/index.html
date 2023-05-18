@@ -61,6 +61,8 @@
 
         $(".input-search").focus(function () {
             $(".close-btn").addClass("active");
+            $(".back-search").addClass("active");
+            $(".input-search").addClass("active");
             {#document.getElementById('body').style.background = '#808080'#}
             {#document.getElementById('search_field')[0].placeholder = 'Чувствителен к регистру'#}
             {#$('search_field:text').attr('placeholder','Some New Text');#}
@@ -72,6 +74,8 @@
         $(".input-search").focusout(function () {
             document.getElementById('registr-check').style.opacity = '0'
             $(".close-btn").removeClass("active");
+            $(".back-search").removeClass("active");
+            $(".input-search").removeClass("active");
             {#document.getElementById('body').style.background = 'white'#}
         });
 

@@ -8,302 +8,314 @@
     <br>
 
 
-    <div class="container">
-        <div class="row">
-            <div class="col-10">
-                <div class="d-flex justify-content-start">
-                    <h4>Детали задания {{ obj.task_number }} <small class="text-muted">({{ task_status }})</small></h4>
-                </div>
+    {#    <div class="container">#}
+    <div class="row">
+        <div class="col-10">
+            <div class="d-flex justify-content-center" style="margin-left: 200px">
+                <h4 class="text-1-task" style="margin-top: 25px; display: inline">Детали задания {{ obj.task_number }}
+                    <p class="text-1-task" style="font-size: 15px">({{ task_status }})</p></h4>
             </div>
-            <div class="col">
-                <div class="d-flex justify-content-end">
-                    <h4>
-                        <a href="{% url 'download_blank' obj.id %}"><img class="hover-mouse-icon"
-                                src="{% static 'todo_tasks/icons/file-earmark-pdf.svg' %}" data-toggle="tooltip"
-                                title="Скачать бланк"></a>
-                        {% if flag == True and user.department == obj.department_number or user.department == obj.incoming_dep %}
-                            <a href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
-                               aria-expanded="false">
-                                <img src="{% static 'todo_tasks/icons/list.svg' %}" data-toggle="tooltip"
-                                     title="Действия" class="hover-mouse-icon">
-                                {% include 'todo_tasks/detail_buttons/buttons_gear_for_details.html' %}
-                            </a>
-                            </h4>
-                        {% endif %}
-                </div>
+        </div>
+        <div class="col" style="margin-top: 25px">
+            <div class="d-flex justify-content-end">
+                <h4>
+                    <a href="{% url 'download_blank' obj.id %}"><img class="hover-mouse-icon"
+                                                                     src="{% static 'todo_tasks/icons/file-earmark-pdf.svg' %}"
+                                                                     data-toggle="tooltip"
+                                                                     title="Скачать бланк"></a>
+                    {% if flag == True and user.department == obj.department_number or user.department == obj.incoming_dep %}
+                        <a href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
+                           aria-expanded="false">
+                            <img src="{% static 'todo_tasks/icons/list.svg' %}" data-toggle="tooltip"
+                                 title="Действия" class="hover-mouse-icon">
+                            {% include 'todo_tasks/detail_buttons/buttons_gear_for_details.html' %}
+                        </a>
+                        </h4>
+                    {% endif %}
             </div>
         </div>
     </div>
+    {#    </div>#}
 
 
     <br>
 
 
-    <div class="container">
-        <div class="row">
-            <div class="col">
-                Автор задания:
-                <span data-toggle="tooltip"
-                      title="{{ obj.author.job_title }} тел. ({{ obj.author.user_phone }}), {{ obj.author.department.command_name }}">{{ form.author }}</span>
-                Принимающий отдел:
-                {{ form.incoming_dep }}
-                Объект:
-                {{ form.task_object }}
+    {#    <div class="container">#}
+    <div class="row">
+        <div class="col">
 
-                Номер договора:
-                {{ form.task_contract }}
-                Этап:
-                {{ form.task_stage }}
-                Номер заказа:
-                {{ form.task_order }}
-                Здание
-                {{ form.task_building }}
-                Вид документации:
-                {{ form.task_type_work }}
-                Марка документации:
-                {{ form.task_mark_doc }}
+            <span class="text-3"
+                  style="display: inline-block; text-transform: uppercase; margin-top: 10px">Автор задания:</span>
+            <span data-toggle="tooltip"
+                  title="{{ obj.author.job_title }} тел. ({{ obj.author.user_phone }}), {{ obj.author.department.command_name }}">{{ form.author }}</span>
+            <span class="text-3"
+                  style="display: inline-block; text-transform: uppercase; margin-top: 10px">Принимающий отдел:</span>
+            {{ form.incoming_dep }}
+            <span class="text-3"
+                  style="display: inline-block; text-transform: uppercase; margin-top: 10px">Объект:</span>
+            {{ form.task_object }}
+            <span class="text-3"
+                  style="display: inline-block; text-transform: uppercase; margin-top: 10px">Номер договора:</span>
+            {{ form.task_contract }}
+            <span class="text-3"
+                  style="display: inline-block; text-transform: uppercase; margin-top: 10px">Этап:</span>
+            {{ form.task_stage }}
+            <span class="text-3"
+                  style="display: inline-block; text-transform: uppercase; margin-top: 10px">Номер заказа:</span>
+            {{ form.task_order }}
+            <span class="text-3"
+                  style="display: inline-block; text-transform: uppercase; margin-top: 10px">Здание</span>
+            {{ form.task_building }}
+            <span class="text-3"
+                  style="display: inline-block; text-transform: uppercase; margin-top: 10px">Вид документации:</span>
+            {{ form.task_type_work }}
+            <span class="text-3"
+                  style="display: inline-block; text-transform: uppercase; margin-top: 10px">Марка документации:</span>
+            {{ form.task_mark_doc }}
 
-            </div>
-            <div class="col">
-                <p>Текст задания:</p>
-                {{ form.text_task }}
-                <br>
-                Дата создания: {{ obj.task_create_date }}
-                <br>
-                Дата последнего изменения: {{ obj.task_last_edit }}
-                <br>
-                <br>
-                <! Формирование строку с первым подписантом>
+        </div>
+        <div class="col">
+            <span class="text-3" style="display: inline-block; text-transform: uppercase; margin-top: 10px">Текст задания:</span>
+            {{ form.text_task }}
+            <br>
+            Дата создания: {{ obj.task_create_date }}
+            <br>
+            Дата последнего изменения: {{ obj.task_last_edit }}
+            <br>
+            <br>
+            <! Формирование строку с первым подписантом>
 
-                <div class="row">
-                    <div class="col">
-                        {{ sign_info.first_sign_job_title }}:
-                    </div>
+            <div class="row">
+                <div class="col">
+                    {{ sign_info.first_sign_job_title }}:
+                </div>
 
-                    <div class="col">
+                <div class="col">
                         <span data-toggle="tooltip"
                               title="{{ obj.first_sign_user }} (тел. {{ obj.first_sign_user.user_phone }})">{{ sign_info.first_sign_name }}</span>
-                    </div>
-
-                    {% if obj.first_sign_status %}
-                        <div class="col bg-success text-white text-right">
-                            <span data-toggle="tooltip" title="{{ obj.first_sign_date }}">Подписано</span>
-                        </div>
-                    {% else %}
-                        <div class="col bg-light text-right ">
-                            Не подписано
-                        </div>
-                    {% endif %}
-
                 </div>
 
-                <! Формирование строку со вторым подписантом>
+                {% if obj.first_sign_status %}
+                    <div class="col bg-success text-white text-right">
+                        <span data-toggle="tooltip" title="{{ obj.first_sign_date }}">Подписано</span>
+                    </div>
+                {% else %}
+                    <div class="col bg-light text-right ">
+                        Не подписано
+                    </div>
+                {% endif %}
 
-                <div class="row">
-                    <div class="col">
-                        {{ sign_info.second_sign_job_title }}:
-                    </div>
-                    <div class="col">
-                        {#                        {{ sign_info.second_sign_name }}#}
-                        <span data-toggle="tooltip"
-                              title="{{ obj.second_sign_user }} (тел. {{ obj.second_sign_user.user_phone }})">{{ sign_info.second_sign_name }}</span>
-                    </div>
-                    {% if obj.second_sign_status %}
-                        <div class="col bg-success text-white text-right">
-                            <span data-toggle="tooltip" title="{{ obj.second_sign_date }}">Подписано</span>
-                        </div>
-                    {% else %}
-                        <div class="col bg-light text-right ">
-                            Не подписано
-                        </div>
-                    {% endif %}
+            </div>
+
+            <! Формирование строку со вторым подписантом>
+
+            <div class="row">
+                <div class="col">
+                    {{ sign_info.second_sign_job_title }}:
                 </div>
-
-
-                <! Формирование строку с третьим подписантом>
-
-
-                <div class="row">
-                    <div class="col">
-                        {{ sign_info.cpe_sign_job_title }}:
+                <div class="col">
+                    {#                        {{ sign_info.second_sign_name }}#}
+                    <span data-toggle="tooltip"
+                          title="{{ obj.second_sign_user }} (тел. {{ obj.second_sign_user.user_phone }})">{{ sign_info.second_sign_name }}</span>
+                </div>
+                {% if obj.second_sign_status %}
+                    <div class="col bg-success text-white text-right">
+                        <span data-toggle="tooltip" title="{{ obj.second_sign_date }}">Подписано</span>
                     </div>
-                    <div class="col">
+                {% else %}
+                    <div class="col bg-light text-right ">
+                        Не подписано
+                    </div>
+                {% endif %}
+            </div>
+
+
+            <! Формирование строку с третьим подписантом>
+
+
+            <div class="row">
+                <div class="col">
+                    {{ sign_info.cpe_sign_job_title }}:
+                </div>
+                <div class="col">
                         <span data-toggle="tooltip"
                               title="{{ obj.cpe_sign_user }} (тел. {{ obj.cpe_sign_user.user_phone }})">{{ sign_info.cpe_sign_name }}</span>
-                    </div>
-                    {% if obj.cpe_sign_status %}
-                        <div class="col bg-success text-white text-right">
-                            <span data-toggle="tooltip" title="{{ obj.cpe_sign_date }}">Подписано</span>
-                        </div>
-                    {% else %}
-                        <div class="col bg-light text-right ">
-                            Не подписано
-                        </div>
-                    {% endif %}
                 </div>
-
-                <!-- Формируем строку с принимающим -->
-
-                <div class="row">
-                    <div class="col">
-                        {{ sign_info.incom_job_title }}:
+                {% if obj.cpe_sign_status %}
+                    <div class="col bg-success text-white text-right">
+                        <span data-toggle="tooltip" title="{{ obj.cpe_sign_date }}">Подписано</span>
                     </div>
-                    <div class="col">
+                {% else %}
+                    <div class="col bg-light text-right ">
+                        Не подписано
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Формируем строку с принимающим -->
+
+            <div class="row">
+                <div class="col">
+                    {{ sign_info.incom_job_title }}:
+                </div>
+                <div class="col">
                         <span data-toggle="tooltip"
                               title="{{ obj.incoming_employee }} (тел. {{ obj.incoming_employee.user_phone }})">{{ sign_info.incom_sign_name }}</span>
+                </div>
+                {% if obj.incoming_status %}
+                    <div class="col bg-success text-white text-right">
+                        <span data-toggle="tooltip" title="{{ obj.incoming_date }}">Подписано</span>
                     </div>
-                    {% if obj.incoming_status %}
-                        <div class="col bg-success text-white text-right">
-                            <span data-toggle="tooltip" title="{{ obj.incoming_date }}">Подписано</span>
-                        </div>
-                    {% else %}
-                        <div class="col bg-light text-right ">
-                            Не подписано
+                {% else %}
+                    <div class="col bg-light text-right ">
+                        Не подписано
+                    </div>
+                {% endif %}
+            </div>
+
+
+            <div class="row">
+                <div class="col">
+                    {% if obj.cpe_comment %}
+                        <div class="alert alert-success mt-2">
+                            <p class="h5">Комментарий ГИП-а<br>
+                            <p>{{ obj.cpe_comment }}</p>
                         </div>
                     {% endif %}
                 </div>
+            </div>
+
+        </div>
+    </div>
+
+    {% if files %}
 
 
-                <div class="row">
-                    <div class="col">
-                        {% if obj.cpe_comment %}
-                            <div class="alert alert-success mt-2">
-                                <p class="h5">Комментарий ГИП-а<br>
-                                <p>{{ obj.cpe_comment }}</p>
-                            </div>
-                        {% endif %}
+        <span class="text-3"
+              style="display: inline-block; text-transform: uppercase; margin-top: 25px">Приложенные файлы:</span>
+        <ul class="list-group">
+            {% for file in files %}
+                <li class="list-group-item d-flex justify-content-start align-items-center hover-mouse ">
+                    <img src="{% static 'todo_tasks/icons/file-arrow-down.svg' %}">
+                    <a href="{% url 'download_file' file.id %}"
+                       class="nav-link text-black" download>{% split_filename file.file %}</a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+
+
+
+    {% if approve_users %}
+        <div>
+            <span class="text-3"
+                  style="display: inline-block; text-transform: uppercase; margin-top: 25px">Согласователи:</span>
+            <ul class="list-group">
+                {% for user in approve_users %}
+                    {% if user.approve_status %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center bg-success bg-opacity-10">
+                            {% else %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                    {% endif %}
+                {{ user.approve_user }} <small class="text-muted">
+                    ({{ user.approve_user.job_title }}, {{ user.approve_user.department }},
+                    тел. {{ user.approve_user.user_phone }})</small>
+                </li>
+                {% endfor %}
+                <ul>
+        </div>
+    {% endif %}
+    {% block buttons %}
+    {% endblock %}
+
+    <!-- Формируем список исполнителей, если они имеются-->
+    {% if workers %}
+
+        <span class="text-3"
+              style="display: inline-block; text-transform: uppercase; margin-top: 25px">Исполнители:</span>
+        <ul class="list-group">
+            {% for worker in workers %}
+                <li class="list-group-item d-flex justify-content-between align-items-center hover-mouse">
+                    {{ worker.worker_user }} <small class="text-muted">
+                    ({{ worker.worker_user.job_title }}, {{ worker.worker_user.department }},
+                    тел. {{ worker.worker_user.user_phone }})</small>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    <!-- Формируем список исполнителей, если они имеются-->
+
+
+    {% if obj.task_status == 2 or obj.task_status == 3  and obj.department_number.id == user.department.id %}
+        <!-- Модальное окно аннулирование задания-->
+        <div class="modal fade" id="cancel_task" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+             aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog">
+
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="staticBackdropLabel">Аннулирование задания</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                aria-label="Закрыть"></button>
+                    </div>
+                    <div class="modal-body">
+                        Вы точно хотите аннулировать задание? Отменить данное действие невозможно
+                    </div>
+                    <div class="modal-footer">
+                        <form method="POST">
+
+                            {% csrf_token %}
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                            <input type="submit" class="btn btn-danger" name="cancel_modal_button"
+                                   value="Аннулировать">
+                        </form>
                     </div>
                 </div>
-
             </div>
         </div>
 
-        {% if files %}
 
-            <br>
-            <h5>Приложенные файлы:</h5>
-            <ul class="list-group">
-                {% for file in files %}
-                    <li class="list-group-item d-flex justify-content-start align-items-center hover-mouse ">
-                        <img src="{% static 'todo_tasks/icons/file-arrow-down.svg' %}">
-                        <a href="{% url 'download_file' file.id %}"
-                           class="nav-link text-black" download>{% split_filename file.file %}</a>
-                    </li>
-                {% endfor %}
-            </ul>
-        {% endif %}
+        <!-- Модальное окно сообщиь о корректировке-->
+        <div class="modal fade" id="correction_task" data-bs-backdrop="static" data-bs-keyboard="false"
+             tabindex="-1"
+             aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog">
 
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="staticBackdropLabel">Корректировка</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                aria-label="Закрыть"></button>
+                    </div>
+                    <div class="modal-body">
+                        Хотите изменить статус задания? Отменить данное действие невозможно
+                    </div>
+                    <div class="modal-footer">
+                        <form method="POST">
 
-
-
-        {% if approve_users %}
-            <div>
-                <br>
-                <h5>Согласователи:</h5>
-                <ul class="list-group">
-                    {% for user in approve_users %}
-                        {% if user.approve_status %}
-                            <li class="list-group-item d-flex justify-content-between align-items-center bg-success bg-opacity-10">
-                                {% else %}
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                        {% endif %}
-                    {{ user.approve_user }} <small class="text-muted">
-                        ({{ user.approve_user.job_title }}, {{ user.approve_user.department }},
-                        тел. {{ user.approve_user.user_phone }})</small>
-                    </li>
-                    {% endfor %}
-                    <ul>
-            </div>
-        {% endif %}
-        {% block buttons %}
-        {% endblock %}
-
-        <!-- Формируем список исполнителей, если они имеются-->
-        {% if workers %}
-
-            <br>
-            <h5>Исполнители:</h5>
-            <ul class="list-group">
-                {% for worker in workers %}
-                    <li class="list-group-item d-flex justify-content-between align-items-center hover-mouse">
-                        {{ worker.worker_user }} <small class="text-muted">
-                        ({{ worker.worker_user.job_title }}, {{ worker.worker_user.department }},
-                        тел. {{ worker.worker_user.user_phone }})</small>
-                    </li>
-                {% endfor %}
-            </ul>
-        {% endif %}
-
-        <!-- Формируем список исполнителей, если они имеются-->
-
-
-        {% if obj.task_status == 2 or obj.task_status == 3  and obj.department_number.id == user.department.id %}
-            <!-- Модальное окно аннулирование задания-->
-            <div class="modal fade" id="cancel_task" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-                 aria-labelledby="staticBackdropLabel" aria-hidden="true">
-                <div class="modal-dialog">
-
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="staticBackdropLabel">Аннулирование задания</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                    aria-label="Закрыть"></button>
-                        </div>
-                        <div class="modal-body">
-                            Вы точно хотите аннулировать задание? Отменить данное действие невозможно
-                        </div>
-                        <div class="modal-footer">
-                            <form method="POST">
-
-                                {% csrf_token %}
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
-                                <input type="submit" class="btn btn-danger" name="cancel_modal_button"
-                                       value="Аннулировать">
-                            </form>
-                        </div>
+                            {% csrf_token %}
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                            <input type="submit" class="btn btn-danger" name="correction_modal_button"
+                                   value="Сообщить о планируемом изменении">
+                        </form>
                     </div>
                 </div>
             </div>
+        </div>
 
+    {% endif %}
+    <br>
 
-            <!-- Модальное окно сообщиь о корректировке-->
-            <div class="modal fade" id="correction_task" data-bs-backdrop="static" data-bs-keyboard="false"
-                 tabindex="-1"
-                 aria-labelledby="staticBackdropLabel" aria-hidden="true">
-                <div class="modal-dialog">
-
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="staticBackdropLabel">Корректировка</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                    aria-label="Закрыть"></button>
-                        </div>
-                        <div class="modal-body">
-                            Хотите изменить статус задания? Отменить данное действие невозможно
-                        </div>
-                        <div class="modal-footer">
-                            <form method="POST">
-
-                                {% csrf_token %}
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
-                                <input type="submit" class="btn btn-danger" name="correction_modal_button"
-                                       value="Сообщить о планируемом изменении">
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-        {% endif %}
-        <br>
-
-        {#<span data-toggle="tooltip" title="другой текст подсказки">некоторый текст</span>#}
-        <script>
-            // после загрузки страницы
-            $(function () {
-                // инициализации подсказок для всех элементов на странице, имеющих атрибут data-toggle="tooltip"
-                $('[data-toggle="tooltip"]').tooltip();
-            });
-        </script>
+    {#<span data-toggle="tooltip" title="другой текст подсказки">некоторый текст</span>#}
+    <script>
+        // после загрузки страницы
+        $(function () {
+            // инициализации подсказок для всех элементов на странице, имеющих атрибут data-toggle="tooltip"
+            $('[data-toggle="tooltip"]').tooltip();
+        });
+    </script>
 
 {% endblock %}

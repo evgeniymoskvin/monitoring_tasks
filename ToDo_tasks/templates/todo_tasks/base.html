@@ -11,6 +11,8 @@
     <link rel="stylesheet" type="text/css" href="{% static 'todo_tasks/Bootstrap-5-5.1.3/css/bootstrap.css' %}"/>
     <link rel="stylesheet" type="text/css" href="{% static 'todo_tasks/css/tasks.css' %}"/>
     <link rel="stylesheet" type="text/css" href="{% static 'todo_tasks/css/style_sidebar.css' %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'todo_tasks/css/buttons.css' %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'todo_tasks/css/loader-big.css' %}"/>
     <link rel="stylesheet" type="text/css"
           href="{% static 'todo_tasks/DataTables-1.12.1/css/dataTables.bootstrap5.css' %}"/>
     <script type="text/javascript" src="{% static 'todo_tasks/Bootstrap-5-5.1.3/js/bootstrap.bundle.js' %}"></script>
@@ -27,77 +29,40 @@
 
 </head>
 
-<body class="content-fade" id="body">
+<script>
+    window.addEventListener("beforeunload", function () {
+
+        body_container = document.getElementById('body_container')
+        body_container.style.display = 'none'
+        {#console.log('сработал none')#}
+
+        spinloader = document.getElementById('loader-big')
+        body_full = document.getElementById('body-full')
+        spinloader.style.display = 'block'
+        console.log('сработал блок')
+
+
+    });
+</script>
+
+<body class="content-fade back-search" id="body-full">
 
 {% include "todo_tasks/sidebar.html" %}
 
-{#<nav class="py-2 my-nav">#}
-{#    <div class="container d-flex flex-wrap">#}
-{#        <ul class="nav me-auto">#}
-{#            <li class="nav-item">#}
-{#                <a class="nav-link text-3-menu" href="{% url 'index' %}">{{ user }}</a>#}
-{##}
-{#            </li>#}
-{#        </ul>#}
-{##}
-{#        <ul class="nav">#}
-{#            <div class="dropdown">#}
-{#                <a class="nav-link text-3-menu" type="button" data-bs-toggle="offcanvas"#}
-{#                   data-bs-target="#offcanvasScrolling"#}
-{#                   aria-controls="offcanvasScrolling"> Меню </a>#}
-{#            </div>#}
-{#            </li>#}
-{#        </ul>#}
-{#        <!--Боковое меню-->#}
-{#        <div class="offcanvas offcanvas-end bg-light" data-bs-scroll="true" data-bs-backdrop="false" tabindex="-1"#}
-{#             id="offcanvasScrolling" aria-labelledby="offcanvasScrollingLabel">#}
-{#            <div class="offcanvas-header">#}
-{#                <h5 class="offcanvas-title" id="offcanvasScrollingLabel">Меню</h5>#}
-{#                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Закрыть"></button>#}
-{#            </div>#}
-{#            <div class="offcanvas-body">#}
-{#                <a class="dropdown-item" href="{% url 'index' %}">Главная страница</a>#}
-{#                <!-- Для руководителей-->#}
-{#                {% if user.right_to_sign == True and user.cpe_flag == False %}#}
-{#                    {% include "todo_tasks/offcanvas/offcanvas_can_sign.html" %}#}
-{#                {% elif user.cpe_flag == True %}#}
-{#                    {% include "todo_tasks/offcanvas/offcanvas_cpe.html" %}#}
-{#                {% else %}#}
-{#                    {% include "todo_tasks/offcanvas/offcanvas_worker.html" %}#}
-{#                {% endif %}#}
-{#                <a class="dropdown-item" href="{% url 'advanced_search' %}">Расширенный поиск</a>#}
-{#                <hr class="dropdown-divider">#}
-{#                                <a class="dropdown-item" href="{% url 'change_password' %}">Сменить пароль</a>#}
-{#                                <a class="dropdown-item" href="{% url 'logout' %}">Выйти</a>#}
-{##}
-{##}
-{#                <div class="dropdown">#}
-{#                    <a href="#" class="dropdown-item align-items-center text-black dropdown-toggle"#}
-{#                       id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">#}
-{#                        {{ user }}#}
-{#                    </a>#}
-{#                    <ul class="dropdown-menu dropdown-menu-dark text-small shadow">#}
-{#                        <li><a class="dropdown-item" href="{% url 'profile' %}">Профиль</a></li>#}
-{#                        <li>#}
-{#                            <hr class="dropdown-divider">#}
-{#                        </li>#}
-{#                        <li><a class="dropdown-item" href="{% url 'logout' %}">Выйти</a></li>#}
-{#                    </ul>#}
-{#                </div>#}
-{#            </div>#}
-{#        </div>#}
-{##}
-{##}
-{#    </div>#}
-{#    </div>#}
-{#    </div>#}
-{#</nav>#}
-
-<div class="container">
+<div class="container" id="body_container" style="display: block">
 
     {% block content %}
     {% endblock %}
 </div>
+
+
+<div id="loader-big" style="display: none; background: #CACACA; width: 100vw; height: 100vw">
+    <div class="centered_div">
+        <p class="text-1-task" style="color: #202022">Работаем</p>
+        <span class="loader-big"></span>
+    </div>
+</div>
+
 
 <script>
     $('tr[data-href]').on("click", function () {

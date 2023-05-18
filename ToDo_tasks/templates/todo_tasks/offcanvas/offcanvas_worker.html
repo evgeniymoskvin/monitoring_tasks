@@ -50,7 +50,10 @@
 <li class="has-subnav" onclick="onclickmytasks()">
     <a href="#">
         <i class="fa">
-            <div class="icon-box-menu"></div>
+            <div class="icon-box-menu">
+                <p class="text-menu-sidebar numberCircle" id="my_tasks_num"
+                   style="display: none">{% need_to_reed_my_tasks user %}</p>
+            </div>
         </i>
         <span class="nav-text text-menu-sidebar" style="text-transform: uppercase">
                             Мои задания
@@ -82,7 +85,10 @@
 <li class="has-subnav" id="my_inbox" style="display: none">
     <a href="{% url 'inbox' %}">
         <i class="fa">
-            <div class="icon-angles-down-solid-menu"></div>
+            <div class="icon-angles-down-solid-menu">
+                <p class="text-menu-sidebar numberCircle" id="my_tasks_num_inbox"
+                   style="display: none">{% need_to_reed_my_tasks user %}</p>
+            </div>
         </i>
         <span class="nav-text text-menu-sidebar" style="text-transform: uppercase">
                             Мои входящие задания

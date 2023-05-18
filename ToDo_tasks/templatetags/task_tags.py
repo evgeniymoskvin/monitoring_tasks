@@ -43,7 +43,7 @@ def get_count_task_workers_to_sign(user):
         count_tasks = TaskModel.objects.get_queryset().filter(task_status=2).filter(
                 incoming_dep=user.department).filter(task_workers=False).count()
         if count_tasks > 0:
-            count_task_to_workers = f'({count_tasks})'
+            count_task_to_workers = f'{count_tasks}'
     return count_task_to_workers
 
 @register.simple_tag()
@@ -51,7 +51,7 @@ def unread_inbox(user):
     count_unread = ''
     tasks_count_unread = WorkerModel.objects.get_queryset().filter(worker_user=user).filter(read_status=False).count()
     if tasks_count_unread > 0:
-        count_unread = f'({tasks_count_unread})'
+        count_unread = f'{tasks_count_unread}'
     return count_unread
 
 
@@ -63,7 +63,18 @@ def need_approve(user):
 
     if tasks_to_approve > 0:
         count_unread = f'{tasks_to_approve}'
+
     return count_unread
+
+@register.simple_tag()
+def need_to_reed_my_tasks(user):
+    count_my_unread = ''
+    tasks_id_unread = WorkerModel.objects.get_queryset().filter(worker_user=user).filter(read_status=False).count()
+
+    if tasks_id_unread > 0:
+        count_my_unread = f'{tasks_id_unread}'
+    print(count_my_unread)
+    return count_my_unread
 
 @register.simple_tag()
 def split_filename(value:str):

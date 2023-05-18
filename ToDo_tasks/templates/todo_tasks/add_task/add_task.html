@@ -7,14 +7,13 @@
     <script src="{% static 'todo_tasks/select2/select2.min.js' %}"></script>
 
     <script>
-        function showloader() {
+        window.addEventListener("beforeunload", function () {
             spinloader = document.getElementById('loaderspin')
-            console.log(spinloader)
             spinloader.style.display = 'block'
 
             formadd = document.getElementById('formadd')
             formadd.style.display = 'none'
-        }
+        });
     </script>
 {% endblock %}
 
@@ -134,8 +133,8 @@
                     <div class="row justify-content-center; ">
                         <div class="col">
                             <figure class="text-center">
-                                <a class="btn btn-outline-secondary" href="{% url 'index' %}" role="button">Отмена</a>
-                                <button class="btn btn-outline-success" type="submit" onclick="showloader()">Выдать
+                                <a class="button-cancel-a" href="{% url 'index' %}" role="button">Отмена</a>
+                                <button class="button-success" type="submit">Выдать
                                     задание
                                 </button>
                             </figure>

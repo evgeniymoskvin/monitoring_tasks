@@ -17,11 +17,13 @@
     <form id="form-container" method="POST"
           hx-post={% url 'details_to_add_workers' pk=obj.id %} hx-target="#worker_list">
         {% csrf_token %}
-        <p>Назначить ответственного исполнителя:</p>
+                    <span class="text-3"
+                  style="display: inline-block; text-transform: uppercase; margin-top: 25px">Назначить ответственного исполнителя:</span>
+
         {{ formset.worker_user }}
         <br>
         <figure class="text-center">
-            <button class="btn btn-success" type="submit" hx-target="worker_list">Назначить исполнителя</button>
+            <button class="button-success" type="submit" hx-target="worker_list">Назначить исполнителя</button>
         </figure>
     </form>
 

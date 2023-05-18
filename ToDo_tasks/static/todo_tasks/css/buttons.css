@@ -1,0 +1,225 @@
+.button-index {
+    font-family: "p22_underground_cy_prodemi", serif;
+    text-transform: uppercase;
+    font-size: 30px;
+    border-radius: 15px;
+    text-align: center;
+    border: 2px solid black;
+    background-color: white;
+    transition: all .05s ease-in-out;
+    color: black;
+    padding-left: 50px;
+    padding-right: 50px;
+    padding-top: 10px;
+}
+
+.button-index:hover {
+    scale: 110%;
+    border-radius: 15px;
+    text-align: center;
+    background-color: black;
+    color: white;
+}
+
+
+.button-edit-profile {
+    font-family: "p22_underground_cy_prodemi", serif;
+    text-transform: uppercase;
+    font-size: 15px;
+    border-radius: 10px;
+    text-align: center;
+    border: 2px solid black;
+    background-color: white;
+    transition: all .3s ease-in-out;
+    color: black;
+    padding-left: 30px;
+    padding-right: 30px;
+    padding-top: 10px;
+    padding-bottom: 8px;
+}
+
+.button-edit-profile:hover {
+    border-radius: 15px;
+    text-align: center;
+    background-color: black;
+    color: white;
+}
+
+.button-search {
+    font-family: "p22_underground_cy_probook", serif;
+    text-transform: uppercase;
+    font-size: 15px;
+    border-radius: 10px;
+    text-align: center;
+    border: 2px solid #0a53be;
+    background-color: #0a53be;
+    transition: all .2s ease-in-out;
+    color: white;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    padding-left: 10px;
+    padding-right: 10px;
+    box-shadow: 0px 10px 38px 0px rgba(0, 0, 0, 0.2);
+}
+
+.button-search:hover {
+    text-align: center;
+    border: 2px solid #074094;
+    background-color: #074094;
+    box-shadow: 10px 10px 38px 0px rgba(0, 0, 0, 0.2);
+}
+
+.button-success {
+    font-family: "p22_underground_cy_probook", serif;
+    /*text-transform: uppercase;*/
+    font-size: 16px;
+    border-radius: 5px;
+    text-align: center;
+    border: 2px solid darkgreen;
+    background-color: white;
+    transition: all .3s ease-in-out;
+    color: darkgreen;
+    text-decoration: none;
+    padding-left: 15px;
+    padding-right: 15px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.button-success:hover {
+    border-radius: 6px;
+    text-align: center;
+    background-color: darkgreen;
+    border: 2px solid darkgreen;
+    color: white;
+    box-shadow: 0px 10px 38px 0px rgba(0, 0, 0, 0.2);
+}
+
+.button-cancel {
+    font-family: "p22_underground_cy_probook", serif;
+    /*text-transform: uppercase;*/
+    font-size: 16px;
+    border-radius: 5px;
+    text-align: center;
+    border: 2px solid #7c7c7c;
+    background-color: white;
+    transition: all .3s ease-in-out;
+    color: black;
+    text-decoration: none;
+    padding-left: 15px;
+    padding-right: 15px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.button-cancel:hover {
+    border-radius: 6px;
+    text-align: center;
+    background-color: #7c7c7c;
+    color: white;
+    box-shadow: 0px 10px 38px 0px rgba(0, 0, 0, 0.2);
+}
+
+
+.button-cancel-a {
+    font-family: "p22_underground_cy_probook", serif;
+    /*text-transform: uppercase;*/
+    font-size: 16px;
+    border-radius: 5px;
+    text-align: center;
+    border: 2px solid #7c7c7c;
+    background-color: white;
+    transition: all .3s ease-in-out;
+    color: black;
+    text-decoration: none;
+    padding-left: 15px;
+    padding-right: 15px;
+    padding-top: 14px;
+    padding-bottom: 14px;
+}
+
+.button-cancel-a:hover {
+    border-radius: 6px;
+    text-align: center;
+    background-color: #7c7c7c;
+    color: white;
+    box-shadow: 0px 10px 38px 0px rgba(0, 0, 0, 0.2);
+}
+
+.button-warning {
+    font-family: "p22_underground_cy_probook", serif;
+    /*text-transform: uppercase;*/
+    font-size: 16px;
+    border-radius: 5px;
+    text-align: center;
+    border: 2px solid #bd7700;
+    background-color: white;
+    transition: all .3s ease-in-out;
+    color: #bd7700;
+    text-decoration: none;
+    padding-left: 15px;
+    padding-right: 15px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.button-warning:hover {
+    border-radius: 6px;
+    text-align: center;
+    background-color: #ffaf00;
+    border: 2px solid #ffaf00;
+    color: white;
+    box-shadow: 0px 10px 38px 0px rgba(0, 0, 0, 0.2);
+}
+
+.button-primary {
+    font-family: "p22_underground_cy_probook", serif;
+    /*text-transform: uppercase;*/
+    font-size: 16px;
+    border-radius: 5px;
+    text-align: center;
+    border: 2px solid #074094;
+    background-color: white;
+    transition: all .3s ease-in-out;
+    color: #074094;
+    text-decoration: none;
+    padding-left: 15px;
+    padding-right: 15px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.button-primary:hover {
+    border-radius: 6px;
+    text-align: center;
+    background-color: #074094;
+    border: 2px solid #074094;
+    color: white;
+    box-shadow: 0px 10px 38px 0px rgba(0, 0, 0, 0.2);
+}
+
+.button-danger {
+    font-family: "p22_underground_cy_probook", serif;
+    /*text-transform: uppercase;*/
+    font-size: 16px;
+    border-radius: 5px;
+    text-align: center;
+    border: 2px solid #c50000;
+    background-color: white;
+    transition: all .3s ease-in-out;
+    color: #c50000;
+    text-decoration: none;
+    padding-left: 15px;
+    padding-right: 15px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.button-danger:hover {
+    border-radius: 6px;
+    text-align: center;
+    background-color: #c50000;
+    border: 2px solid #c50000;
+    color: white;
+    box-shadow: 0px 10px 38px 0px rgba(0, 0, 0, 0.2);
+}
