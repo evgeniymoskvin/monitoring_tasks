@@ -38,7 +38,6 @@ class AboutView(View):
         return render(request, 'todo_tasks/about.html', content)
 
     def post(self, request):
-        print(request.POST)
         if User.objects.filter(username=request.POST['username']).exists():
             user = authenticate(username=request.POST['username'], password=request.POST['password'])
             try:
@@ -1056,8 +1055,21 @@ class UserProfileView(View):
         user = Employee.objects.get(user=request.user)
         form = UserProfileForm(instance=user)
         content = {'form': form,
-                   "user": user}
+                   "user": user,
+                   }
         return render(request, 'todo_tasks/system_user/user_profile.html', content)
+
+    def post(self, request):
+        user = Employee.objects.get(user=request.user)
+        if request.POST.get('mailing_check') == 'on':
+            print(request.POST.get('mailing_check'))
+            user.mailing_list_check = True
+            user.save()
+        else:
+            print('ничего')
+            user.mailing_list_check = False
+            user.save()
+        return redirect('profile')
 
 
 class EditProfileUserView(View):
@@ -1080,7 +1092,8 @@ class EditProfileUserView(View):
             employee = form.save(commit=False)
             employee.user = User.objects.get(username=request.user)
             try:
+                employee.save()
+            except:
                 employee.id = Employee.objects.get(user=request.user).id
-            finally:
                 employee.save()
         return redirect('profile')

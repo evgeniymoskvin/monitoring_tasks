@@ -8,24 +8,58 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Редактирование профиля</title>
     <link rel="stylesheet" type="text/css" href="{% static 'todo_tasks/Bootstrap-5-5.1.3/css/bootstrap.css' %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'todo_tasks/css/tasks.css' %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'todo_tasks/css/buttons.css' %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'todo_tasks/css/loader-big.css' %}"/>
 </head>
 
-<body>
-<div class="container">
+<script>
+    window.addEventListener("beforeunload", function () {
+
+        body_container = document.getElementById('body_container')
+        body_container.style.display = 'none'
+
+        spinloader = document.getElementById('loader-big')
+        body_full = document.getElementById('body-full')
+        spinloader.style.display = 'block'
+
+
+    });
+</script>
+
+<body class="content-fade back-search" id="body-full">
+<div class="container" id="body_container">
 
 
     {% block content %}
         <br>
-        <h4>Редактирование профиля {{ user }}</h4>
+        <h4 class="text-1-task" style="margin-top: 25px;">Редактирование профиля {{ user }}</h4>
         <br>
         <form method="post">
             {% csrf_token %}
+            <span class="text-3" style="display: inline-block; text-transform: uppercase; margin-top: 10px">Фамилия:</span>
+            {{ form.last_name }}
+            <span class="text-3" style="display: inline-block; text-transform: uppercase; margin-top: 10px">Имя:</span>
+            {{ form.first_name }}
+            <span class="text-3" style="display: inline-block; text-transform: uppercase; margin-top: 10px">Отчество:</span>
+            {{ form.middle_name }}
             {{ form.as_p }}
             <br>
-            <input type="button" onclick="history.back();" class="btn btn-primary" value="Отмена"/>
-            <button type="submit" class="btn btn-success">Сохранить</button>
+            <figure class="text-center">
+                <input type="button" class="button-cancel" onclick="history.back();" class="btn btn-primary"
+                       value="Отмена"/>
+                <button type="submit" class="button-success">Сохранить</button>
+            </figure>
         </form>
         </div>
     {% endblock %}
+
+<div id="loader-big" style="display: none; background: #CACACA; width: 100vw; height: 100vw">
+    <div class="centered_div">
+        <p class="text-1-task" style="color: #202022">Работаем</p>
+        <span class="loader-big"></span>
+    </div>
+</div>
+
 
 </body>

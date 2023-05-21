@@ -6,25 +6,25 @@
 
 {% block content %}
     <br>
-    <h4>{{ user }}, эти задания ожидают Вашего согласования</h4>
+    <h4 class="text-1-task" style="margin-top: 25px;">{{ user }}, эти задания ожидают Вашего согласования</h4>
 <table id="incoming_table" class="table table-hover" style="width: 100%">
                     <thead>
                     <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">Номер задания</th>
-                        <th scope="col">Текст задания</th>
-                        <th scope="col">Автор задания</th>
+                        <th class="th_tables" scope="col">#</th>
+                        <th class="th_tables" scope="col">Номер задания</th>
+                        <th class="th_tables" scope="col">Текст задания</th>
+                        <th class="th_tables" scope="col">Автор задания</th>
                     </tr>
                     </thead>
                     <tbody>
 
                     {% for obj in tasks %}
-                        <tr data-href="{% url 'approve_details' pk=obj.id %}">
-                            <th scope="row">{{ forloop.counter }}</th>
-                            <td>
+                        <tr class="tr-tables" data-href="{% url 'approve_details' pk=obj.id %}">
+                            <th class="th_tables" scope="row">{{ forloop.counter }}</th>
+                            <td class="td_tables">
                                 {{ obj.task_number }}</td>
-                            <td>{{ obj.text_task|truncatechars:100 }}</td>
-                            <td>{{ obj.author }}</td>
+                            <td class="td_tables">{{ obj.text_task|truncatechars:100 }}</td>
+                            <td class="td_tables">{{ obj.author }}</td>
                         </tr>
                     {% endfor %}
 

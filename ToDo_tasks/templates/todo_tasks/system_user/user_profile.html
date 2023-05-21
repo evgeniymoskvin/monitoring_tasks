@@ -7,6 +7,13 @@
 {% block content %}
     <div style="margin-top: 75px">
         <h4 class="text-1-not-inline" style="text-transform: uppercase;">Ваш профиль</h4>
+
+        <p>
+            <span class="text-3"
+                  style="display: inline; text-transform: uppercase;">id:</span>
+            <span class="text-4-book-left"> {{ user.id }} </span>
+        </p>
+
         <p>
             <span class="text-3" style="display: inline; margin-top: 150px">ФИО:</span>
             <span class="text-4-book-left" style="display: inline;"> {{ user }} </span>
@@ -32,6 +39,21 @@
         </p>
 
         <p>
+            <span class="text-3" style="display: inline; text-transform: uppercase;">Почта:</span>
+            <span class="text-4-book-left"> {{ user.user.email }} </span>
+        </p>
+
+        <p>
+            <span class="text-3" style="display: inline; text-transform: uppercase;">Уведомления:</span>
+            <span class="text-4-book-left"> {% if user.mailing_list_check %}
+                Включены
+            {% else %}
+                Только важные
+            {% endif %}
+            </span>
+        </p>
+
+        <p>
             <span class="text-3" style="display: inline; text-transform: uppercase;">Login:</span>
             <span class="text-4-book-left"> {{ user.user }} </span>
         </p>
@@ -50,8 +72,47 @@
                 <button class="button-edit-profile" type="submit">Редактировать профиль</button>
             </form>
         </div>
-        {#        <a href="{% url 'edit_profile' %}" class="btn btn-primary" role="button">Редактировать</a>#}
+        <!-- Кнопка-триггер модального окна -->
+        <div style="margin-top: 10px">
+            <button class="button-edit-profile" data-bs-toggle="modal" data-bs-target="#NotificationModal">
+                Настройка уведомлений
+            </button>
+        </div>
     </div>
 
     {#    {{ form.as_table }}#}
+
+    <!-- Модальное окно -->
+    <div class="modal fade" id="NotificationModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Настройка уведомлений</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+                </div>
+
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="modal-body">
+                        Уведомления на почту:
+
+                        {% if user.mailing_list_check %}
+                            <input type="checkbox" name="mailing_check" checked>
+                        {% else %}
+                            <input type="checkbox" name="mailing_check">
+                        {% endif %}
+                        <br>
+                        <span class="text-3" style="display: inline; text-transform: uppercase;">ВАЖНО!</span>
+
+                        Отключить комментарии к заданию и "отказ в подписании задания" невозможно
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Закрыть</button>
+                        <button type="submit" class="btn btn-outline-success">Сохранить изменения</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 {% endblock %}

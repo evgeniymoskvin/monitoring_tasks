@@ -366,6 +366,7 @@ class UserProfileForm(ModelForm):
                    'check_edit',
                    'can_make_task',
                    'cpe_flag',
+                   'mailing_list_check'
                    ]
         widgets = {
             # 'user': Select(attrs={"class": "form-control",
@@ -408,3 +409,5 @@ class LoginForm(AuthenticationForm):
             attrs={"autocomplete": "current-password", "class": "form-control", 'id': 'floatingPassword',
                    'placeholder': 'Пароль'}),
     )
+
+

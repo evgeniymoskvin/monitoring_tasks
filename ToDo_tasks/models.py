@@ -63,7 +63,7 @@ class Employee(models.Model):
     middle_name = models.CharField("Отчество", max_length=150)
     job_title = models.ForeignKey(JobTitleModel, on_delete=models.PROTECT, null=True, verbose_name="Должность")
     department = models.ForeignKey(CommandNumberModel, on_delete=models.PROTECT, null=True, verbose_name="№ отдела")
-    user_phone = models.IntegerField("№ телефона")
+    user_phone = models.IntegerField("№ телефона", null=True, default=None)
     department_group = models.ForeignKey(GroupDepartmentModel, on_delete=models.SET_NULL, default=None, null=True, verbose_name="Управление")
     right_to_sign = models.BooleanField(verbose_name="Право подписывать", default=False)
     check_edit = models.BooleanField("Возможность редактирования", default=False)
