@@ -6,8 +6,7 @@
 
 {% block content %}
     <br>
-    <h2 class="m-3, text-center">Отредактировать задание {{ obj.task_number }}</h2>
-    <br>
+    <h4 class="text-1-task" style="margin-top: 25px;">Отредактировать задание {{ obj.task_number }}</h4>
     <form id="formAdd" method="post" data-contracts-url="{% url 'ajax_load_contracts' %}"
           data-stages-url="{% url 'ajax_load_stages' %}">
         <div class="container">
@@ -16,35 +15,28 @@
                 <div class="col-5">
                     {% csrf_token %}
 
-                    Здание:
-                    <br>
+                    <span class="text-3" style="display: inline-block; text-transform: uppercase; margin-top: 10px">Здание:</span>
                     {{ form.task_building }}
-                    Текст задания:
+                    <span class="text-3" style="display: inline-block; text-transform: uppercase; margin-top: 10px">Текст задания:</span>
                     {{ form.text_task }}
                     <br>
                     {#                    Здесь должно быть поле для загрузки файла#}
                 </div>
             </div>
 
-            {#        <h2 class="m-3, text-center">Выдать задание</h2>#}
-
-            {#        {% csrf_token %}#}
-            {#        {{ form.as_table }}#}
-            <br>
-
-
             <div class="row justify-content-center">
                 <div class="col-2">
-                    Первый руководитель:
+                    <span class="text-4-book-left">Первый руководитель:</span>
                 </div>
                 <div class="col-3">
                     {{ form.first_sign_user }}
                 </div>
             </div>
 
+            <br>
             <div class="row justify-content-center">
                 <div class="col-2">
-                    Второй руководитель:
+                    <span class="text-4-book-left">Второй руководитель:</span>
                 </div>
                 <div class="col-3">
                     {{ form.second_sign_user }}
@@ -55,7 +47,7 @@
 
             <div class="row justify-content-center">
                 <div class="col-2">
-                    Принимает:
+                    <span class="text-4-book-left">Принимающий отдел:</span>
                 </div>
                 <div class="col-3">
                     {{ form.incoming_dep }}
@@ -66,11 +58,11 @@
             <div class="row justify-content-center">
                 <div class="col">
                     <figure class="text-center">
-                        <button type="button" class="btn btn-danger" data-bs-toggle="modal"
+                        <button type="button" class="button-danger" data-bs-toggle="modal"
                                 data-bs-target="#staticBackdrop">Удалить
                         </button>
-                        <a href="{% url "details" pk=obj.id %}" class="btn btn-secondary">Отмена</a>
-                        <button type="submit" class="btn btn-success" href="{% url 'change' pk=obj.id %}">Сохранить
+                        <a href="{% url "details" pk=obj.id %}" class="button-cancel-a">Отмена</a>
+                        <button type="submit" class="button-success" href="{% url 'change' pk=obj.id %}">Сохранить
                         </button>
                     </figure>
                 </div>

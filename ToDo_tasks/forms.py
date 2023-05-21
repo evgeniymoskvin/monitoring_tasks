@@ -39,9 +39,11 @@ class TaskForm(ModelForm):
                                                 "aria-label": "Наименование объекта",
                                                 "style": "height: 125px;"}),
                    "task_contract": Select(attrs={"class": "form-select",
-                                                  "aria-label": "Номер контракта"}),
+                                                  "aria-label": "Номер контракта",
+                                                  'disabled': 'disabled'}),
                    "task_stage": Select(attrs={"class": "form-select",
-                                               "aria-label": "Этап договора"}),
+                                               "aria-label": "Этап договора",
+                                               'disabled': 'disabled'}),
                    "text_task": Textarea(attrs={"placeholder": "Введите текст задания",
                                                 "class": "form-control",
                                                 "style": "height:410px;"}),
@@ -69,8 +71,8 @@ class TaskForm(ModelForm):
         super().__init__(*args, **kwargs)
         self.fields['task_contract'].queryset = ContractModel.objects  # подгрузка значений
         self.fields['task_stage'].queryset = StageModel.objects  # подгрузка значений
-        self.fields['task_contract'].choices = [(0, '---------')]  # исходное отображение
-        self.fields['task_stage'].choices = [(0, '---------')]  # исходное отображение
+        self.fields['task_contract'].choices = [(0, 'Сначала выберете объект')]  # исходное отображение
+        self.fields['task_stage'].choices = [(0, 'Сначала выберете № договора')]  # исходное отображение
 
 
 class TaskFormForSave(ModelForm):
@@ -222,11 +224,13 @@ class SearchForm(Form):
                                    queryset=ObjectModel.objects,
                                    empty_label="Не выбрано",
                                    required=False)
-    task_contract = ModelChoiceField(widget=Select(attrs={"class": "form-select"}),
+    task_contract = ModelChoiceField(widget=Select(attrs={"class": "form-select",
+                                                          'disabled': 'disabled'}),
                                      queryset=ContractModel.objects,
                                      empty_label="Не выбрано",
                                      required=False)
-    task_stage = ModelChoiceField(widget=Select(attrs={"class": "form-select"}),
+    task_stage = ModelChoiceField(widget=Select(attrs={"class": "form-select",
+                                                       'disabled': 'disabled'}),
                                   queryset=StageModel.objects,
                                   empty_label="Не выбрано",
                                   required=False)
@@ -256,10 +260,12 @@ class SearchForm(Form):
     task_text = CharField(widget=TextInput(attrs={"class": "form-control",
                                                   "placeholder": "Для кириллицы учитывайте регистр"}), required=False)
 
-    # def __init__(self, *args, **kwargs):
-    #     super().__init__(*args, **kwargs)
-    #     self.fields['task_contract'].queryset = ContractModel.objects  # подгрузка значений
-    #     self.fields['task_contract'].choices = [(0, '---------')]
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['task_contract'].queryset = ContractModel.objects  # подгрузка значений
+        self.fields['task_stage'].queryset = StageModel.objects  # подгрузка значений
+        self.fields['task_contract'].choices = [(0, 'Сначала выберете объект')]  # исходное отображение
+        self.fields['task_stage'].choices = [(0, 'Сначала выберете № договора')]  # исходное отображение
 
 
 class TaskEditWorkersForm(ModelForm):
@@ -409,5 +415,3 @@ class LoginForm(AuthenticationForm):
             attrs={"autocomplete": "current-password", "class": "form-control", 'id': 'floatingPassword',
                    'placeholder': 'Пароль'}),
     )
-
-

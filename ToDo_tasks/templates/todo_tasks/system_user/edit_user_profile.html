@@ -28,7 +28,7 @@
 </script>
 
 <body class="content-fade back-search" id="body-full">
-<div class="container" id="body_container">
+<div class="container" style="width: 650px" id="body_container">
 
 
     {% block content %}
@@ -43,7 +43,15 @@
             {{ form.first_name }}
             <span class="text-3" style="display: inline-block; text-transform: uppercase; margin-top: 10px">Отчество:</span>
             {{ form.middle_name }}
-            {{ form.as_p }}
+            <span class="text-3" style="display: inline-block; text-transform: uppercase; margin-top: 10px">Должность:</span>
+            {{ form.job_title }}
+            <span class="text-3" style="display: inline-block; text-transform: uppercase; margin-top: 10px">№ отдела:</span>
+            {{ form.department }}
+            <span class="text-3" style="display: inline-block; text-transform: uppercase; margin-top: 10px">Управление:</span>
+            {{ form.department_group }}
+            <span class="text-3" style="display: inline-block; text-transform: uppercase; margin-top: 10px">Номер телефона:</span>
+            {{ form.user_phone }}
+{#            {{ form.as_p }}#}
             <br>
             <figure class="text-center">
                 <input type="button" class="button-cancel" onclick="history.back();" class="btn btn-primary"

@@ -212,13 +212,23 @@ class AddTaskView(View):
         # Из исходного пост запроса получаем список отделов, куда надо выдать задания
         incoming_deps_list = request.POST.getlist('incoming_dep')
         approved_user_list = request.POST.getlist('approve_user')
+        print(temp_req)
         # Перебираем отделы в которые направляются задания
         for dep in incoming_deps_list:
             # Меняем значение отдела, на нужное нам из списка
             temp_req['incoming_dep'] = int(dep)
-            if temp_req['task_contract'] == '0':
+            try:
+                value_contract = temp_req['task_contract']
+                if temp_req['task_contract'] == '0':
+                    temp_req['task_contract'] = ''
+            except:
                 temp_req['task_contract'] = ''
-            if temp_req['task_stage'] == '0':
+
+            try:
+                value_stage = temp_req['task_stage']
+                if value_stage == '0':
+                    temp_req['task_stage'] = ''
+            except:
                 temp_req['task_stage'] = ''
             # Грузим в форму для сохранения
             form = TaskFormForSave(temp_req)
@@ -859,6 +869,7 @@ class AdvancedSearchView(View):
     def get(self, request):
         queryset = TaskModel.objects
         user = Employee.objects.get(user=request.user)
+        search_status = False
 
         search_object = request.GET.get('task_object')
         search_building = request.GET.get('task_building')
@@ -909,11 +920,13 @@ class AdvancedSearchView(View):
         # Для того что бы можно было попасть с главной страницы, иначе падает в ошибку по типу объекта
         if hasattr(queryset, '__iter__') is False:
             queryset = TaskModel.objects.none()
+            search_status = True
 
         form = SearchForm(initial=data)
         content = {"user": user,
                    "form": form,
-                   "search_result": queryset}
+                   "search_result": queryset,
+                   "search_status": search_status}
         return render(request, 'todo_tasks/search/advanced_search.html', content)
 
 

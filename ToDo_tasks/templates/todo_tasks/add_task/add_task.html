@@ -213,6 +213,7 @@
                     'object': objectId       // добавляем objectID в query параметры GET запроса
                 },
                 success: function (data) {   // `data` результат выполнения  функции `load_contract`
+                    $("#id_task_contract").prop('disabled', false);
                     $("#id_task_contract").html(data);  // помещаем результат в выпадающее меню
                 }
             });
@@ -229,26 +230,12 @@
                     'contract': conractId
                 },
                 success: function (data) {
+                    $("#id_task_stage").prop('disabled', false);
                     $("#id_task_stage").html(data);
                 }
             });
 
         });
-
-        {#$("#id_incoming_dep").change(function () {#}
-        {#    var url = $("#formAdd").attr("data-incoming-emp-url");#}
-        {#    var depId = $(this).val();#}
-        {##}
-        {#    $.ajax({#}
-        {#        url: url,#}
-        {#        data: {#}
-        {#            'departament': depId#}
-        {#        },#}
-        {#        success: function (data) {#}
-        {#            $("#id_incoming_employee").html(data);#}
-        {#        }#}
-        {#    });#}
-        {##}
 
     </script>
 {% endblock %}

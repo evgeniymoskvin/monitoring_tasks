@@ -11,178 +11,200 @@
 
 {% block content %}
     <br>
-    <h4>Расширенный поиск</h4>
-    <br>
-    <form id="formAdd" method="GET" action="." data-contracts-url="{% url 'ajax_load_contracts' %}"
-          data-stages-url="{% url 'ajax_load_stages' %}">
-        Наименование бъекта:
-        <div class="form-row">
-            <div class="form-group col-12">
-                <div class="input-group">
-                    {{ form.task_object }}
-                    <span class="input-group-append">
+    <h4 class="text-1-task" style="margin-top: 25px;">Расширенный поиск</h4>
+    <div class="easy-animation" id="form_search"
+         style="display: {% if search_status %} block {% else %} none {% endif %}">
+        <form id="formAdd" method="GET" action="." data-contracts-url="{% url 'ajax_load_contracts' %}"
+              data-stages-url="{% url 'ajax_load_stages' %}">
+            <span class="text-3" style="display: inline-block; text-transform: uppercase; margin-top: 10px">Наименование объекта:</span>
+            <div class="form-row">
+                <div class="form-group col-12">
+                    <div class="input-group">
+                        {{ form.task_object }}
+                        <span class="input-group-append">
                     </span>
+                    </div>
                 </div>
             </div>
-        </div>
-        № договора:
-        <div class="form-row">
-            <div class="form-group col-12">
-                <div class="input-group">
-                    {{ form.task_contract }}
+            <span class="text-3" style="display: inline-block; text-transform: uppercase; margin-top: 10px">Номер договора:</span>
+            <div class="form-row">
+                <div class="form-group col-12">
+                    <div class="input-group">
+                        {{ form.task_contract }}
+                    </div>
                 </div>
             </div>
-        </div>
-        Этап:
-        <div class="form-row">
-            <div class="form-group col-12">
-                {{ form.task_stage }}
+            <span class="text-3" style="display: inline-block; text-transform: uppercase; margin-top: 10px">Этап:</span>
+            <div class="form-row">
+                <div class="form-group col-12">
+                    {{ form.task_stage }}
+                </div>
             </div>
-        </div>
-        Здание:
-        <div class="form-row">
-            <div class="form-group col-12">
-                {{ form.task_building }}
+            <span class="text-3"
+                  style="display: inline-block; text-transform: uppercase; margin-top: 10px">Здание:</span>
+            <div class="form-row">
+                <div class="form-group col-12">
+                    {{ form.task_building }}
+                </div>
             </div>
-        </div>
-        Отдел выдавший задание:
-        <div class="form-row">
-            <div class="form-group col-12">
-                {{ form.task_dep }}
+            <span class="text-3" style="display: inline-block; text-transform: uppercase; margin-top: 10px">Отдел выдавший задание:</span>
+            <div class="form-row">
+                <div class="form-group col-12">
+                    {{ form.task_dep }}
+                </div>
             </div>
-        </div>
-        Отдел получивший задание:
-        <div class="form-row">
-            <div class="form-group col-12">
-                {{ form.task_incoming_dep }}
+            <span class="text-3" style="display: inline-block; text-transform: uppercase; margin-top: 10px">Отдел получивший задание:</span>
+            <div class="form-row">
+                <div class="form-group col-12">
+                    {{ form.task_incoming_dep }}
+                </div>
             </div>
-        </div>
-        Тип документации
-        <div class="form-row">
-            <div class="form-group col-12">
-                {{ form.type_work }}
+            <span class="text-3" style="display: inline-block; text-transform: uppercase; margin-top: 10px">Тип документации:</span>
+            <div class="form-row">
+                <div class="form-group col-12">
+                    {{ form.type_work }}
+                </div>
             </div>
-        </div>
-
-        Статус
-        <div class="form-row">
-            <div class="form-group col-12">
-                {{ form.task_status }}
+            <span class="text-3"
+                  style="display: inline-block; text-transform: uppercase; margin-top: 10px">Статус:</span>
+            <div class="form-row">
+                <div class="form-group col-12">
+                    {{ form.task_status }}
+                </div>
             </div>
-        </div>
-
-        Подпись ГИП-а позже чем (включительно):
-        <div class="form-row">
-            <div class="form-group col-12">
-                {{ form.date_start }}
+            <span class="text-3" style="display: inline-block; text-transform: uppercase; margin-top: 10px">Подпись ГИП-а позже чем (включительно):</span>
+            <div class="form-row">
+                <div class="form-group col-12">
+                    {{ form.date_start }}
+                </div>
             </div>
-        </div>
-
-        Подпись ГИП-а НЕ позже чем (включительно):
-        <div class="form-row">
-            <div class="form-group col-12">
-                {{ form.date_end }}
+            <span class="text-3" style="display: inline-block; text-transform: uppercase; margin-top: 10px">Подпись ГИП-а НЕ позже чем (включительно):</span>
+            <div class="form-row">
+                <div class="form-group col-12">
+                    {{ form.date_end }}
+                </div>
             </div>
-        </div>
-
-        Текст задания:
-        <div class="form-row">
-            <div class="form-group col-12">
-                {{ form.task_text }}
+            <span class="text-3" style="display: inline-block; text-transform: uppercase; margin-top: 10px">Текст задания:</span>
+            <div class="form-row">
+                <div class="form-group col-12">
+                    {{ form.task_text }}
+                </div>
             </div>
-        </div>
 
-        <br>
-        <button type="submit" class="btn btn-primary">Найти</button>
-    </form>
+            <div id="search_buttons" style="margin-top: 15px; margin-left: -100px">
+                <div class="row justify-content-center; ">
+                    <div class="col">
+                        <figure class="text-center">
+                            <a id="btn-cancel" class="button-cancel-a" href="#" role="button" style="opacity: 0"
+                               onclick="onClickCancel()">Отмена</a>
+                            <button class="button-success" type="submit">Найти</button>
+                        </figure>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
 
-    <br>
+    <div class="easy-animation" id="search_result"
+         style="display: {% if search_status %} none {% else %} block {% endif %}">
+        {#        <h4 class="text-2-task">Результаты поиска:</h4>#}
+        <span class="text-5-book" style=" display:inline-block; text-align: left; font-size: 17px; text-transform: uppercase;
+        margin-top: 15px; margin-bottom: 15px" onclick="onClickFilter()">Изменить фильтры<i class="fa icon-sliders" style="display: inline-block; margin-top: -7px"></i></span>
+        <table id="incoming_table_dep" class="table table-hover" style="width: 100%">
+            <thead>
+            <tr>
+                <th class="th_tables" scope="col">#</th>
+                <th class="th_tables" scope="col">Номер задания</th>
+                <th class="th_tables" scope="col">Объект</th>
+                <th class="th_tables" scope="col">Здание</th>
+                <th class="th_tables" scope="col">Текст задания</th>
+                <th class="th_tables" scope="col">Выдал</th>
+                <th class="th_tables" scope="col">Принял</th>
 
-    <h4>Результаты поиска:</h4>
+                {#                        <th scope="col">Автор задания</th>#}
+                <th class="th_tables" scope="col">Статус</th>
+            </tr>
+            </thead>
+            <tbody>
 
-    <table id="incoming_table_dep" class="table table-hover" style="width: 100%">
-        <thead>
-        <tr>
-            <th scope="col">#</th>
-            <th scope="col">Номер задания</th>
-            <th scope="col">Объект</th>
-            <th scope="col">Здание</th>
-            <th scope="col">Текст задания</th>
-            <th scope="col">Выдал</th>
-            <th scope="col">Принял</th>
-
-            {#                        <th scope="col">Автор задания</th>#}
-            <th scope="col">Статус</th>
-        </tr>
-        </thead>
-        <tbody>
-
-        {% for obj in search_result %}
-            <tr data-href="{% url 'details' pk=obj.id %}">
-                <th scope="row">{{ forloop.counter }}</th>
-                <td>
-                    {{ obj.task_number }}</td>
-                <td>
+            {% for obj in search_result %}
+                <tr class="tr-tables" data-href="{% url 'details' pk=obj.id %}">
+                    <th class="th_tables" scope="row">{{ forloop.counter }}</th>
+                    <td class="td_tables">
+                        {{ obj.task_number }}</td>
+                    <td class="td_tables">
 
                     <span data-toggle="tooltip"
                           title="{{ obj.task_object }}">{{ obj.task_object|truncatechars:50 }}
                     </span>
-                </td>
-                <td>
+                    </td>
+                    <td class="td_tables">
                     <span data-toggle="tooltip"
                           title="{{ obj.task_building }}">{{ obj.task_building|truncatechars:50 }}
                     </span>
-                <td>
+                    <td class="td_tables">
 
 
                     <span data-toggle="tooltip"
                           title="{{ obj.text_task }}">{{ obj.text_task|truncatechars:50 }}
                     </span>
-                </td>
-                {#                            <td>{{ obj.author }}</td>#}
-                <td>
+                    </td>
+                    {#                            <td>{{ obj.author }}</td>#}
+                    <td class="td_tables">
                     <span data-toggle="tooltip"
                           title="{{ obj.department_number }}">{{ obj.department_number.command_number }}
                     </span>
-                </td>
-                <td>
+                    </td>
+                    <td class="td_tables">
                     <span data-toggle="tooltip"
                           title="{{ obj.incoming_dep }}">{{ obj.incoming_dep.command_number }}
                     </span>
-                </td>
-                {#                <td>{{ obj.get_task_status_display }}</td>#}
-                {% if obj.task_status == 2 %}
-                    <td>
-                        <img src="{% static 'todo_tasks/icons/check2-all.svg' %}"
-                             title="{{ obj.get_task_status_display }}">
                     </td>
-                {% elif obj.task_status == 1 %}
-                    <td>
-                        <img src="{% static 'todo_tasks/icons/check2.svg' %}" title="{{ obj.get_task_status_display }}">
-                    </td>
-                {% elif obj.task_status == 3 %}
-                    <td>
-                        <img src="{% static 'todo_tasks/icons/x-lg.svg' %}" title="{{ obj.get_task_status_display }}">
-                    </td>
-                {% else %}
-                    <td></td>
-                {% endif %}
+                    {#                <td>{{ obj.get_task_status_display }}</td>#}
+                    {% if obj.task_status == 2 %}
+                        <td class="td_tables">
+                            <img src="{% static 'todo_tasks/icons/check2-all.svg' %}"
+                                 title="{{ obj.get_task_status_display }}">
+                        </td>
+                    {% elif obj.task_status == 1 %}
+                        <td class="td_tables">
+                            <img src="{% static 'todo_tasks/icons/check2.svg' %}"
+                                 title="{{ obj.get_task_status_display }}">
+                        </td>
+                    {% elif obj.task_status == 3 %}
+                        <td class="td_tables">
+                            <img src="{% static 'todo_tasks/icons/x-lg.svg' %}"
+                                 title="{{ obj.get_task_status_display }}">
+                        </td>
+                    {% else %}
+                        <td class="td_tables"></td>
+                    {% endif %}
 
-            </tr>
-        {% endfor %}
+                </tr>
+            {% endfor %}
 
-        </tbody>
-    </table>
+            </tbody>
+        </table>
 
-<br>
-
+        <br>
+    </div>
 {% endblock %}
 
 {% block js_stuff %}
     <!-- JS для работы таблицы со всеми заданиями -->
     <script>
 
+        function onClickFilter() {
+            document.getElementById("form_search").style.display = 'block'
+            document.getElementById("btn-cancel").style.opacity = '1'
+            document.getElementById("search_result").style.display = 'none'
+            document.getElementById("search_buttons").style.marginLeft = '0px'
+        }
 
+        function onClickCancel() {
+            document.getElementById("form_search").style.display = 'none'
+            document.getElementById("search_result").style.display = 'block'
+        }
 
         $(document).ready(function () {
             var table = $('#incoming_table_dep').DataTable({
@@ -210,19 +232,40 @@
                 .appendTo($('.col-sm-6:eq(0)', table.table().container()));
         });
 
-       {#$(document).ready(function () {#}
-       {#    $('#id_task_object').select2({#}
-       {#        placeholder: 'Выберите объект'#}
-       {#    });#}
-       {##}
-       {#    $('#id_task_contract').select2({#}
-       {#        placeholder: 'Выберите № договора'#}
-       {#    });#}
-       {#    $('#id_task_stage').select2({#}
-       {#        placeholder: 'Выберите этап'#}
-       {#    });#}
+        // JS для фильтрации списка контрактов
+        $("#id_task_object").change(function () {
+            var url = $("#formAdd").attr("data-contracts-url");
+            var objectId = $(this).val();  // получаем object ID из HTML input
 
-       {#});#}
+            $.ajax({                       // формируем AJAX запрос
+                url: url,                    // подгружаем URL адрес для запроса
+                data: {
+                    'object': objectId       // добавляем objectID в query параметры GET запроса
+                },
+                success: function (data) {   // `data` результат выполнения  функции `load_contract`
+                    $("#id_task_contract").prop('disabled', false);
+                    $("#id_task_contract").html(data);  // помещаем результат в выпадающее меню
+                }
+            });
+
+        });
+        //!JS для фильтрации списка этапов
+        $("#id_task_contract").change(function () {
+            var url = $("#formAdd").attr("data-stages-url");
+            var conractId = $(this).val();
+
+            $.ajax({
+                url: url,
+                data: {
+                    'contract': conractId
+                },
+                success: function (data) {
+                    $("#id_task_stage").prop('disabled', false);
+                    $("#id_task_stage").html(data);
+                }
+            });
+
+        });
 
     </script>
 {% endblock %}

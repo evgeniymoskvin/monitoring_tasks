@@ -55,6 +55,13 @@
     text-align: center;
 }
 
+.text-2-task {
+    font-family: "p22_underground_cy_prodemi", serif;
+    font-size: 20px;
+    text-transform: uppercase;
+    text-align: left;
+}
+
 .text-1-year {
     font-family: "p22_underground_cy_prodemi", serif;
     font-size: 25px;
@@ -408,4 +415,8 @@
     line-height: 1;
     vertical-align: center;
     letter-spacing: 0.01em;
+}
+
+.easy-animation {
+    transition: all .3s ease-in-out;
 }
