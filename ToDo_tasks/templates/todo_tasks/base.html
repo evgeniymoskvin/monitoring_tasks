@@ -43,7 +43,7 @@
     });
 </script>
 
-<body class="content-fade back-search" id="body-full">
+<body class="content-fade back-search scroll" id="body-full">
 
 {% include "todo_tasks/sidebar.html" %}
 
@@ -54,7 +54,7 @@
 </div>
 
 
-<div id="loader-big" style="display: none; background: #CACACA; width: 99vw; height: 50.4vw">
+<div id="loader-big" style="display: none; background: #CACACA; width: 99vw; height: 100vw">
     <div class="centered_div">
         <p class="text-1-task" style="color: #202022">Работаем</p>
         <span class="loader-big"></span>
@@ -65,6 +65,14 @@
 <script>
     $('tr[data-href]').on("click", function () {
         document.location = $(this).data('href');
+    });
+</script>
+
+<script>
+    // после загрузки страницы
+    $(function () {
+        // инициализации подсказок для всех элементов на странице, имеющих атрибут data-toggle="tooltip"
+        $('[data-toggle="tooltip"]').tooltip();
     });
 </script>
 

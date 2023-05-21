@@ -668,7 +668,6 @@ class ToWorkerListView(View):
     def get(self, request):
         sign_user = Employee.objects.get(user=request.user)  # получаем пользователя
         tasks = get_list_incoming_tasks_to_workers(sign_user)  # Получаем queryset с заданиями
-        print(tasks)
         content = {
             'data_without_workers': tasks,
             'user': sign_user}

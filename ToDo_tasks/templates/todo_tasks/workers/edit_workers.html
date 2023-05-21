@@ -10,7 +10,7 @@
         <script src="{% static 'todo_tasks/select2/select2.min.js' %}"></script>
     {% endblock %}
     <br>
-    <h4>Корректировка ответственных исполнителей</h4>
+    <h4 class="text-1-task" style="margin-top: 25px">Корректировка ответственных исполнителей</h4>
     <p>Выберете задание, для которого необходимо откорректировать ответственных исполнителей</p>
     <div class="row">
         <form method="POST" hx-post={% url 'edit_workers' %} hx-target="#worker_list">
@@ -21,7 +21,7 @@
             <div class="col-2">
                 <br>
                 {#                    <figure class="text-center">#}
-                <button class="btn btn-success" type="submit" hx-target="worker_list">Получить данные</button>
+                <button class="button-success" type="submit" hx-target="worker_list">Получить данные</button>
                 {#                    </figure>#}
 
             </div>

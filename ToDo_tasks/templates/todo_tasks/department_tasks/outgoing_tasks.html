@@ -24,7 +24,11 @@
             <tr class="tr-tables" data-href="{% url 'details' pk=obj.id %}">
                 <th class="th_tables" scope="row">{{ forloop.counter }}</th>
                 <td class="td_tables">{{ obj.task_number }}</td>
-                <td class="td_tables">{{ obj.text_task|truncatechars:100 }}</td>
+                <td class="td_tables">
+                    <span data-toggle="tooltip"
+                          title="{{ obj.text_task|truncatechars:500 }}">{{ obj.text_task|truncatechars:100 }}
+                    </span>
+                </td>
                 <td class="td_tables">
                     {% if obj.first_sign_status == 1 and obj.second_sign_status == 1 and obj.cpe_sign_status == 1 %}
                         <img src="{% static 'todo_tasks/icons/check2-all.svg' %}">
@@ -105,13 +109,5 @@
 
         });
 
-    </script>
-
-    <script>
-        // после загрузки страницы
-        $(function () {
-            // инициализации подсказок для всех элементов на странице, имеющих атрибут data-toggle="tooltip"
-            $('[data-toggle="tooltip"]').tooltip();
-        });
     </script>
 {% endblock %}

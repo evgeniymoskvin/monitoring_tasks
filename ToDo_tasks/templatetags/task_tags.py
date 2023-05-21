@@ -40,10 +40,19 @@ def get_count_task_incoming_to_sign(user):
 def get_count_task_workers_to_sign(user):
     count_task_to_workers = ''
     if user.right_to_sign is True and user.cpe_flag is False:
+        # Если надо указать все задания, где надо назначит исполнителей, активировать строчки
+        # queryset = CanAcceptModel.objects.get_queryset().filter(user_accept=user)
+        # list_departments = []
+        # for dep in queryset:
+        #     list_departments.append(dep.dep_accept_id)
+        # count_tasks = TaskModel.objects.get_queryset().filter(incoming_dep_id__in=list_departments).filter(
+        #     incoming_status=True).filter(task_workers=False).count()
+        # Если надо указать все задания, где надо назначит исполнителей, следующую строчку закомментировать
         count_tasks = TaskModel.objects.get_queryset().filter(task_status=2).filter(
                 incoming_dep=user.department).filter(task_workers=False).count()
         if count_tasks > 0:
             count_task_to_workers = f'{count_tasks}'
+    print(count_task_to_workers)
     return count_task_to_workers
 
 @register.simple_tag()

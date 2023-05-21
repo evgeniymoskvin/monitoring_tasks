@@ -109,7 +109,8 @@
          style="display: {% if search_status %} none {% else %} block {% endif %}">
         {#        <h4 class="text-2-task">Результаты поиска:</h4>#}
         <span class="text-5-book" style=" display:inline-block; text-align: left; font-size: 17px; text-transform: uppercase;
-        margin-top: 15px; margin-bottom: 15px" onclick="onClickFilter()">Изменить фильтры<i class="fa icon-sliders" style="display: inline-block; margin-top: -7px"></i></span>
+        margin-top: 15px; margin-bottom: 15px" onclick="onClickFilter()">Изменить фильтры<i class="fa icon-sliders"
+                                                                                            style="display: inline-block; margin-top: -7px"></i></span>
         <table id="incoming_table_dep" class="table table-hover" style="width: 100%">
             <thead>
             <tr>
@@ -146,7 +147,7 @@
 
 
                     <span data-toggle="tooltip"
-                          title="{{ obj.text_task }}">{{ obj.text_task|truncatechars:50 }}
+                          title="{{ obj.text_task|truncatechars:500 }}}}">{{ obj.text_task|truncatechars:50 }}
                     </span>
                     </td>
                     {#                            <td>{{ obj.author }}</td>#}

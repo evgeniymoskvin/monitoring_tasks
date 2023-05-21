@@ -6,40 +6,36 @@
 
 {% block content %}
 
+    <br>
+    <h3 class="text-1-task" style="margin-top: 25px;">Выданные задания отдела {{ user.department.command_number }}</h3>
 
+    <table id="all_tasks_table" class="table table-hover">
+        <thead>
+        <tr>
+            <th class="th_tables" scope="col">#</th>
+            <th class="th_tables" scope="col">Номер задания</th>
+            <th class="th_tables" scope="col">Текст задания</th>
+            <th class="th_tables" scope="col">Автор задания</th>
+        </tr>
+        </thead>
 
+        <tbody>
+        {% for obj in data_all %}
+            <tr class="tr-tables" data-href="{% url 'details' pk=obj.id %}">
+                <th class="th_tables" scope="row">{{ forloop.counter }}</th>
+                <td class="td_tables">
+                    {{ obj.task_number }}</td>
+                <td class="td_tables">
+                    <span data-toggle="tooltip"
+                          title="{{ obj.text_task|truncatechars:500 }}">{{ obj.text_task|truncatechars:100 }}
+                    </span>
+                </td>
+                <td class="td_tables">{{ obj.author }}</td>
 
-        <br>
-        <h3 class="text-1-task" style="margin-top: 25px;">Выданные задания отдела {{ user.department.command_number }}</h3>
-        <br>
-        <!-- Вкладка со всеми заданиями -->
-
-                    <table id="all_tasks_table" class="table table-hover" style="width: 100%">
-                        <thead>
-                        <tr>
-                            <th class="th_tables" scope="col">#</th>
-                            <th class="th_tables" scope="col">Номер задания</th>
-                            <th class="th_tables" scope="col">Текст задания</th>
-                            <th class="th_tables" scope="col">Автор задания</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {% for obj in data_all %}
-                            <tr class="tr-tables" data-href="{% url 'details' pk=obj.id %}">
-                                <th class="th_tables" scope="row">{{ forloop.counter }}</th>
-                                <td class="td_tables">
-                                <a href="{% url 'details' pk=obj.id %}"
-                                   style="position: absolute; width: 100%; left: 0px; height: 1.5em;"></a>
-                                    {{ obj.task_number }}</td>
-                                <td class="td_tables">
-                                    {{ obj.text_task|truncatechars:100 }}
-                                </td>
-                                <td class="td_tables">{{ obj.author }}</td>
-
-                            </tr>
-                        {% endfor %}
-                        </tbody>
-                    </table>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
 
 {% endblock %}
 
@@ -72,40 +68,6 @@
                 .appendTo($('.col-sm-6:eq(0)', table.table().container()));
         });
 
-        <!-- JS для работы таблицы c заданиями пользователя -->
 
-        $(document).ready(function () {
-            $('#to_sign_tasks_table').DataTable({
-                    dom:
-                        "<'row'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-6'f>>" +
-                        "<'row'<'col-sm-12'tr>>" +
-                        "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>" + "<'row justify-content-md-center'<'col-sm-2 col-md-2 col-xxl-2'B>>",
-                    "language": {
-                        "lengthMenu": "Показать _MENU_",
-                        "zeroRecords": "Записи не найдены",
-                        "info": "Показано с _START_ по _END_ из _TOTAL_ записей",
-                        "search": "Поиск:",
-                        "paginate": {
-                            "next": "Следующая",
-                            "previous": "Предыдущая"
-                        }
-                    },
-
-
-                    "aLengthMenu": [[1, 5, 10, 20, 25, -1], [1, 5, 10, 20, 25, "Все"]],
-                    "iDisplayLength": 20,
-                    buttons: ['pdf', 'excel']
-                }
-            );
-        });
-
-    </script>
-
-    <script>
-        // после загрузки страницы
-        $(function () {
-            // инициализации подсказок для всех элементов на странице, имеющих атрибут data-toggle="tooltip"
-            $('[data-toggle="tooltip"]').tooltip();
-        });
     </script>
 {% endblock %}

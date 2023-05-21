@@ -24,7 +24,11 @@
                 <th class="th_tables" scope="row">{{ forloop.counter }}</th>
                 <td class="td_tables">
                     {{ obj.task_number }}</td>
-                <td class="td_tables">{{ obj.text_task }}</td>
+                <td class="td_tables">
+                    <span data-toggle="tooltip"
+                          title="{{ obj.text_task|truncatechars:500 }}">{{ obj.text_task|truncatechars:100 }}
+                    </span>
+                </td>
                 <td class="td_tables">
                     {% if obj.first_sign_status == 1 and obj.second_sign_status == 1 and obj.cpe_sign_status == 1 and obj.incoming_status == 1 %}
                         <img src="{% static 'todo_tasks/icons/check2-all.svg' %}" title="Подписали все">
@@ -76,4 +80,6 @@
                 .appendTo($('.col-sm-6:eq(0)', table.table().container()));
         });
     </script>
+
+
 {% endblock %}

@@ -7,41 +7,45 @@
 {% block content %}
     <br>
     <h3 class="text-1-task" style="margin-top: 25px;">Входящие задания в отдел {{ user.department.command_number }}</h3>
-<table id="incoming_table_dep" class="table table-hover" style="width: 100%">
-                    <thead>
-                    <tr>
-                        <th class="th_tables" scope="col">#</th>
-                        <th class="th_tables" scope="col">Номер задания</th>
-                        <th class="th_tables" scope="col">Текст задания</th>
-                        <th class="th_tables" scope="col">Автор задания</th>
-                        <th class="th_tables" scope="col">Исполнители</th>
-                    </tr>
-                    </thead>
-                    <tbody>
+    <table id="incoming_table_dep" class="table table-hover" style="width: 100%">
+        <thead>
+        <tr>
+            <th class="th_tables" scope="col">#</th>
+            <th class="th_tables" scope="col">Номер задания</th>
+            <th class="th_tables" scope="col">Текст задания</th>
+            <th class="th_tables" scope="col">Автор задания</th>
+            <th class="th_tables" scope="col">Исполнители</th>
+        </tr>
+        </thead>
+        <tbody>
 
-                    {% for obj in data_have_workers %}
-                        <tr class="tr-tables" data-href="{% url 'details' pk=obj.id %}">
-                            <th class="th_tables" scope="row">{{ forloop.counter }}</th>
-                            <td>
-{#                                <a href="{% url 'details' pk=obj.id %}"#}
-{#                                   style="position: absolute; width: 100%; left: 0px; height: 1.5em;"></a>#}
-                                {{ obj.task_number }}</td>
-                            <td class="td_tables">{{ obj.text_task|truncatechars:100 }}</td>
-                            <td class="td_tables">{{ obj.author }}</td>
-                            <td class="td_tables">
-                                {% if obj.task_workers %}
-                                    Назначены
-                                {% else %}
-                                    Не назначены
-                                {% endif %}
-                            </td>
-                        </tr>
-                    {% endfor %}
+        {% for obj in data_have_workers %}
+            <tr class="tr-tables" data-href="{% url 'details' pk=obj.id %}">
+                <th class="th_tables" scope="row">{{ forloop.counter }}</th>
+                <td>
+                    {#                                <a href="{% url 'details' pk=obj.id %}"#}
+                    {#                                   style="position: absolute; width: 100%; left: 0px; height: 1.5em;"></a>#}
+                    {{ obj.task_number }}</td>
+                <td class="td_tables">
+                    <span data-toggle="tooltip"
+                          title="{{ obj.text_task|truncatechars:500 }}">{{ obj.text_task|truncatechars:100 }}
+                    </span>
+                </td>
+                <td class="td_tables">{{ obj.author }}</td>
+                <td class="td_tables">
+                    {% if obj.task_workers %}
+                        Назначены
+                    {% else %}
+                        Не назначены
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
 
-                    </tbody>
-                </table>
+        </tbody>
+    </table>
 
-<script>
+    <script>
         $(document).ready(function () {
             var table = $('#incoming_table_dep').DataTable({
                     {#order: [[1, 'asc']],#}
@@ -67,7 +71,6 @@
             table.buttons().container()
                 .appendTo($('.col-sm-6:eq(0)', table.table().container()));
         });
-</script>
-
+    </script>
 {% endblock %}
 
