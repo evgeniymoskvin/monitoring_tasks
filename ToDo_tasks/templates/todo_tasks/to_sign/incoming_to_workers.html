@@ -1,51 +1,70 @@
 {% extends "todo_tasks/base.html" %}
+{% load static %}
 
 {% block title %}
     Входящие задания
 {% endblock %}
 
 {% block content %}
-    <br>
-    <h3 class="text-1-task" style="margin-top: 25px;">Входящие задания, которым необходимо назначить исполнителей</h3>
-    <br>
-    <table id="incoming_table_dep" class="table table-hover" style="width: 100%">
-        <thead>
-        <tr>
-            <th class="th_tables" scope="col">#</th>
-            <th class="th_tables" scope="col">Номер задания</th>
-            <th class="th_tables" scope="col">Текст задания</th>
-            <th class="th_tables" scope="col">Автор задания</th>
-            <th class="th_tables" scope="col">Исполнители</th>
-        </tr>
-        </thead>
-        <tbody>
-
-        {% for obj in data_without_workers %}
+    {% if data_without_workers %}
+        <br>
+        <h3 class="text-1-task" style="margin-top: 25px;">Входящие задания, которым необходимо назначить
+            исполнителей</h3>
+        <br>
+        <table id="incoming_table_dep" class="table table-hover" style="width: 100%">
+            <thead>
             <tr>
-                <th class="th_tables" scope="row">{{ forloop.counter }}</th>
-                <td class="td_tables">
-                    <a href="{% url 'details_to_add_workers' pk=obj.id %}"
-                       style="position: absolute; width: 100%; left: 0px; height: 1.5em;"></a>
-                    {{ obj.task_number }}</td>
-                <td class="td_tables">
+                <th class="th_tables" scope="col">#</th>
+                <th class="th_tables" scope="col">Номер задания</th>
+                <th class="th_tables" scope="col">Текст задания</th>
+                <th class="th_tables" scope="col">Автор задания</th>
+                <th class="th_tables" scope="col">Исполнители</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            {% for obj in data_without_workers %}
+                <tr>
+                    <th class="th_tables" scope="row">{{ forloop.counter }}</th>
+                    <td class="td_tables">
+                        <a href="{% url 'details_to_add_workers' pk=obj.id %}"
+                           style="position: absolute; width: 100%; left: 0px; height: 1.5em;"></a>
+                        {{ obj.task_number }}</td>
+                    <td class="td_tables">
                     <span data-toggle="tooltip"
                           title="{{ obj.text_task|truncatechars:500 }}">{{ obj.text_task|truncatechars:100 }}
                     </span>
-                </td>
-                <td class="td_tables">{{ obj.author }}</td>
-                <td class="td_tables">
-                    {% if obj.task_workers %}
-                        Назначены
-                    {% else %}
-                        Не назначены
-                    {% endif %}
-                </td>
-            </tr>
-        {% endfor %}
+                    </td>
+                    <td class="td_tables">{{ obj.author }}</td>
+                    <td class="td_tables">
+                        {% if obj.task_workers %}
+                            Назначены
+                        {% else %}
+                            Не назначены
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
 
-        </tbody>
-    </table>
+            </tbody>
+        </table>
+    {% else %}
+        <h4 class="text-1-task" style="margin-top: 25px;">{{ user }}</h4>
+        <div class="row justify-content-center" style="margin-top: 0px">
+            <div class="col" style="display: inline-block; text-align: center">
+                <span class="text-index-book"
+                      style="display: inline-block; text-transform: uppercase; margin-top: 25px">Входящих задания, ожидающих назначения исполнителей, не найдено</span>
+                <br>
+                <img src="{% static 'todo_tasks/icons/face-grin-beam-regular.svg' %}" width="50px"
+                     style="margin-top: 30px">
 
+            </div>
+            <div>
+                <p class="text-5-bold" style="text-transform: uppercase" onclick="location.href='{% url 'index' %}';">На
+                    главную</p>
+            </div>
+        </div>
+    {% endif %}
 
 {% endblock %}
 

@@ -45,5 +45,11 @@ urlpatterns = [
     path('edit_profile', views.EditProfileUserView.as_view(), name='edit_profile'),
     path('edit_approve/<int:pk>', views.EditApproveUserView.as_view(), name='edit_approve'),
     path('modal-login', LoginView.as_view(), name='login-modal'),
-
+    path('favorites/', views.FavoritesListView.as_view(), name='favorites'),
+    path('favorites/<int:pk>', views.CurrentFavoritesListView.as_view(), name='favorite_list'),
+    path('share_favorites/<int:pk>', views.ShareFavoritesListView.as_view(), name='share_favorites'),
+    path('edit_favorites/<int:pk>', views.EditFavoriteListView.as_view(), name='edit_favorites'),
+    path('delete_share_favorites/<int:pk>', views.DeleteShareFavoritesListView.as_view(), name='delete_share_favorites'),
+    path('add_task_to_favorites/<int:pk>', views.AddTaskFavoritesListView.as_view(), name='add_task_to_favorites'),
+    path('delete_task_from_favorites/<int:pk>', views.DeleteTaskFromFavoriteView.as_view(), name='delete_task_from_favorites'),
 ]

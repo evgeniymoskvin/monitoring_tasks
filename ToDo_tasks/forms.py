@@ -1,5 +1,6 @@
 from .models import TaskModel, ObjectModel, ContractModel, StageModel, OrdersModel, Employee, CanAcceptModel, \
-    WorkerModel, ApproveModel, AttachmentFilesModel, CommandNumberModel
+    WorkerModel, ApproveModel, AttachmentFilesModel, CommandNumberModel, MarkDocModel, FavoritesListModel, \
+    FavoritesShareModel, TasksInFavoritesModel
 from django.forms import ModelForm, TextInput, Textarea, CheckboxInput, Select, ChoiceField, Form, PasswordInput, \
     CharField, ModelChoiceField, modelformset_factory, ModelMultipleChoiceField, MultipleChoiceField, SelectMultiple, \
     FileField, ClearableFileInput, FileInput, DateTimeField, DateTimeInput
@@ -69,8 +70,11 @@ class TaskForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['task_contract'].queryset = ContractModel.objects  # подгрузка значений
-        self.fields['task_stage'].queryset = StageModel.objects  # подгрузка значений
+        self.fields['task_order'].queryset = OrdersModel.objects.order_by('order')
+        self.fields['incoming_dep'].queryset = CommandNumberModel.objects.order_by('command_number')
+        self.fields['task_mark_doc'].queryset = MarkDocModel.objects.order_by("mark_doc")
+        self.fields['task_contract'].queryset = ContractModel.objects.order_by("contract_name")  # подгрузка значений
+        self.fields['task_stage'].queryset = StageModel.objects.order_by("stage_name")  # подгрузка значений
         self.fields['task_contract'].choices = [(0, 'Сначала выберете объект')]  # исходное отображение
         self.fields['task_stage'].choices = [(0, 'Сначала выберете № договора')]  # исходное отображение
 
@@ -290,7 +294,7 @@ class WorkerForm(ModelForm):
                    ]
         widgets = {
             "worker_user": Select(attrs={"class": "form-select",
-                                         "aria-label": "Первый руководитель"}),
+                                         "aria-label": "Работник"}),
         }
 
 
@@ -304,7 +308,7 @@ class WorkersEditForm(ModelForm):
                    ]
         widgets = {
             "task": Select(attrs={"class": "form-select",
-                                  "aria-label": "Первый руководитель"}),
+                                  "aria-label": "Работник"}),
         }
 
 
@@ -415,3 +419,56 @@ class LoginForm(AuthenticationForm):
             attrs={"autocomplete": "current-password", "class": "form-control", 'id': 'floatingPassword',
                    'placeholder': 'Пароль'}),
     )
+
+
+class CreateFavoriteListForm(ModelForm):
+    """Форма создания списков избранного"""
+
+    class Meta:
+        model = FavoritesListModel
+        fields = ['favorite_list_name',
+                  ]
+
+        widgets = {"favorite_list_name": TextInput(attrs={"class": "form-control",
+                                                          "aria-label": "Название списка"
+                                                          })}
+
+
+class ShareFavoriteListForm(ModelForm):
+    class Meta:
+        model = FavoritesShareModel
+        fields = ['favorite_share_user',
+                  'can_change_list']
+        widgets = {"favorite_share_user": Select(attrs={"class": "form-select",
+                                                        "aria-label": "Сотрудник"
+                                                        }),
+                   "can_change_list": CheckboxInput()}
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['favorite_share_user'].queryset = Employee.objects.order_by("last_name").filter(work_status=True)
+
+
+class AddMyFavoriteForm(ModelForm):
+    """Форма создания списков избранного"""
+
+    class Meta:
+        model = TasksInFavoritesModel
+        fields = ['favorite_list',
+                  ]
+
+        widgets = {"favorite_list": Select(attrs={"class": "form-select",
+                                                        "aria-label": "Сотрудник"
+                                                        })}
+
+class AddShareFavoriteForm(ModelForm):
+    """Форма создания списков избранного"""
+
+    class Meta:
+        model = TasksInFavoritesModel
+        fields = ['favorite_list',
+                  ]
+
+        widgets = {"favorite_list": Select(attrs={"class": "form-select",
+                                                        "aria-label": "Сотрудник"
+                                                        })}
+

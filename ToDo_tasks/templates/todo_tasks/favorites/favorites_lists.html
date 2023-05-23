@@ -1,0 +1,97 @@
+{% extends "todo_tasks/base.html" %}
+{% load static %}
+
+{% block title %}
+    Избранное / {{ user }}
+{% endblock %}
+
+{% block content %}
+    <br>
+    <h3 class="text-1-task" style="margin-top: 25px;">Избранное</h3>
+
+    {% if list_favorites or share_list_favorites %}
+        <div class="row justify-content-center">
+            <div class="col" style="display: inline-block; text-align: center">
+                <div>
+                    <p class="text-5-bold" style="text-transform: uppercase" onclick="openCreateFavoriteListModal()">
+                        Создать
+                        список</p>
+                </div>
+            </div>
+        </div>
+        {% if list_favorites %}
+            <span class="text-3"
+                  style="display: inline-block; text-transform: uppercase; margin-top: 25px">Мои списки избранного:</span>
+            <ul class="list-group">
+                {% for favorite in list_favorites %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center hover-mouse"
+                        onclick="location.href='{% url 'favorite_list' pk=favorite.id %}';">
+                        {{ favorite.favorite_list_name }}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+        {% if share_list_favorites %}
+            <span class="text-3"
+                  style="display: inline-block; text-transform: uppercase; margin-top: 25px">Доступные списки избранного:</span>
+            <ul class="list-group">
+                {% for favorite in share_list_favorites %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center hover-mouse"
+                        onclick="location.href='{% url 'favorite_list' pk=favorite.favorite_list.id %}';">
+                        {{ favorite.favorite_list }}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% else %}
+        <div class="row justify-content-center" style="margin-top: 50px">
+            <div class="col" style="display: inline-block; text-align: center">
+                <img src="{% static 'todo_tasks/icons/face-tired-regular.svg' %}" width="50px">
+                <br>
+                <span class="text-index-book"
+                      style="display: inline-block; text-transform: uppercase; margin-top: 25px">У Вас пока что нет ни одного избранного</span>
+            </div>
+
+            <div>
+                <p class="text-5-bold" style="text-transform: uppercase" onclick="openCreateFavoriteListModal()">Создать
+                    список</p>
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- Модальное окно создания списка -->
+
+    <div class="modal fade" id="newFavoritesModal" tabindex="-1" aria-labelledby="newFavoritesModal" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" style="text-transform: uppercase;">Создать список</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="modal-body" id="modalBody">
+                        <p class="text-3" style="text-transform: uppercase;">Название списка</p>
+                        {{ form_create_list.favorite_list_name }}
+                        <br>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Отмена</button>
+                        <input type="submit" class="btn btn-outline-primary" value="Создать">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block js_stuff %}
+    <script>
+
+        function openCreateFavoriteListModal() {
+            $('#newFavoritesModal').modal('show');
+        }
+    </script>
+{% endblock %}

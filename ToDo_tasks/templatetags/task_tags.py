@@ -82,7 +82,6 @@ def need_to_reed_my_tasks(user):
 
     if tasks_id_unread > 0:
         count_my_unread = f'{tasks_id_unread}'
-    print(count_my_unread)
     return count_my_unread
 
 @register.simple_tag()

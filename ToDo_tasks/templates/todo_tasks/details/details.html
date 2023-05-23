@@ -19,6 +19,10 @@
         <div class="col" style="margin-top: 25px">
             <div class="d-flex justify-content-end">
                 <h4>
+                    <a href="#" onclick="openFavoriteListModal()"><img class="hover-mouse-icon"
+                                                                       src="{% static 'todo_tasks/icons/bookmark.svg' %}"
+                                                                       data-toggle="tooltip"
+                                                                       title="Добавить в избранное"></a>
                     <a href="{% url 'download_blank' obj.id %}"><img class="hover-mouse-icon"
                                                                      src="{% static 'todo_tasks/icons/file-earmark-pdf.svg' %}"
                                                                      data-toggle="tooltip"
@@ -309,6 +313,40 @@
     {% endif %}
     <br>
 
+    <!-- Модальное окно добавить в избранное -->
+
+    <div class="modal fade" id="to_favorites" data-bs-backdrop="static" data-bs-keyboard="false"
+         tabindex="-1"
+         aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="staticBackdropLabel">Добавить в избранное</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                            aria-label="Закрыть"></button>
+                </div>
+                <form method="POST" action="{% url 'add_task_to_favorites' pk=obj.id %}">
+                    <div class="modal-body">
+
+                        Список:
+                        {{ to_my_favorite_form }}
+
+                        {#                    {{ to_share_favorite_form.favorite_list }}#}
+                    </div>
+                    <div class="modal-footer">
+
+                        {% csrf_token %}
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                        <input type="submit" class="btn btn-success" name="correction_modal_button"
+                               value="Добавить">
+                </form>
+            </div>
+        </div>
+    </div>
+    </div>
+
+
     {#<span data-toggle="tooltip" title="другой текст подсказки">некоторый текст</span>#}
     <script>
         // после загрузки страницы
@@ -316,6 +354,12 @@
             // инициализации подсказок для всех элементов на странице, имеющих атрибут data-toggle="tooltip"
             $('[data-toggle="tooltip"]').tooltip();
         });
+
+
+        function openFavoriteListModal() {
+            $('#to_favorites').modal('show');
+        }
+
     </script>
 
 {% endblock %}

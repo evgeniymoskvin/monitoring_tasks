@@ -306,3 +306,11 @@ nav ul, nav li {
     height: 15px;
     margin-left: -17px;
 }
+
+.icon-favorites-menu {
+    background-image: url('../icons/bookmark-regular.svg');
+    background-position: center center;
+    background-repeat: no-repeat;
+    height: 21px;
+    padding-left: 16px; /* Or size of icon + spacing */
+}

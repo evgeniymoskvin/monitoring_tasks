@@ -15,9 +15,11 @@ from django.http import HttpResponse, Http404
 from django.contrib.auth import authenticate, login
 
 from .models import Employee, TaskModel, ContractModel, ObjectModel, StageModel, TaskNumbersModel, CommandNumberModel, \
-    CpeModel, CanAcceptModel, WorkerModel, ApproveModel, AttachmentFilesModel
+    CpeModel, CanAcceptModel, WorkerModel, ApproveModel, AttachmentFilesModel, FavoritesListModel, \
+    TasksInFavoritesModel, FavoritesShareModel
 from .forms import TaskForm, TaskEditForm, SearchForm, WorkerForm, WorkersEditForm, \
-    TaskFormForSave, ApproveForm, FilesUploadForm, UserProfileForm, ApproveEditForm, LoginForm
+    TaskFormForSave, ApproveForm, FilesUploadForm, UserProfileForm, ApproveEditForm, LoginForm, CreateFavoriteListForm, \
+    ShareFavoriteListForm, AddMyFavoriteForm, AddShareFavoriteForm
 from .functions import get_data_for_detail, get_list_to_sign, get_task_edit_form, \
     get_list_to_sign_cpe, get_list_incoming_tasks_to_sign, get_list_incoming_tasks_to_workers, save_to_worker_list, \
     get_list_to_change_workers, is_valid_queryparam
@@ -161,7 +163,17 @@ class DetailView(View):
             content['change_work_flag'] = True
         content[
             'flag'] = True  # Для того, что бы шестеренка была доступна только на странице деталей, и ни на каких других дочерних
-
+        to_my_favorite_form = AddMyFavoriteForm()
+        to_share_favorite_form = AddShareFavoriteForm()
+        # Получаем список чужих избранных в которые можем вносить изменения
+        sharing_favorite_list = FavoritesShareModel.objects.get_queryset().filter(
+            favorite_share_user_id=content['user']).filter(can_change_list=True)
+        list_sharing_favorites = [i.favorite_list.id for i in sharing_favorite_list]
+        sharing_favorite_list_to_form = FavoritesListModel.objects.filter(id__in=list_sharing_favorites)
+        # Получаем список своих избранных и добавляем к ним чужие
+        to_my_favorite_form.fields['favorite_list'].queryset = FavoritesListModel.objects.filter(
+            favorite_list_holder=content['user']).union(sharing_favorite_list_to_form)
+        content['to_my_favorite_form'] = to_my_favorite_form
         return render(request, 'todo_tasks/details/details.html', content)
 
     def post(self, request, pk):
@@ -188,14 +200,14 @@ class AddTaskView(View):
     def get(self, request):
         form = TaskForm()  # Форма задания
         approve_form = ApproveForm()  # Форма согласователей
-        approve_form.fields['approve_user'].queryset = Employee.objects.filter(cpe_flag=False)
+        approve_form.fields['approve_user'].queryset = Employee.objects.filter(cpe_flag=False).filter(
+            work_status=True).order_by("last_name")
         # Фильтруем поля руководителей в соответствии с отделом пользователя
         department_user = Employee.objects.get(user=request.user).department  # получаем номер отдела
         form.fields['first_sign_user'].queryset = Employee.objects.filter(department=department_user).filter(
             right_to_sign=True)  # получаем в 1ое поле список пользователей по двум фильтрам
         form.fields['second_sign_user'].queryset = Employee.objects.filter(department=department_user).filter(
             right_to_sign=True)  # получаем во 2ое поле список пользователей по двум фильтрам
-
         file_form = FilesUploadForm()
         objects = ObjectModel.objects.all()
         context = {'form': form,
@@ -682,7 +694,8 @@ class ToAddWorkersDetailView(View):
         sign_user = Employee.objects.get(user=request.user)
         content = get_data_for_detail(request, pk)
         formset = WorkerForm()
-        formset.fields['worker_user'].queryset = Employee.objects.filter(department_group=sign_user.department_group)
+        formset.fields['worker_user'].queryset = Employee.objects.filter(
+            department_group=sign_user.department_group).filter(work_status=True)
         content['data_all'] = WorkerModel.objects.get_queryset().filter(task=pk)
         content["formset"] = formset
         return render(request, 'todo_tasks/workers/details_to_add_workers.html', content)
@@ -755,7 +768,8 @@ class EditWorkersDetailView(View):
         formset = WorkerForm()
         sign_user_departments = CanAcceptModel.objects.get_queryset().filter(user_accept=user)
         sign_user_departments_list = [obj.dep_accept for obj in sign_user_departments]
-        formset.fields['worker_user'].queryset = Employee.objects.filter(department__in=sign_user_departments_list)
+        formset.fields['worker_user'].queryset = Employee.objects.filter(
+            department__in=sign_user_departments_list).filter(work_status=True)
         content = {"data_all": data_all,
                    'user': user,
                    "obj": obj,
@@ -1101,11 +1115,166 @@ class EditProfileUserView(View):
     def post(self, request):
         form = UserProfileForm(request.POST)
         if form.is_valid():
-            employee = form.save(commit=False)
-            employee.user = User.objects.get(username=request.user)
-            try:
+            employee_form = form.save(commit=False)
+            check_user = Employee.objects.get_queryset().filter(user=request.user)
+            if check_user:
+                employee = Employee.objects.get(user=request.user)
+                employee.last_name = employee_form.last_name
+                employee.first_name = employee_form.first_name
+                employee.last_name = employee_form.last_name
+                employee.job_title = employee_form.job_title
+                employee.department = employee.department
+                employee.department_group = employee_form.department_group
+                employee.user_phone = employee_form.user_phone
+                employee.work_status = True
                 employee.save()
-            except:
-                employee.id = Employee.objects.get(user=request.user).id
-                employee.save()
+            else:
+                employee_form.user_id = User.objects.get(username=request.user).id
+                employee_form.save()
+        employee = Employee.objects.get(user=request.user)
+        employee.work_status = True
+        employee.save()
         return redirect('profile')
+
+
+class FavoritesListView(View):
+    """Страница списков избранного пользователя"""
+
+    @method_decorator(login_required(login_url='login'))
+    def get(self, request):
+        user = Employee.objects.get(user=request.user)
+        list_favorites = FavoritesListModel.objects.get_queryset().filter(favorite_list_holder=user)
+        share_list_favorites = FavoritesShareModel.objects.get_queryset().filter(favorite_share_user=user)
+        print(share_list_favorites)
+        form = CreateFavoriteListForm()
+        content = {'list_favorites': list_favorites,
+                   "user": user,
+                   "form_create_list": form,
+                   "share_list_favorites": share_list_favorites
+                   }
+        return render(request, 'todo_tasks/favorites/favorites_lists.html', content)
+
+    def post(self, request):
+        """post запрос создания нового списка"""
+        form = CreateFavoriteListForm(request.POST)
+        new_list_favorites = form.save(commit=False)
+        new_list_favorites.favorite_list_holder = Employee.objects.get(user=request.user)
+        new_list_favorites.save()
+        return redirect(f'favorites')
+
+
+class CurrentFavoritesListView(View):
+    """Страница списков избранного пользователя"""
+
+    @method_decorator(login_required(login_url='login'))
+    def get(self, request, pk):
+        user = Employee.objects.get(user=request.user)
+        list_name = FavoritesListModel.objects.get(id=pk)
+        access_flag = False
+        can_change_flag = False
+        holder_flag = False
+        data_all_favorites = TasksInFavoritesModel.objects.none()
+        can_view_favorites = FavoritesShareModel.objects.get_queryset().filter(favorite_list_id=pk).filter(
+            favorite_share_user=user)
+        can_change_favorites = FavoritesShareModel.objects.get_queryset().filter(favorite_list_id=pk).filter(
+            favorite_share_user=user).filter(can_change_list=True)
+
+        if (list_name.favorite_list_holder == user) or (can_view_favorites):
+            access_flag = True
+            data_all_favorites = TasksInFavoritesModel.objects.get_queryset().filter(favorite_list_id=pk)
+
+        if (list_name.favorite_list_holder == user):
+            holder_flag = True
+
+        if can_change_favorites:
+            can_change_flag = True
+
+        content = {
+            "user": user,
+            "list_name": list_name,
+            "access_flag": access_flag,
+            "data_all_favorites": data_all_favorites,
+            "can_change_flag": can_change_flag,
+            "holder_flag": holder_flag
+
+        }
+        return render(request, 'todo_tasks/favorites/current_favorites_list.html', content)
+
+
+class ShareFavoritesListView(View):
+    "Страница редактирования достпуа к избранному списку"
+
+    @method_decorator(login_required(login_url='login'))
+    def get(self, request, pk):
+        user = Employee.objects.get(user=request.user)
+        list_name = FavoritesListModel.objects.get(id=pk)
+        share_form = ShareFavoriteListForm()
+        share_users_list = FavoritesShareModel.objects.get_queryset().filter(favorite_list_id=pk)
+
+        content = {
+            "user": user,
+            "list_name": list_name,
+            "share_form": share_form,
+            "share_users_list": share_users_list
+
+        }
+        return render(request, 'todo_tasks/favorites/share_favorite_list.html', content)
+
+    def post(self, request, pk):
+        pk = int(pk)
+        share_form = ShareFavoriteListForm(request.POST)
+        if share_form.is_valid():
+            new_share_user_favorites = share_form.save(commit=False)
+            new_share_user_favorites.favorite_list = FavoritesListModel.objects.get(id=pk)
+            new_share_user_favorites.save()
+        return redirect(request.META['HTTP_REFERER'])
+
+
+class DeleteShareFavoritesListView(View):
+    "Удаление доступа к списку"
+
+    def post(self, request, pk):
+        delete_share = FavoritesShareModel.objects.get(id=pk)
+        delete_share.delete()
+        return redirect(request.META['HTTP_REFERER'])
+
+
+class AddTaskFavoritesListView(View):
+    "Добавление в избранное"
+
+    def post(self, request, pk):
+        form = AddMyFavoriteForm(request.POST)
+        if form.is_valid():
+            new_share = form.save(commit=False)
+            new_share.favorite_task_id = pk
+            new_share.save()
+        return redirect(request.META['HTTP_REFERER'])
+
+
+class EditFavoriteListView(View):
+    "Редактирование списка в избранном"
+
+    def get(self, request, pk):
+        user = Employee.objects.get(user=request.user)
+        list_name = FavoritesListModel.objects.get(id=pk)
+        favorites_tasks = TasksInFavoritesModel.objects.get_queryset().filter(favorite_list_id=pk)
+        print(favorites_tasks)
+        print(pk, list_name)
+        content = {
+            "user": user,
+            "list_name": list_name,
+            "favorites_tasks": favorites_tasks,
+        }
+        return render(request, 'todo_tasks/favorites/edit_current_favorite_list.html', content)
+
+    def post(self, request, pk):
+        """Удаление списка избранного"""
+        FavoritesListModel.objects.get(id=pk).delete()
+        return redirect('favorites')
+
+class DeleteTaskFromFavoriteView(View):
+
+    def post(self, request, pk):
+        task_to_delete = TasksInFavoritesModel.objects.get(id=pk)
+        task_to_delete.delete()
+        return redirect(request.META['HTTP_REFERER'])

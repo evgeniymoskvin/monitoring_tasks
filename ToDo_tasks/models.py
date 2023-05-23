@@ -6,6 +6,7 @@ import datetime
 from os import path
 from django.conf import settings
 
+
 # COMAND_CHOICES = [(000, "000 - Не указан"), (201, "201 - Строительный первый"), (202, "202 - Строительный второй")]
 
 
@@ -47,6 +48,7 @@ class GroupDepartmentModel(models.Model):
         verbose_name = _("управление")
         verbose_name_plural = _("управления")
 
+
 class Employee(models.Model):
     """
     Дополнительные параметры пользователей
@@ -64,12 +66,14 @@ class Employee(models.Model):
     job_title = models.ForeignKey(JobTitleModel, on_delete=models.PROTECT, null=True, verbose_name="Должность")
     department = models.ForeignKey(CommandNumberModel, on_delete=models.PROTECT, null=True, verbose_name="№ отдела")
     user_phone = models.IntegerField("№ телефона", null=True, default=None)
-    department_group = models.ForeignKey(GroupDepartmentModel, on_delete=models.SET_NULL, default=None, null=True, verbose_name="Управление")
+    department_group = models.ForeignKey(GroupDepartmentModel, on_delete=models.SET_NULL, default=None, null=True,
+                                         verbose_name="Управление")
     right_to_sign = models.BooleanField(verbose_name="Право подписывать", default=False)
-    check_edit = models.BooleanField("Возможность редактирования", default=False)
+    check_edit = models.BooleanField("Возможность редактирования", default=True)
     can_make_task = models.BooleanField("Возможность выдавать задания", default=True)
     cpe_flag = models.BooleanField("Флаг ГИП (техническая метка)", default=False)
     mailing_list_check = models.BooleanField("Получать рассылку", default=True)
+    work_status = models.BooleanField("Сотрудник работает", default=True)
 
     def __str__(self):
         return f'{self.last_name} {self.first_name} {self.middle_name}'
@@ -191,11 +195,15 @@ class TaskModel(models.Model):
     department_number = models.ForeignKey(CommandNumberModel, verbose_name="Номер отдела", on_delete=models.PROTECT,
                                           null=True)
     task_type_work = models.IntegerField("Вид документации:", choices=TypeWorkTask.choices, default=0)
-    task_mark_doc = models.ForeignKey(MarkDocModel, verbose_name="Марка документации", on_delete=models.PROTECT, null=True)
-    task_order = models.ForeignKey(OrdersModel, on_delete=models.PROTECT, verbose_name="Номер заказа", null=True, blank=True)
+    task_mark_doc = models.ForeignKey(MarkDocModel, verbose_name="Марка документации", on_delete=models.PROTECT,
+                                      null=True)
+    task_order = models.ForeignKey(OrdersModel, on_delete=models.PROTECT, verbose_name="Номер заказа", null=True,
+                                   blank=True)
     task_object = models.ForeignKey(ObjectModel, on_delete=models.PROTECT, verbose_name="Наименование объекта")
-    task_contract = models.ForeignKey(ContractModel, on_delete=models.PROTECT, verbose_name="Номер контракта", null=True, blank=True)
-    task_stage = models.ForeignKey(StageModel, on_delete=models.PROTECT, verbose_name="Этап договора", null=True, blank=True)
+    task_contract = models.ForeignKey(ContractModel, on_delete=models.PROTECT, verbose_name="Номер контракта",
+                                      null=True, blank=True)
+    task_stage = models.ForeignKey(StageModel, on_delete=models.PROTECT, verbose_name="Этап договора", null=True,
+                                   blank=True)
     task_building = models.CharField("Здание", max_length=150, null=True)
     task_change_number = models.IntegerField("Номер изменения", default=0, null=True)
     first_sign_user = models.ForeignKey(Employee, on_delete=models.PROTECT, null=True,
@@ -307,3 +315,47 @@ class AttachmentFilesModel(models.Model):
 
     def __str__(self):
         return f'{self.task}, {self.file.name}'
+
+
+class FavoritesListModel(models.Model):
+    """Таблица списков избранных"""
+    favorite_list_name = models.CharField("Название списка", max_length=25)
+    favorite_list_holder = models.ForeignKey(Employee, on_delete=models.SET_NULL, verbose_name="Владелец списка",
+                                             null=True)
+    class Meta:
+        verbose_name = _("список избранного")
+        verbose_name_plural = _("списки избранного")
+
+    def __str__(self):
+        return f'{self.favorite_list_name}'
+
+class TasksInFavoritesModel(models.Model):
+    """Список задание находящихся в избранном"""
+    favorite_list = models.ForeignKey(FavoritesListModel, on_delete=models.CASCADE, verbose_name="Список избранного",
+                                      null=False)
+    favorite_task = models.ForeignKey(TaskModel, on_delete=models.CASCADE, verbose_name="Задание", null=False)
+
+    class Meta:
+        verbose_name = _("задание в избранном")
+        verbose_name_plural = _("задания в избранном")
+
+    def __str__(self):
+        return f'{self.favorite_list}: {self.favorite_task}'
+
+
+class FavoritesShareModel(models.Model):
+    """Список людей кому расшарили доступ"""
+    favorite_share_user = models.ForeignKey(Employee, on_delete=models.CASCADE, verbose_name="Доверенный пользователь",
+                                            null=False)
+    favorite_list = models.ForeignKey(FavoritesListModel, on_delete=models.CASCADE, verbose_name="Список избранного",
+                                      null=False)
+    can_change_list = models.BooleanField("Право редактировать список", default=False, blank=True)
+
+    class Meta:
+        verbose_name = _("расшаренный пользователь избранного")
+        verbose_name_plural = _("расшаренные пользователи избранного")
+
+    def __str__(self):
+        return f'{self.favorite_list}: {self.favorite_share_user}'
+
+
