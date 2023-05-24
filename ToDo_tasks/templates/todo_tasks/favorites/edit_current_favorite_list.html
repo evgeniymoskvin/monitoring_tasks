@@ -10,71 +10,99 @@
     <br>
     <div style="text-align: center">
         <h3 class="text-1-task" style="margin-top: 25px; ">{{ list_name.favorite_list_name }}</h3>
-        <h3 class="text-1-task" style="margin-top: 0px; font-size: 12px">Редактирование</h3>
-    </div>
-    {% if favorites_tasks %}}
-        <h6 class="text-3"
-            style="display: inline-block; text-transform: uppercase; margin-top: 25px">Задания в списке:</h6>
-        <ul class="list-group">
-            <div id="test">
-                {% for data in favorites_tasks %}
-                    <li class="list-group-item d-flex justify-content-between align-items-center hover-mouse"
-                        style="cursor: context-menu;"
-                        onclick="location.href='{% url 'details' pk=data.favorite_task.id %}';">
-                        {{ data.favorite_task }}
-                        <form method="post" action="{% url 'delete_task_from_favorites' pk=data.id %}">
-                            {% csrf_token %}
-                            <button class="btn btn-outline-danger btn-sm" type="submit">
-                                Удалить
-                            </button>
-                        </form>
-
-                    </li>
-                {% endfor %}
+        {% if access_flag %}
+            <h3 class="text-1-task" style="margin-top: 0px; font-size: 12px">Редактирование</h3>
             </div>
-        </ul>
-    {% else %}
-        <div class="row justify-content-center" style="margin-top: 50px">
-            <div class="col" style="display: inline-block; text-align: center">
-                <img src="{% static 'todo_tasks/icons/face-tired-regular.svg' %}" width="50px">
-                <br>
-                <span class="text-index-book"
-                      style="display: inline-block; text-transform: uppercase; margin-top: 25px">В этом списке нет ни одного задания</span>
-            </div>
-        </div>
-    {% endif %}
-    <div>
-        <p class="text-5-bold" style="text-transform: uppercase" onclick="openDeleteFavoriteListModal()">
-            Удалить список</p>
-    </div>
+            {% if favorites_tasks %}
+                <h6 class="text-3"
+                    style="display: inline-block; text-transform: uppercase; margin-top: 25px">Задания в списке:</h6>
+                <ul class="list-group">
+                    <div id="test">
+                        {% for data in favorites_tasks %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center hover-mouse"
+                                style="cursor: context-menu;"
+                                onclick="location.href='{% url 'details' pk=data.favorite_task.id %}';">
+                                {{ data.favorite_task }}
+                                <form method="post" action="{% url 'delete_task_from_favorites' pk=data.id %}">
+                                    {% csrf_token %}
+                                    <button class="btn btn-outline-danger btn-sm" type="submit">
+                                        Удалить
+                                    </button>
+                                </form>
 
-    <!-- Модальное окно удаления списка -->
-
-    <div class="modal fade" id="deleteFavoritesModal" tabindex="-1" aria-labelledby="deleteFavoritesModal"
-         aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" style="text-transform: uppercase;">Удалить список</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </li>
+                        {% endfor %}
+                    </div>
+                </ul>
+            {% else %}
+                <div class="row justify-content-center" style="margin-top: 50px">
+                    <div class="col" style="display: inline-block; text-align: center">
+                        <img src="{% static 'todo_tasks/icons/face-tired-regular.svg' %}" width="50px">
+                        <br>
+                        <span class="text-index-book"
+                              style="display: inline-block; text-transform: uppercase; margin-top: 25px">В этом списке нет ни одного задания</span>
+                    </div>
                 </div>
-                <form method="post">
-                    {% csrf_token %}
-                    <div class="modal-body" id="modalBody">
-                        <p class="text-3" style="text-transform: uppercase;">Точно хотите удалить весь список?</p>
-                        <p class="text-4-book-left" style="text-transform: uppercase;">Данное действие отменить
-                            невозможно, так же
-                            список исчезнет у всех пользователей, которым предоставлен доступ</p>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Отмена</button>
-                        <input type="submit" class="btn btn-outline-danger" value="Удалить">
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
+            {% endif %}
 
+            <div class="row justify-content-center">
+                <div class="col" style="display: inline-block; text-align: center">
+                    <div style="margin-top: 15px; margin-bottom: 15px">
+                    <span class="text-5-bold" style="text-transform: uppercase"
+                          onclick="location.href='{% url 'favorite_list' pk=list_name.id %}';">
+                        Назад к списку</span>
+                        <span class="text-3-menu" style="text-transform: uppercase; font-size: 20px">
+                        /</span>
+                        <span class="text-5-bold-red" style="text-transform: uppercase"
+                              onclick="openDeleteFavoriteListModal()">
+                        Удалить список</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Модальное окно удаления списка -->
+
+            <div class="modal fade" id="deleteFavoritesModal" tabindex="-1" aria-labelledby="deleteFavoritesModal"
+                 aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" style="text-transform: uppercase;">Удалить список</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <form method="post">
+                            {% csrf_token %}
+                            <div class="modal-body" id="modalBody">
+                                <p class="text-3" style="text-transform: uppercase;">Точно хотите удалить весь
+                                    список?</p>
+                                <p class="text-4-book-left" style="text-transform: uppercase;">Данное действие отменить
+                                    невозможно, так же
+                                    список исчезнет у всех пользователей, которым предоставлен доступ</p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Отмена
+                                </button>
+                                <input type="submit" class="btn btn-outline-danger" value="Удалить">
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="row justify-content-center" style="margin-top: 50px">
+                <div class="col" style="display: inline-block; text-align: center">
+                    <img src="{% static 'todo_tasks/icons/face-tired-regular.svg' %}" width="50px">
+                    <br>
+                    <span class="text-index-book"
+                          style="display: inline-block; text-transform: uppercase; margin-top: 25px">У Вас нет доступа</span>
+                </div>
+
+                <div>
+                    <p class="text-5-bold" style="text-transform: uppercase"
+                       onclick="location.href='{% url 'favorites' %}';">Перейти в избранное</p>
+                </div>
+            </div>
+        {% endif %}
 {% endblock %}
 
 {% block js_stuff %}

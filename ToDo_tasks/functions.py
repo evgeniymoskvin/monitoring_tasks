@@ -1,5 +1,6 @@
 from django.shortcuts import redirect
-from .models import Employee, TaskModel, CpeModel, ContractModel, ObjectModel, StageModel, CanAcceptModel
+from .models import Employee, TaskModel, CpeModel, ContractModel, ObjectModel, StageModel, CanAcceptModel, FavoritesListModel, \
+    TasksInFavoritesModel, FavoritesShareModel
 from .forms import TaskForm, TaskCheckForm, TaskEditForm, WorkerModel, ApproveModel, AttachmentFilesModel
 from .email_functions import add_worker_email
 
@@ -196,3 +197,12 @@ def save_to_worker_list(request, pk):
 
 def is_valid_queryparam(param):
     return param != '' and param is not None
+
+def get_can_change_favorites_access(pk, user, list_name):
+    """Функция определения доступа к возможности редактировать список избранного пользователем"""
+    can_change_favorites = FavoritesShareModel.objects.get_queryset().filter(favorite_list_id=pk).filter(
+        favorite_share_user=user).filter(can_change_list=True)
+    if (list_name.favorite_list_holder == user) or (can_change_favorites):
+        return True
+    else:
+        return False

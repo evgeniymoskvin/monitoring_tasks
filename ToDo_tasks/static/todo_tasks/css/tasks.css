@@ -138,6 +138,22 @@
     color: #0a53be;
 }
 
+
+.text-5-bold-red {
+    font-family: "p22_underground_cy_prodemi", serif;
+    font-size: 15px;
+    cursor: context-menu;
+    text-align: center;
+    margin-top: 20px;
+    transition-duration: .2s;
+
+}
+
+.text-5-bold-red:hover {
+    color: #cc0000;
+}
+
+
 .hover-mouse {
     transition-duration: .2s;
 }

@@ -335,7 +335,10 @@ class FilesUploadForm(ModelForm):
         fields = ['file']
 
         widgets = {
-            'file': ClearableFileInput(attrs={'multiple': True})
+            'file': ClearableFileInput(attrs={'multiple': True,
+                                              "class": "form-control",
+                                              "style": "min-width: 500px;"
+                                              })
         }
 
 

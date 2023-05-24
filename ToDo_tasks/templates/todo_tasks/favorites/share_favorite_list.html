@@ -13,70 +13,84 @@
 {% block content %}
     <br>
     <h3 class="text-1-task" style="margin-top: 25px; ">{{ list_name.favorite_list_name }}</h3>
-    <h3 class="text-1-task" style="margin-top: 0px; font-size: 12px">Редактировать доступ</h3>
-    <form method="post">
-        {% csrf_token %}
+    {% if access_flag %}
+        <h3 class="text-1-task" style="margin-top: 0px; font-size: 12px">Редактировать доступ</h3>
+        <form method="post">
+            {% csrf_token %}
 
 
-        <div class="row justify-content-center" style="margin-top: 15px">
-            <div class="col">
+            <div class="row justify-content-center" style="margin-top: 15px">
+                <div class="col">
                 <span class="text-3"
                       style="display: inline-block; text-transform: uppercase; margin-top: 10px">Выберете сотрудника:</span>
-                {{ share_form.favorite_share_user }}
-            </div>
-        </div>
-
-        <div class="row justify-content-center" style="margin-top: 15px">
-            <div class="col-3" style="display: inline-block">
-                <span class="text-3" style="text-transform: uppercase; display: inline-block; margin-right: 10px">Право редактировать список:  </span>
-                {{ share_form.can_change_list }}
-            </div>
-        </div>
-
-
-        <div style="margin-top: 15px">
-            <div class="row justify-content-center; ">
-                <div class="col">
-                    <figure class="text-center">
-                        <input class="button-cancel" name="action"
-                               onclick="location.href='{% url 'favorite_list' pk=list_name.id %}';" type="submit"
-                               value="К списку"/>
-                        <button class="button-success" type="submit">Поделиться
-                        </button>
-                    </figure>
+                    {{ share_form.favorite_share_user }}
                 </div>
             </div>
-        </div>
 
-    </form>
-
-    {% if share_users_list %}
-        <h6 class="text-3"
-            style="display: inline-block; text-transform: uppercase; margin-top: 25px">Сотрудники, у которых есть
-            доступ:</h6>
-        <ul class="list-group">
-            <div id="test">
-                {% for data in share_users_list %}
-                    <li class="list-group-item d-flex justify-content-between align-items-center hover-mouse">
-                        {{ data.favorite_share_user }}
-                        {% if data.can_change_list %}
-                            (Может редактировать)
-                        {% else %}
-                            (Не может редактировать)
-                        {% endif %}
-                        <form method="post" action="{% url 'delete_share_favorites' pk=data.id %}">
-                            {% csrf_token %}
-                            <button class="btn btn-outline-danger btn-sm" type="submit">
-                                Закрыть доступ
-                            </button>
-                        </form>
-
-                    </li>
-                {% endfor %}
+            <div class="row justify-content-center" style="margin-top: 15px">
+                <div class="col-3" style="display: inline-block">
+                    <span class="text-3" style="text-transform: uppercase; display: inline-block; margin-right: 10px">Право редактировать список:  </span>
+                    {{ share_form.can_change_list }}
+                </div>
             </div>
-        </ul>
-    {% endif %}
 
+
+            <div style="margin-top: 15px">
+                <div class="row justify-content-center; ">
+                    <div class="col">
+                        <figure class="text-center">
+                            <input class="button-cancel" name="action"
+                                   onclick="location.href='{% url 'favorite_list' pk=list_name.id %}';" type="submit"
+                                   value="К списку"/>
+                            <button class="button-success" type="submit">Поделиться
+                            </button>
+                        </figure>
+                    </div>
+                </div>
+            </div>
+
+        </form>
+
+        {% if share_users_list %}
+            <h6 class="text-3"
+                style="display: inline-block; text-transform: uppercase; margin-top: 25px">Сотрудники, у которых есть
+                доступ:</h6>
+            <ul class="list-group">
+                <div id="test">
+                    {% for data in share_users_list %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center hover-mouse">
+                            {{ data.favorite_share_user }}
+                            {% if data.can_change_list %}
+                                (Может редактировать)
+                            {% else %}
+                                (Не может редактировать)
+                            {% endif %}
+                            <form method="post" action="{% url 'delete_share_favorites' pk=data.id %}">
+                                {% csrf_token %}
+                                <button class="btn btn-outline-danger btn-sm" type="submit">
+                                    Закрыть доступ
+                                </button>
+                            </form>
+
+                        </li>
+                    {% endfor %}
+                </div>
+            </ul>
+        {% endif %}
+    {% else %}
+        <div class="row justify-content-center" style="margin-top: 50px">
+            <div class="col" style="display: inline-block; text-align: center">
+                <img src="{% static 'todo_tasks/icons/face-tired-regular.svg' %}" width="50px">
+                <br>
+                <span class="text-index-book"
+                      style="display: inline-block; text-transform: uppercase; margin-top: 25px">У Вас нет доступа</span>
+            </div>
+
+            <div>
+                <p class="text-5-bold" style="text-transform: uppercase" onclick="location.href='{% url 'favorites'  %}';">Перейти в избранное</p>
+            </div>
+        </div>
+    {% endif %}
 {% endblock %}
 
 {% block js_stuff %}

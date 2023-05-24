@@ -23,7 +23,7 @@
                                                                        src="{% static 'todo_tasks/icons/bookmark.svg' %}"
                                                                        data-toggle="tooltip"
                                                                        title="Добавить в избранное"></a>
-                    <a href="{% url 'download_blank' obj.id %}"><img class="hover-mouse-icon"
+                    <a href="{% url 'download_blank' obj.id %}" target="_blank"><img class="hover-mouse-icon"
                                                                      src="{% static 'todo_tasks/icons/file-earmark-pdf.svg' %}"
                                                                      data-toggle="tooltip"
                                                                      title="Скачать бланк"></a>
@@ -200,7 +200,7 @@
               style="display: inline-block; text-transform: uppercase; margin-top: 25px">Приложенные файлы:</span>
         <ul class="list-group">
             {% for file in files %}
-                <li class="list-group-item d-flex justify-content-start align-items-center hover-mouse ">
+                <li class="list-group-item d-flex justify-content-start align-items-center hover-mouse">
                     <img src="{% static 'todo_tasks/icons/file-arrow-down.svg' %}">
                     <a href="{% url 'download_file' file.id %}"
                        class="nav-link text-black" download>{% split_filename file.file %}</a>

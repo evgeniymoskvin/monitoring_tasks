@@ -30,21 +30,29 @@
 {% endblock %}
 {% block content %}
     <br>
-
-    <h4>Добавить/удалить файлы к заданию {{ obj.task_number }}</h4>
+    <h3 class="text-1-task" style="margin-top: 25px; ">Файлы к заданию {{ obj.task_number }}</h3>
+    <h3 class="text-1-task" style="margin-top: 0px; font-size: 12px">Редактирование</h3>
+{#    <h4>Добавить/удалить файлы к заданию {{ obj.task_number }}</h4>#}
 
 
     <form id="form-container" enctype="multipart/form-data" method="POST"
           hx-post={% url 'change_files' pk=obj.id %} hx-target="#task_files">
         {% csrf_token %}
-        <p>Выберете файлы для загрузки.
-            <br>Обратите внимание, после добавления файлов, подписи согласователей исчезнут.</p>
+        <p class="text-index-book-p" style="font-size: 15px">Выберете файлы для загрузки.</p>
+            <span class="text-3"
+                      style="display: inline-block; text-transform: uppercase; margin-top: 10px">Внимание!</span>
+        <p class="text-index-book-p" style="font-size: 15px">После добавления файлов, подписи согласователей исчезнут.</p>
+        <br>
         {{ file_form.file }}
         <br>
         <figure class="text-center">
-            <button class="btn btn-success" type="submit" onclick="showloader()" hx-target="task_files" id="button_add">
+            <input class="button-cancel" name="action"
+                                   onclick="location.href='{% url 'details' pk=obj.id %}';" type="submit"
+                                   value="К заданию"/>
+            <button class="button-success" type="submit" onclick="showloader()" hx-target="task_files" id="button_add">
                 Добавить
             </button>
+
             <div style="display: none;" id="loaderspin">
                 <span class="loader"></span>
             </div>

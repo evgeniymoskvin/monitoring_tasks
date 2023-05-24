@@ -15,7 +15,7 @@
                 <div class="col" style="display: inline-block; text-align: center">
                     <div style="margin-top: 15px; margin-bottom: 15px">
                     <span class="text-5-book" style="text-transform: uppercase; display: inline; font-size: 15px"
-                          onclick="location.href='{% url 'edit_favorites' pk=list_name.id %}';" >
+                          onclick="location.href='{% url 'edit_favorites' pk=list_name.id %}';">
                         Редактировать список</span>
                         <span class="text-3-menu" style="text-transform: uppercase; font-size: 20px">
                         /</span>
@@ -100,6 +100,11 @@
                 <br>
                 <span class="text-index-book"
                       style="display: inline-block; text-transform: uppercase; margin-top: 25px">У Вас нет доступа</span>
+            </div>
+
+            <div>
+                <p class="text-5-bold" style="text-transform: uppercase"
+                   onclick="location.href='{% url 'favorites' %}';">Перейти в избранное</p>
             </div>
         </div>
     {% endif %}

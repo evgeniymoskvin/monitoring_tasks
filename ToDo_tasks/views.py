@@ -22,7 +22,7 @@ from .forms import TaskForm, TaskEditForm, SearchForm, WorkerForm, WorkersEditFo
     ShareFavoriteListForm, AddMyFavoriteForm, AddShareFavoriteForm
 from .functions import get_data_for_detail, get_list_to_sign, get_task_edit_form, \
     get_list_to_sign_cpe, get_list_incoming_tasks_to_sign, get_list_incoming_tasks_to_workers, save_to_worker_list, \
-    get_list_to_change_workers, is_valid_queryparam
+    get_list_to_change_workers, is_valid_queryparam, get_can_change_favorites_access
 from .pdf_making import pdf_gen
 from .email_functions import email_create_task, check_and_send_to_cpe, email_after_cpe_sign, delete_worker_email, \
     incoming_not_sign_email, email_not_sign, email_change_task, approve_give_comment_email, email_add_approver, \
@@ -224,7 +224,6 @@ class AddTaskView(View):
         # Из исходного пост запроса получаем список отделов, куда надо выдать задания
         incoming_deps_list = request.POST.getlist('incoming_dep')
         approved_user_list = request.POST.getlist('approve_user')
-        print(temp_req)
         # Перебираем отделы в которые направляются задания
         for dep in incoming_deps_list:
             # Меняем значение отдела, на нужное нам из списка
@@ -269,7 +268,7 @@ class AddTaskView(View):
 
                 new_post.task_number = f'ЗД-{new_post.department_number.command_number}-{last_number.count_of_task}-{str(today_year)[2:4]}'
                 new_post.task_change_number = 0  # номер изменения присваиваем 0
-                print(new_post.task_order)
+                # print(new_post.task_order)
                 # print(new_post.task_number)
                 form.save()  # сохраняем форму в бд
                 # Получаем id номер созданного задания
@@ -537,7 +536,6 @@ class ToSignDetailView(View):
             list_objects = []
             for obj in CpeModel.objects.get_queryset().filter(cpe_user=user):
                 list_objects.append(obj.cpe_object_id)
-            print(list_objects)
             if content['obj'].task_object.id in list_objects:
                 content['cpe_flag'] = True
         else:
@@ -647,7 +645,6 @@ class IncomingSignDetails(View):
         return render(request, 'todo_tasks/details/details_to_incoming_sign.html', content)
 
     def post(self, request, pk):
-        print(request)
         obj = TaskModel.objects.get(pk=pk)
         if 'sign_incoming' in request.POST:
             # Принимающий подписал
@@ -715,7 +712,6 @@ class ToAddWorkersDetailView(View):
         WorkerModel.objects.get(id=pk).delete()
         data_all = WorkerModel.objects.get_queryset().filter(task_id=pk2)
         content = {"data_all": data_all}
-        print(content)
         return render(request, 'todo_tasks/htmx/workers.html', content)
 
 
@@ -724,13 +720,11 @@ class EditWorkerListView(View):
 
     @method_decorator(login_required(login_url='login'))
     def get(self, request):
-        print("эта вьюха")
         """Метод загружает Select поле выбора принятых заданий """
         user = Employee.objects.get(user=request.user)  # "логинимся"
         form = WorkersEditForm()  # загружаем форму с заданиями
         # Фильтруем список по параметру: в каких отделах имеет право подписи
         form.fields["task"].queryset = get_list_to_change_workers(user)
-
         content = {"form": form,
                    "user": user,
                    }
@@ -779,7 +773,6 @@ class EditWorkersDetailView(View):
     def post(self, request, pk):
         """ pk - id необходимого задания"""
         user = Employee.objects.get(user=request.user)
-        print(pk, user)
         # При каждом новом добавлении пользователя обновляем статус задания (назначены исполнители)
         save_to_worker_list(request, pk)  # отправляем пользователя и pk в функцию сохраняющую значения в WorkersModel
 
@@ -802,7 +795,6 @@ class EditWorkersDetailView(View):
         WorkerModel.objects.get(id=pk).delete()
         data_all = WorkerModel.objects.get_queryset().filter(task_id=pk2)
         content = {"data_all": data_all}
-        print(content)
         return render(request, 'todo_tasks/htmx/edit_workers.html', content)
 
 
@@ -818,7 +810,6 @@ class ApproveListView(View):
         for task in tasks:
             tasks_list.append(task.approve_task_id)
         data_to_approve_sign = TaskModel.objects.get_queryset().filter(id__in=tasks_list)
-        print(tasks)
         content = {
             'tasks': data_to_approve_sign,
             'user': sign_user}
@@ -943,30 +934,6 @@ class AdvancedSearchView(View):
         return render(request, 'todo_tasks/search/advanced_search.html', content)
 
 
-# class TestView(View):
-#     def get(self, request):
-#         user = Employee.objects.get(user=request.user)
-#
-#         content = {'user': user}
-#         print(type(request.user))
-#         # print(vars(request))
-#
-#         return render(request, 'todo_tasks/sidebar.html', content)
-
-
-#
-#     def post(self, request):
-#         worker_user = request.POST.get("form-0-worker_user")
-#         obj = WorkerModel()
-#         obj.task_id = 28
-#         obj.read_status = False
-#         obj.worker_user_id = request.POST.get("form-0-worker_user")
-#         obj.save()
-#         print(worker_user)
-#         data_all = WorkerModel.objects.get_queryset()
-#         content = {"data_all": data_all}
-#         return render(request, 'todo_tasks/htmx/workers.html', content)
-
 class EditApproveUserView(View):
 
     @method_decorator(login_required(login_url='login'))
@@ -995,7 +962,6 @@ class EditApproveUserView(View):
         return render(request, 'todo_tasks/htmx/list_approve.html', content)
 
     def delete(self, request, pk):
-        print(pk)
         pk2 = ApproveModel.objects.get(id=pk).approve_task_id
         approve_id = ApproveModel.objects.get(id=pk)
         approve_id.delete()
@@ -1017,7 +983,7 @@ class ObjectTasksListView(View):
 
 def load_contracts(request):
     """Функция для получения списка контрактов"""
-    print("ajax load contracts пришел")  # Проверка, сработал ли ajax с отправкой данных
+    # print("ajax load contracts пришел")  # Проверка, сработал ли ajax с отправкой данных
     object_id = request.GET.get("object")  # достаем значение объекта из запроса
     contracts = ContractModel.objects.filter(
         contract_object=int(object_id))  # получаем все контракты для данного объекта
@@ -1026,7 +992,7 @@ def load_contracts(request):
 
 def load_stages(request):
     """Функция для получения списка этапов"""
-    print("ajax load stages пришел")  # Проверка, сработал ли ajax с отправкой данных
+    # print("ajax load stages пришел")  # Проверка, сработал ли ajax с отправкой данных
     contract_id = request.GET.get("contract")
     stages = StageModel.objects.filter(stage_contract=int(contract_id))
     return render(request, 'todo_tasks/dropdown_update/stages_dropdown_list_update.html', {'stages': stages})
@@ -1034,10 +1000,10 @@ def load_stages(request):
 
 def load_incoming_employee(request):
     """Функция для получения списка этапов"""
-    print("ajax load employee пришел")  # Проверка, сработал ли ajax с отправкой данных
+    # print("ajax load employee пришел")  # Проверка, сработал ли ajax с отправкой данных
     department_id = request.GET.get("departament")
     incoming_employee = CanAcceptModel.objects.filter(user_accept__department_id=department_id)
-    print(incoming_employee)
+    # print(incoming_employee)
     return render(request, 'todo_tasks/dropdown_update/incoming_dropdown_list_update.html',
                   {'incoming_employee': incoming_employee})
 
@@ -1086,13 +1052,12 @@ class UserProfileView(View):
         return render(request, 'todo_tasks/system_user/user_profile.html', content)
 
     def post(self, request):
+        """Включение/отключение рассылок"""
         user = Employee.objects.get(user=request.user)
         if request.POST.get('mailing_check') == 'on':
-            print(request.POST.get('mailing_check'))
             user.mailing_list_check = True
             user.save()
         else:
-            print('ничего')
             user.mailing_list_check = False
             user.save()
         return redirect('profile')
@@ -1145,7 +1110,6 @@ class FavoritesListView(View):
         user = Employee.objects.get(user=request.user)
         list_favorites = FavoritesListModel.objects.get_queryset().filter(favorite_list_holder=user)
         share_list_favorites = FavoritesShareModel.objects.get_queryset().filter(favorite_share_user=user)
-        print(share_list_favorites)
         form = CreateFavoriteListForm()
         content = {'list_favorites': list_favorites,
                    "user": user,
@@ -1179,6 +1143,7 @@ class CurrentFavoritesListView(View):
         can_change_favorites = FavoritesShareModel.objects.get_queryset().filter(favorite_list_id=pk).filter(
             favorite_share_user=user).filter(can_change_list=True)
 
+        #Получение флагов, для управления избранным
         if (list_name.favorite_list_holder == user) or (can_view_favorites):
             access_flag = True
             data_all_favorites = TasksInFavoritesModel.objects.get_queryset().filter(favorite_list_id=pk)
@@ -1210,9 +1175,11 @@ class ShareFavoritesListView(View):
         list_name = FavoritesListModel.objects.get(id=pk)
         share_form = ShareFavoriteListForm()
         share_users_list = FavoritesShareModel.objects.get_queryset().filter(favorite_list_id=pk)
+        access_flag = get_can_change_favorites_access(pk, user, list_name)
 
         content = {
             "user": user,
+            "access_flag": access_flag,
             "list_name": list_name,
             "share_form": share_form,
             "share_users_list": share_users_list
@@ -1221,17 +1188,21 @@ class ShareFavoritesListView(View):
         return render(request, 'todo_tasks/favorites/share_favorite_list.html', content)
 
     def post(self, request, pk):
-        pk = int(pk)
         share_form = ShareFavoriteListForm(request.POST)
         if share_form.is_valid():
             new_share_user_favorites = share_form.save(commit=False)
             new_share_user_favorites.favorite_list = FavoritesListModel.objects.get(id=pk)
-            new_share_user_favorites.save()
-        return redirect(request.META['HTTP_REFERER'])
+            # Проверяем, есть ли такой доступ, если есть, ничего не меняем
+            if FavoritesShareModel.objects.filter(favorite_list_id=new_share_user_favorites.favorite_list).filter(
+                    favorite_share_user=new_share_user_favorites.favorite_share_user):
+                return redirect(request.META['HTTP_REFERER'])
+            else:
+                new_share_user_favorites.save()
+                return redirect(request.META['HTTP_REFERER'])
 
 
 class DeleteShareFavoritesListView(View):
-    "Удаление доступа к списку"
+    """Удаление доступа к списку"""
 
     def post(self, request, pk):
         delete_share = FavoritesShareModel.objects.get(id=pk)
@@ -1240,27 +1211,31 @@ class DeleteShareFavoritesListView(View):
 
 
 class AddTaskFavoritesListView(View):
-    "Добавление в избранное"
+    """Добавление в избранное"""
 
     def post(self, request, pk):
         form = AddMyFavoriteForm(request.POST)
         if form.is_valid():
             new_share = form.save(commit=False)
-            new_share.favorite_task_id = pk
-            new_share.save()
+            # Проверяем, есть ли задание в списке
+            check_tasks = TasksInFavoritesModel.objects.filter(favorite_task_id=pk).filter(
+                favorite_list_id=new_share.favorite_list_id)
+            if check_tasks.count() == 0:
+                new_share.favorite_task_id = pk
+                new_share.save()
         return redirect(request.META['HTTP_REFERER'])
 
 
 class EditFavoriteListView(View):
-    "Редактирование списка в избранном"
+    """Редактирование списка в избранном"""
 
     def get(self, request, pk):
         user = Employee.objects.get(user=request.user)
         list_name = FavoritesListModel.objects.get(id=pk)
         favorites_tasks = TasksInFavoritesModel.objects.get_queryset().filter(favorite_list_id=pk)
-        print(favorites_tasks)
-        print(pk, list_name)
+        access_flag = get_can_change_favorites_access(pk, user, list_name)
         content = {
+            "access_flag": access_flag,
             "user": user,
             "list_name": list_name,
             "favorites_tasks": favorites_tasks,
@@ -1272,7 +1247,9 @@ class EditFavoriteListView(View):
         FavoritesListModel.objects.get(id=pk).delete()
         return redirect('favorites')
 
+
 class DeleteTaskFromFavoriteView(View):
+    """Удаление избранного из списка"""
 
     def post(self, request, pk):
         task_to_delete = TasksInFavoritesModel.objects.get(id=pk)

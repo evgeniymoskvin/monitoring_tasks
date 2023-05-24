@@ -52,7 +52,6 @@ def get_count_task_workers_to_sign(user):
                 incoming_dep=user.department).filter(task_workers=False).count()
         if count_tasks > 0:
             count_task_to_workers = f'{count_tasks}'
-    print(count_task_to_workers)
     return count_task_to_workers
 
 @register.simple_tag()
