@@ -94,17 +94,19 @@
         </script>
 
     {% else %}
-        <div class="row justify-content-center" style="margin-top: 50px">
-            <div class="col" style="display: inline-block; text-align: center">
-                <img src="{% static 'todo_tasks/icons/face-tired-regular.svg' %}" width="50px">
-                <br>
-                <span class="text-index-book"
-                      style="display: inline-block; text-transform: uppercase; margin-top: 25px">У Вас нет доступа</span>
-            </div>
+        <div class="centered_div">
+            <div class="row justify-content-center" style="margin-top: 50px">
+                <div class="col" style="display: inline-block; text-align: center">
+                    <img src="{% static 'todo_tasks/icons/face-tired-regular.svg' %}" width="50px">
+                    <br>
+                    <span class="text-index-book"
+                          style="display: inline-block; text-transform: uppercase; margin-top: 25px">У Вас нет доступа</span>
+                </div>
 
-            <div>
-                <p class="text-5-bold" style="text-transform: uppercase"
-                   onclick="location.href='{% url 'favorites' %}';">Перейти в избранное</p>
+                <div>
+                    <p class="text-5-bold" style="text-transform: uppercase"
+                       onclick="location.href='{% url 'favorites' %}';">Перейти в избранное</p>
+                </div>
             </div>
         </div>
     {% endif %}

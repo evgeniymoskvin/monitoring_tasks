@@ -1,85 +1,108 @@
 {% extends "todo_tasks/base.html" %}
+{% load static %}
 
 {% block title %}
     Входящие задания для {{ user }}
 {% endblock %}
 
 {% block content %}
-    <br>
-    <h3 class="text-1-task" style="margin-top: 25px;">Входящие задания</h3>
-    <table id="incoming_table_dep" class="table table-hover" style="width: 100%">
-        <thead>
-        <tr>
-            <th class="th_tables" scope="col">#</th>
-            <th class="th_tables" scope="col">Номер задания</th>
-            <th class="th_tables" scope="col">Объект</th>
-            <th class="th_tables" scope="col">Здание</th>
-            <th class="th_tables" scope="col">Текст задания</th>
-            <th class="th_tables" scope="col">Статус</th>
-        </tr>
-        </thead>
-        <tbody>
-        {% for obj in data_all_unread %}
-            <tr class="tr-tables" data-href="{% url 'read_task' pk=obj.id %}">
-                <th class="th_tables" scope="row">{{ forloop.counter }}</th>
-                <td class="td_tables-bold">
-                    <strong>{{ obj.task_number|truncatechars:15 }}</strong></td>
-                <td class="td_tables-bold"><strong>{{ obj.task_object|truncatechars:100 }}</strong></td>
-                <td class="td_tables-bold"><strong>{{ obj.task_building|truncatechars:100 }}</strong></td>
-                <td class="td_tables-bold"><strong>
+    {% if data_all_unread or data_all_read %}
+        <br>
+        <h3 class="text-1-task" style="margin-top: 25px;">Входящие задания</h3>
+        <table id="incoming_table_dep" class="table table-hover" style="width: 100%">
+            <thead>
+            <tr>
+                <th class="th_tables" scope="col">#</th>
+                <th class="th_tables" scope="col">Номер задания</th>
+                <th class="th_tables" scope="col">Объект</th>
+                <th class="th_tables" scope="col">Здание</th>
+                <th class="th_tables" scope="col">Текст задания</th>
+                <th class="th_tables" scope="col">Статус</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for obj in data_all_unread %}
+                <tr class="tr-tables" data-href="{% url 'read_task' pk=obj.id %}">
+                    <th class="th_tables" scope="row">{{ forloop.counter }}</th>
+                    <td class="td_tables-bold">
+                        <strong>{{ obj.task_number|truncatechars:15 }}</strong></td>
+                    <td class="td_tables-bold"><strong>{{ obj.task_object|truncatechars:100 }}</strong></td>
+                    <td class="td_tables-bold"><strong>{{ obj.task_building|truncatechars:100 }}</strong></td>
+                    <td class="td_tables-bold"><strong>
                     <span data-toggle="tooltip"
                           title="{{ obj.text_task|truncatechars:500 }}">{{ obj.text_task|truncatechars:100 }}
                     </span>
-                </strong></td>
-                <td class="td_tables-bold"><strong>{{ obj.get_task_status_display }}</strong></td>
-            </tr>
-        {% endfor %}
-        {% for obj in data_all_read %}
-            <tr class="tr-tables" data-href="{% url 'details' pk=obj.id %}">
-                <th class="th_tables" scope="row">{{ forloop.counter }}</th>
-                <td class="td_tables">
-                    {{ obj.task_number|truncatechars:15 }}</td>
-                <td class="td_tables">{{ obj.task_object }}</td>
-                <td class="td_tables">{{ obj.task_building }}</td>
-                <td class="td_tables">
+                    </strong></td>
+                    <td class="td_tables-bold"><strong>{{ obj.get_task_status_display }}</strong></td>
+                </tr>
+            {% endfor %}
+            {% for obj in data_all_read %}
+                <tr class="tr-tables" data-href="{% url 'details' pk=obj.id %}">
+                    <th class="th_tables" scope="row">{{ forloop.counter }}</th>
+                    <td class="td_tables">
+                        {{ obj.task_number|truncatechars:15 }}</td>
+                    <td class="td_tables">{{ obj.task_object }}</td>
+                    <td class="td_tables">{{ obj.task_building }}</td>
+                    <td class="td_tables">
                     <span data-toggle="tooltip"
                           title="{{ obj.text_task|truncatechars:500 }}">{{ obj.text_task|truncatechars:100 }}
                     </span>
-                </td>
-                <td class="td_tables">{{ obj.get_task_status_display }}</td>
-            </tr>
-        {% endfor %}
+                    </td>
+                    <td class="td_tables">{{ obj.get_task_status_display }}</td>
+                </tr>
+            {% endfor %}
 
-        </tbody>
-    </table>
+            </tbody>
+        </table>
 
-    <script>
-        $(document).ready(function () {
-            var table = $('#incoming_table_dep').DataTable({
-                    {#order: [[1, 'asc']],#}
-                    dom:
-                        "<'row'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-6'f>>" +
-                        "<'row'<'col-sm-12'tr>>" +
-                        "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>" + "<'row justify-content-md-center'<'col-sm-2 col-md-2 col-xxl-2'B>>",
-                    "language": {
-                        "lengthMenu": "Показать _MENU_",
-                        "zeroRecords": "Записи не найдены",
-                        "info": "Показано с _START_ по _END_ из _TOTAL_ записей",
-                        "search": "Поиск:",
-                        "paginate": {
-                            "next": "Следующая",
-                            "previous": "Предыдущая"
-                        }
-                    },
-                    "aLengthMenu": [[1, 5, 10, 20, 25, -1], [1, 5, 10, 20, 25, "Все"]],
-                    "iDisplayLength": 20,
-                    buttons: ['pdf', 'excel']
-                }
-            );
-            table.buttons().container()
-                .appendTo($('.col-sm-6:eq(0)', table.table().container()));
-        });
-    </script>
+        <script>
+            $(document).ready(function () {
+                var table = $('#incoming_table_dep').DataTable({
+                        {#order: [[1, 'asc']],#}
+                        dom:
+                            "<'row'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-6'f>>" +
+                            "<'row'<'col-sm-12'tr>>" +
+                            "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>" + "<'row justify-content-md-center'<'col-sm-2 col-md-2 col-xxl-2'B>>",
+                        "language": {
+                            "lengthMenu": "Показать _MENU_",
+                            "zeroRecords": "Записи не найдены",
+                            "info": "Показано с _START_ по _END_ из _TOTAL_ записей",
+                            "search": "Поиск:",
+                            "paginate": {
+                                "next": "Следующая",
+                                "previous": "Предыдущая"
+                            }
+                        },
+                        "aLengthMenu": [[1, 5, 10, 20, 25, -1], [1, 5, 10, 20, 25, "Все"]],
+                        "iDisplayLength": 20,
+                        buttons: ['pdf', 'excel']
+                    }
+                );
+                table.buttons().container()
+                    .appendTo($('.col-sm-6:eq(0)', table.table().container()));
+            });
+        </script>
+
+    {% else %}
+        <div class="centered_div">
+            <h4 class="text-1-task" style="margin-top: 25px;">{{ user }}</h4>
+            <div class="row justify-content-center" style="margin-top: 0px">
+                <div class="col" style="display: inline-block; text-align: center">
+                <span class="text-index-book"
+                      style="display: inline-block; text-transform: uppercase; margin-top: 25px">Здесь пока что пусто</span>
+                    <br>
+                    <img src="{% static 'todo_tasks/icons/face-grin-beam-regular.svg' %}" width="50px"
+                         style="margin-top: 30px">
+
+                </div>
+                <div>
+                    <p class="text-5-bold" style="text-transform: uppercase"
+                       onclick="location.href='{% url 'index' %}';">На главную</p>
+                </div>
+            </div>
+        </div>
+
+    {% endif %}
 
 {% endblock %}
 

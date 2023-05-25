@@ -318,7 +318,7 @@ class AttachmentFilesModel(models.Model):
 
 
 class FavoritesListModel(models.Model):
-    """Таблица списков избранных"""
+    """Таблица списков избранного"""
     favorite_list_name = models.CharField("Название списка", max_length=25)
     favorite_list_holder = models.ForeignKey(Employee, on_delete=models.SET_NULL, verbose_name="Владелец списка",
                                              null=True)

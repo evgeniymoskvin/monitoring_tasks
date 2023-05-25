@@ -2,24 +2,24 @@
 
     {% if obj.department_number == user.department %}
         {% if obj.author.user_id == user.id and obj.task_status == 1 and obj.cpe_sign_status == False or obj.back_to_change == True %}
-            <li><a class="dropdown-item" href="{% url "change" pk=obj.id %}">Редактировать</a></li>
-            <li><a class="dropdown-item" href="{% url "change_files" pk=obj.id %}">Отредактировать вложения</a></li>
-            <li><a class="dropdown-item" href="{% url "edit_approve" pk=obj.id %}">Отредактировать согласователей</a>
+            <li><a class="dropdown-item" style="cursor: context-menu;" href="{% url "change" pk=obj.id %}">Редактировать</a></li>
+            <li><a class="dropdown-item" style="cursor: context-menu;" href="{% url "change_files" pk=obj.id %}">Отредактировать вложения</a></li>
+            <li><a class="dropdown-item" style="cursor: context-menu;" href="{% url "edit_approve" pk=obj.id %}">Отредактировать согласователей</a>
             </li>
         {% elif user.check_edit == True and obj.task_status == 1 and obj.cpe_sign_status == False or obj.back_to_change == True %}
-            <li><a class="dropdown-item" href="{% url "change" pk=obj.id %}">Редактировать</a></li>
-            <li><a class="dropdown-item" href="{% url "change_files" pk=obj.id %}">Отредактировать вложения</a></li>
-            <li><a class="dropdown-item" href="{% url "edit_approve" pk=obj.id %}">Отредактировать согласователей</a>
+            <li><a class="dropdown-item" style="cursor: context-menu;" href="{% url "change" pk=obj.id %}">Редактировать</a></li>
+            <li><a class="dropdown-item" style="cursor: context-menu;" href="{% url "change_files" pk=obj.id %}">Отредактировать вложения</a></li>
+            <li><a class="dropdown-item" style="cursor: context-menu;" href="{% url "edit_approve" pk=obj.id %}">Отредактировать согласователей</a>
             </li>
         {% elif obj.task_status == 1 and obj.back_to_change == True %}
-            <li><a class="dropdown-item" href="{% url "change" pk=obj.id %}">Редактировать</a></li>
-            <li><a class="dropdown-item" href="{% url "change_files" pk=obj.id %}">Отредактировать вложения</a></li>
-            <li><a class="dropdown-item" href="{% url "edit_approve" pk=obj.id %}">Отредактировать согласователей</a>
+            <li><a class="dropdown-item" style="cursor: context-menu;" href="{% url "change" pk=obj.id %}">Редактировать</a></li>
+            <li><a class="dropdown-item" style="cursor: context-menu;" href="{% url "change_files" pk=obj.id %}">Отредактировать вложения</a></li>
+            <li><a class="dropdown-item" style="cursor: context-menu;" href="{% url "edit_approve" pk=obj.id %}">Отредактировать согласователей</a>
             </li>
         {% else %}
-            <li><a class="dropdown-item disabled" href="{% url "change" pk=obj.id %}">Редактировать</a></li>
-            <li><a class="dropdown-item disabled" href="{% url "change_files" pk=obj.id %}">Отредактировать вложения</a>
-            <li><a class="dropdown-item disabled" href="{% url "edit_approve" pk=obj.id %}">Отредактировать
+            <li><a class="dropdown-item disabled" style="cursor: context-menu;" href="{% url "change" pk=obj.id %}">Редактировать</a></li>
+            <li><a class="dropdown-item disabled" style="cursor: context-menu;" href="{% url "change_files" pk=obj.id %}">Отредактировать вложения</a>
+            <li><a class="dropdown-item disabled" style="cursor: context-menu;" href="{% url "edit_approve" pk=obj.id %}">Отредактировать
                 согласователей</a>
             </li>
         {% endif %}
@@ -27,17 +27,17 @@
 
 
     {% if change_work_flag == True %}
-        <li><a class="dropdown-item" href="{% url "change_workers" pk=obj.id %}">Редактировать исполнителей</a></li>
+        <li><a class="dropdown-item" href="{% url "change_workers" pk=obj.id %}" style="cursor: context-menu;">Редактировать исполнителей</a></li>
     {% endif %}
 
 
     {% if obj.department_number_id == user.department_id and obj.task_status == 2 or obj.task_status == 3 %}
 {#        {% if obj.task_status == 2 or obj.task_status == 3 %}#}
             <li><a class="dropdown-item" data-bs-toggle="modal"
-                   data-bs-target="#cancel_task">Аннулировать задание</a></li>
+                   data-bs-target="#cancel_task" style="cursor: context-menu;">Аннулировать задание</a></li>
             <li><a class="dropdown-item" data-bs-toggle="modal"
-                   data-bs-target="#correction_task">Сообщить о корректировке</a></li>
-            <li><a class="dropdown-item" href="{% url "add_task_change" pk=obj.id %}">Выдать изменение</a></li>
+                   data-bs-target="#correction_task" style="cursor: context-menu;">Сообщить о корректировке</a></li>
+            <li><a class="dropdown-item" href="{% url "add_task_change" pk=obj.id %}" style="cursor: context-menu;">Выдать изменение</a></li>
 {#        {% endif %}#}
     {% endif %}
 

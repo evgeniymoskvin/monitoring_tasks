@@ -5,37 +5,60 @@
 {#{% endblock %}#}
 
 {% block content %}
+    {% if data_all %}
+        <br>
+        <h3 class="text-1-task" style="margin-top: 25px;">Выданные задания
+            отдела {{ user.department.command_number }}</h3>
 
-    <br>
-    <h3 class="text-1-task" style="margin-top: 25px;">Выданные задания отдела {{ user.department.command_number }}</h3>
+        <table id="all_tasks_table" class="table table-hover">
+            <thead>
+            <tr>
+                <th class="th_tables" scope="col">#</th>
+                <th class="th_tables" scope="col">Номер задания</th>
+                <th class="th_tables" scope="col">Текст задания</th>
+                <th class="th_tables" scope="col">Автор задания</th>
+            </tr>
+            </thead>
 
-    <table id="all_tasks_table" class="table table-hover">
-        <thead>
-        <tr>
-            <th class="th_tables" scope="col">#</th>
-            <th class="th_tables" scope="col">Номер задания</th>
-            <th class="th_tables" scope="col">Текст задания</th>
-            <th class="th_tables" scope="col">Автор задания</th>
-        </tr>
-        </thead>
-
-        <tbody>
-        {% for obj in data_all %}
-            <tr class="tr-tables" data-href="{% url 'details' pk=obj.id %}">
-                <th class="th_tables" scope="row">{{ forloop.counter }}</th>
-                <td class="td_tables">
-                    {{ obj.task_number }}</td>
-                <td class="td_tables">
+            <tbody>
+            {% for obj in data_all %}
+                <tr class="tr-tables" data-href="{% url 'details' pk=obj.id %}">
+                    <th class="th_tables" scope="row">{{ forloop.counter }}</th>
+                    <td class="td_tables">
+                        {{ obj.task_number }}</td>
+                    <td class="td_tables">
                     <span data-toggle="tooltip"
                           title="{{ obj.text_task|truncatechars:500 }}">{{ obj.text_task|truncatechars:100 }}
                     </span>
-                </td>
-                <td class="td_tables">{{ obj.author }}</td>
+                    </td>
+                    <td class="td_tables">{{ obj.author }}</td>
 
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+    {% else %}
+        <div class="centered_div">
+            <h4 class="text-1-task" style="margin-top: 25px;">Выданные задания
+            отдела {{ user.department.command_number }}</h4>
+            <div class="row justify-content-center" style="margin-top: 0px">
+                <div class="col" style="display: inline-block; text-align: center">
+                <span class="text-index-book"
+                      style="display: inline-block; text-transform: uppercase; margin-top: 25px">Здесь пока что пусто</span>
+                    <br>
+                    <img src="{% static 'todo_tasks/icons/face-meh-regular.svg' %}" width="50px"
+                         style="margin-top: 30px">
+
+                </div>
+                <div>
+                    <p class="text-5-bold" style="text-transform: uppercase"
+                       onclick="location.href='{% url 'index' %}';">На главную</p>
+                </div>
+            </div>
+        </div>
+
+    {% endif %}
 
 {% endblock %}
 
@@ -70,4 +93,7 @@
 
 
     </script>
+
+
+
 {% endblock %}

@@ -1,10 +1,12 @@
 {% extends "todo_tasks/base.html" %}
+{% load static %}
 
 {% block title %}
     Входящие задания
 {% endblock %}
 
 {% block content %}
+    {% if data_have_workers %}
     <br>
     <h3 class="text-1-task" style="margin-top: 25px;">Входящие задания в отдел {{ user.department.command_number }}</h3>
     <table id="incoming_table_dep" class="table table-hover" style="width: 100%">
@@ -72,5 +74,26 @@
                 .appendTo($('.col-sm-6:eq(0)', table.table().container()));
         });
     </script>
+
+        {% else %}
+        <div class="centered_div">
+            <h4 class="text-1-task" style="margin-top: 25px;">Входящие задания в отдел {{ user.department.command_number }}</h4>
+            <div class="row justify-content-center" style="margin-top: 0px">
+                <div class="col" style="display: inline-block; text-align: center">
+                <span class="text-index-book"
+                      style="display: inline-block; text-transform: uppercase; margin-top: 25px">Здесь пока что пусто</span>
+                    <br>
+                    <img src="{% static 'todo_tasks/icons/face-grin-beam-regular.svg' %}" width="50px"
+                         style="margin-top: 30px">
+
+                </div>
+                <div>
+                    <p class="text-5-bold" style="text-transform: uppercase"
+                       onclick="location.href='{% url 'index' %}';">На главную</p>
+                </div>
+            </div>
+        </div>
+
+    {% endif %}
 {% endblock %}
 
