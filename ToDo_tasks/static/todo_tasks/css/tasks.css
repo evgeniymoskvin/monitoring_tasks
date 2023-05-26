@@ -393,7 +393,7 @@
 }
 
 .back-search.active {
-    /*background: #4f2020;*/
+    background: #e0e0e0;
 }
 
 @keyframes animate {
@@ -416,7 +416,8 @@
 
 .tr-tables {
     height: 15px;
-    vertical-align: center
+    vertical-align: center;
+        cursor: context-menu;
 }
 
 .th_tables {
@@ -428,6 +429,7 @@
     line-height: 1;
     text-transform: uppercase;
     vertical-align: center;
+        cursor: context-menu;
 }
 
 .td_tables {
@@ -436,6 +438,8 @@
     font-size: 15px;
     line-height: 1;
     vertical-align: center;
+        cursor: context-menu;
+
 }
 
 .td_tables-bold {
@@ -445,6 +449,7 @@
     line-height: 1;
     vertical-align: center;
     letter-spacing: 0.01em;
+    cursor: context-menu;
 }
 
 .easy-animation {
