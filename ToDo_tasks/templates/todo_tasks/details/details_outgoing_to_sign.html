@@ -95,7 +95,7 @@
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
-                            <input type="submit" class="btn btn-danger" name="back_modal_button" value="Вернуть">
+                            <input id="button_back" type="submit" class="btn btn-warning" name="back_modal_button" value="Отправить сообщение">
                         </div>
                     </div>
                 </div>
@@ -131,6 +131,18 @@
             // инициализации подсказок для всех элементов на странице, имеющих атрибут data-toggle="tooltip"
             $('[data-toggle="tooltip"]').tooltip();
             $('[data-bs-toggle="tooltip"]').tooltip();
+
+            var checkbox = document.getElementById("flexCheckDefault");
+            var back_button = document.getElementById("button_back");
+            checkbox.addEventListener('change', function () {
+                if (this.checked) {
+                    back_button.value = ("Вернуть")
+                    back_button.className = 'btn btn-danger'
+                } else {
+                    back_button.value = ("Отправить сообщение")
+                    back_button.className = 'btn btn-warning'
+                }
+            });
         });
     </script>
 {% endblock %}

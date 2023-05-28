@@ -16,7 +16,7 @@ from django.contrib.auth import authenticate, login
 
 from .models import Employee, TaskModel, ContractModel, ObjectModel, StageModel, TaskNumbersModel, CommandNumberModel, \
     CpeModel, CanAcceptModel, WorkerModel, ApproveModel, AttachmentFilesModel, FavoritesListModel, \
-    TasksInFavoritesModel, FavoritesShareModel
+    TasksInFavoritesModel, FavoritesShareModel, CanChangeWorkersModel
 from .forms import TaskForm, TaskEditForm, SearchForm, WorkerForm, WorkersEditForm, \
     TaskFormForSave, ApproveForm, FilesUploadForm, UserProfileForm, ApproveEditForm, LoginForm, CreateFavoriteListForm, \
     ShareFavoriteListForm, AddMyFavoriteForm, AddShareFavoriteForm
@@ -160,6 +160,8 @@ class DetailView(View):
         """Получаем номер задания из ссылки и формируем страницу подробностей"""
         content = get_data_for_detail(request, pk)
         if TaskModel.objects.get(id=pk) in get_list_to_change_workers(content['user']):
+            content['change_work_flag'] = True
+        if CanChangeWorkersModel.objects.get_queryset().filter(user_accept=content['user']):
             content['change_work_flag'] = True
         content[
             'flag'] = True  # Для того, что бы шестеренка была доступна только на странице деталей, и ни на каких других дочерних
@@ -401,14 +403,11 @@ class EditTaskFiles(View):
         return render(request, 'todo_tasks/htmx/list_files.html', content)
 
     def delete(self, request, pk):
-        print(pk)
         file = AttachmentFilesModel.objects.get(id=pk)
         task_id = file.task_id
         os.remove(os.path.join(settings.MEDIA_ROOT, str(file.file)))
         AttachmentFilesModel.objects.get(id=pk).delete()
         old_files = AttachmentFilesModel.objects.get_queryset().filter(task_id=task_id)
-
-        print(old_files)
         content = {"old_files": old_files}
         return render(request, 'todo_tasks/htmx/list_files.html', content)
 
@@ -540,6 +539,7 @@ class ToSignDetailView(View):
                 content['cpe_flag'] = True
         else:
             content['cpe_flag'] = False
+            content['flag'] = True
         return render(request, 'todo_tasks/details/details_outgoing_to_sign.html', content)
 
     # Отработка кнопок подписи задания
@@ -762,8 +762,11 @@ class EditWorkersDetailView(View):
         formset = WorkerForm()
         sign_user_departments = CanAcceptModel.objects.get_queryset().filter(user_accept=user)
         sign_user_departments_list = [obj.dep_accept for obj in sign_user_departments]
-        formset.fields['worker_user'].queryset = Employee.objects.filter(
-            department__in=sign_user_departments_list).filter(work_status=True)
+        if len(sign_user_departments_list) > 0:
+            formset.fields['worker_user'].queryset = Employee.objects.filter(
+                department__in=sign_user_departments_list).filter(work_status=True)
+        elif CanChangeWorkersModel.objects.get_queryset().filter(user_accept=user).count() > 0:
+            formset.fields['worker_user'].queryset = Employee.objects.filter(department=user.department)
         content = {"data_all": data_all,
                    'user': user,
                    "obj": obj,

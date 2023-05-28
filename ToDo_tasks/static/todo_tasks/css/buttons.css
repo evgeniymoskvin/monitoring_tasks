@@ -132,6 +132,7 @@
     transition: all .3s ease-in-out;
     color: black;
     text-decoration: none;
+    cursor: context-menu;
     padding-left: 15px;
     padding-right: 15px;
     padding-top: 14px;

@@ -84,7 +84,7 @@ class Employee(models.Model):
 
 
 class CanAcceptModel(models.Model):
-    """Таблица тех, кому могут назначаться задания"""
+    """Таблица тех, кто может подпиывать входящие задания"""
     dep_accept = models.ForeignKey(CommandNumberModel, on_delete=models.PROTECT,
                                    verbose_name="Отдел за который можно подписаться", null=True)
     user_accept = models.ForeignKey(Employee, on_delete=models.PROTECT, verbose_name="Сотрудник", null=True)
@@ -95,6 +95,20 @@ class CanAcceptModel(models.Model):
     class Meta:
         verbose_name = _("принимающий задания")
         verbose_name_plural = _("принимающие задания")
+
+
+class CanChangeWorkersModel(models.Model):
+    """Таблица тех, кто может назначить исполнителей в отделе"""
+    dep_accept = models.ForeignKey(CommandNumberModel, on_delete=models.PROTECT,
+                                   verbose_name="Отдел за который можно менять исполнителей", null=True)
+    user_accept = models.ForeignKey(Employee, on_delete=models.PROTECT, verbose_name="Сотрудник", null=True)
+
+    def __str__(self):
+        return f'{self.dep_accept.command_number}, {self.user_accept} ({self.user_accept.job_title.job_title})'
+
+    class Meta:
+        verbose_name = _("назначающий исполнителей")
+        verbose_name_plural = _("назначающие исполнителей")
 
 
 class OrdersModel(models.Model):

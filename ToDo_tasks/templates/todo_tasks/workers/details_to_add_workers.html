@@ -8,6 +8,8 @@
 
 {% block css_stuff %}
     <script type="text/javascript" src="{% static 'todo_tasks/htmx/htmx.min.js' %}"></script>
+    <link href="{% static 'todo_tasks/select2/select2.min.css' %}" rel="stylesheet"/>
+    <script src="{% static 'todo_tasks/select2/select2.min.js' %}"></script>
 {% endblock %}
 
 {% block buttons %}
@@ -17,13 +19,13 @@
     <form id="form-container" method="POST"
           hx-post={% url 'details_to_add_workers' pk=obj.id %} hx-target="#worker_list">
         {% csrf_token %}
-                    <span class="text-3"
-                  style="display: inline-block; text-transform: uppercase; margin-top: 25px">Назначить ответственного исполнителя:</span>
+        <span class="text-3"
+              style="display: inline-block; text-transform: uppercase; margin-top: 25px">Назначить ответственного исполнителя:</span>
 
         {{ formset.worker_user }}
         <br>
         <figure class="text-center">
-            <button class="button-success" type="submit" hx-target="worker_list">Назначить исполнителя</button>
+            <button class="button-success" type="submit" hx-target="worker_list" style="margin-top: 25px">Назначить исполнителя</button>
         </figure>
     </form>
 
@@ -38,6 +40,13 @@
         document.body.addEventListener('htmx:configRequest', (event) => {
             event.detail.headers['X-CSRFToken'] = '{{ csrf_token }}';
         })
+
+        $(document).ready(function () {
+            $('#id_worker_user').select2({
+                placeholder: 'Выберите сотрудника',
+            });
+        });
+
     </script>
 
 {% endblock %}

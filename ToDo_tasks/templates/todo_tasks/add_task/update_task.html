@@ -56,15 +56,6 @@
                     </div>
                 </div>
 
-                <div class="row justify-content-center">
-                    <div class="col-5" style="text-align: center; margin-top: 25px">
-                         <span class="text-3"
-                               style="display: inline-block; text-transform: uppercase;">Внимание!</span>
-                        <p class="text-index-book-p" style="font-size: 15px">После изменения, все подписи
-                            исчезнут.</p>
-                    </div>
-                </div>
-
                 <br>
 
                 <div class="row justify-content-center">
@@ -74,60 +65,72 @@
                                     data-bs-target="#staticBackdrop">Удалить
                             </button>
                             <a href="{% url "details" pk=obj.id %}" class="button-cancel-a">Отмена</a>
+                            <button type="button" class="button-success" data-bs-toggle="modal"
+                                    data-bs-target="#ConfirmModal">Сохранить
+                            </button>
+
+                        </figure>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Modal -->
+
+            <div class="modal fade" id="ConfirmModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+                 aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="staticBackdropLabel">
+                                <span class="text-3"
+                                      style="display: inline-block; text-transform: uppercase;">Внимание!</span>
+                            </h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+
+                            <p class="text-index-book-p" style="font-size: 15px; margin-top: 0">После изменения, все
+                                подписи
+                                исчезнут.</p>
+                        </div>
+                        <div class="modal-footer">
                             <button type="submit" class="button-success" href="{% url 'change' pk=obj.id %}">Сохранить
                             </button>
-                        </figure>
+                            <button type="button" class="button-cancel" data-bs-dismiss="modal">Отмена</button>
+                        </div>
                     </div>
                 </div>
             </div>
         </form>
 
 
-        <!-- Modal -->
+
         <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
              aria-labelledby="staticBackdropLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="staticBackdropLabel">Удаление</h1>
+                        <h1 class="modal-title fs-5" id="staticBackdropLabel">
+                                                            <span class="text-3"
+                                      style="display: inline-block; text-transform: uppercase;">Удаление</span></h1>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        Вы точно хотите удалить запись?
+                        <p class="text-index-book-p" style="font-size: 15px; margin-top: 0">Вы точно хотите удалить запись?</p>
                     </div>
                     <div class="modal-footer">
                         <form method="post">
                             {% csrf_token %}
-                            <input type="submit" class="btn btn-danger" name="delete_number" value="Удалить">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                            <input type="submit" class="button-danger" name="delete_number" value="Удалить">
+                            <button type="button" class="button-cancel" data-bs-dismiss="modal">Отмена</button>
                         </form>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="modal fade" id="ConfirmModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-             aria-labelledby="staticBackdropLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="staticBackdropLabel">Удаление</h1>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        Точно изменить?
-                    </div>
-                    <div class="modal-footer">
-                        <form method="post">
-                            {% csrf_token %}
-                            <button type="submit" class="button-success" href="{% url 'change' pk=obj.id %}">Сохранить
-                            </button>
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
+
     {% else %}
 
         <div class="centered_div">

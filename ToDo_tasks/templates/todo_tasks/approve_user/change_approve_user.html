@@ -6,31 +6,62 @@
 {% endblock %}
 {% load static %}
 
+
+
 {% block css_stuff %}
+    <link href="{% static 'todo_tasks/select2/select2.min.css' %}" rel="stylesheet"/>
+    <script src="{% static 'todo_tasks/select2/select2.min.js' %}"></script>
+
     <script type="text/javascript" src="{% static 'todo_tasks/htmx/htmx.min.js' %}"></script>
 {% endblock %}
+
+
+
 {% block content %}
-    <br>
-
-    <h4>Добавить/удалить файлы к заданию {{ obj.task_number }}</h4>
-
-
-    <form id="form-container" enctype="multipart/form-data" method="POST"
-          hx-post={% url 'edit_approve' pk=obj.id %} hx-target="#task_approve">
-        {% csrf_token %}
-        <p>Выберете сотрудников для согласования.</p>
-
-        {{ form.approve_user }}
+    {% if obj.task_status == 1 %}
         <br>
-        <figure class="text-center">
-            <button class="btn btn-success" type="submit" hx-target="task_approve">Добавить</button>
-        </figure>
-    </form>
+        <h3 class="text-1-task" style="margin-top: 25px; ">Согласователи задания {{ obj.task_number }}</h3>
+        <h3 class="text-1-task" style="margin-top: 0px; font-size: 12px">Редактирование</h3>
 
-    <div id="task_approve">
-        {% include 'todo_tasks/htmx/list_approve.html' %}
-    </div>
 
+        <form id="form-container" enctype="multipart/form-data" method="POST"
+              hx-post={% url 'edit_approve' pk=obj.id %} hx-target="#task_approve">
+            {% csrf_token %}
+            <p class="text-index-book-p" style="font-size: 15px; margin-bottom: 15px">Выберите сотрудников для
+                согласования.</p>
+
+            {{ form.approve_user }}
+            <br>
+            <figure class="text-center">
+                <a class="button-cancel-a" onclick="location.href='{% url 'details' pk=obj.id %}';" style="cursor: context-menu;">К заданию</a>
+                <button class="button-success" style="margin-top: 25px; cursor: context-menu;" type="submit" hx-target="task_approve">Добавить
+                </button>
+            </figure>
+        </form>
+
+        <div id="task_approve">
+            {% include 'todo_tasks/htmx/list_approve.html' %}
+        </div>
+    {% else %}
+
+        <div class="centered_div">
+            <h4 class="text-1-task" style="margin-top: 25px;">{{ obj.task_number }}</h4>
+            <div class="row " style="margin-top: 20px">
+                <div class="col" style="display: inline-block; text-align: center">
+                    <img src="{% static 'todo_tasks/icons/circle-xmark-solid.svg' %}" width="50px">
+                    <br>
+                    <span class="text-index-book"
+                          style="display: inline-block; text-transform: uppercase; margin-top: 30px">Согласователей уже нельзя отредактировать</span>
+                </div>
+
+                <div>
+                    <p class="text-5-bold" style="text-transform: uppercase"
+                       onclick="location.href='{% url "details" pk=obj.id %}';">Перейти к заданию</p>
+                </div>
+            </div>
+        </div>
+
+    {% endif %}
 {% endblock %}
 
 {% block js_stuff %}
@@ -39,6 +70,13 @@
         document.body.addEventListener('htmx:configRequest', (event) => {
             event.detail.headers['X-CSRFToken'] = '{{ csrf_token }}';
         })
+
+        $(document).ready(function () {
+            $('#id_approve_user').select2({
+                placeholder: 'Выберите сотрудника',
+            });
+            document.getElementById("id_approve_user").style.width = "100"
+        });
     </script>
 
 {% endblock %}

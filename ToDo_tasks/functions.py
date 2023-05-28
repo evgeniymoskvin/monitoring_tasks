@@ -1,6 +1,6 @@
 from django.shortcuts import redirect
 from .models import Employee, TaskModel, CpeModel, ContractModel, ObjectModel, StageModel, CanAcceptModel, FavoritesListModel, \
-    TasksInFavoritesModel, FavoritesShareModel
+    TasksInFavoritesModel, FavoritesShareModel, CanChangeWorkersModel
 from .forms import TaskForm, TaskCheckForm, TaskEditForm, WorkerModel, ApproveModel, AttachmentFilesModel
 from .email_functions import add_worker_email
 

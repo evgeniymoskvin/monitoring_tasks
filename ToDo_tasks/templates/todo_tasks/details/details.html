@@ -4,6 +4,8 @@
 {% block title %}
     Подробности
 {% endblock %}
+
+
 {% block content %}
     <br>
 
@@ -13,7 +15,8 @@
         <div class="col-10">
             <div class="d-flex justify-content-center" style="margin-left: 200px">
                 <h4 class="text-1-task" style="margin-top: 25px; display: inline">Детали задания {{ obj.task_number }}
-                    <p class="text-1-task" style="font-size: 15px">({{ task_status }})</p></h4>
+                    <p class="text-1-task" style="font-size: 15px">{% if obj.back_to_change %}(Требует
+                        редактирования){% else %}({{ task_status }}) {% endif %}</p></h4>
             </div>
         </div>
         <div class="col" style="margin-top: 25px">
@@ -24,10 +27,11 @@
                                                                        data-toggle="tooltip"
                                                                        title="Добавить в избранное"></a>
                     <a href="{% url 'download_blank' obj.id %}" target="_blank"><img class="hover-mouse-icon"
-                                                                     src="{% static 'todo_tasks/icons/file-earmark-pdf.svg' %}"
-                                                                     data-toggle="tooltip"
-                                                                     title="Скачать бланк"></a>
-                    {% if flag == True and user.department == obj.department_number or user.department == obj.incoming_dep %}
+                                                                                     src="{% static 'todo_tasks/icons/file-earmark-pdf.svg' %}"
+                                                                                     data-toggle="tooltip"
+                                                                                     title="Скачать бланк"></a>
+                                        {% if flag == True and user.department == obj.department_number or user.department == obj.incoming_dep %}
+{#                    {% if flag == True and user.department == obj.department_number %}#}
                         <a href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
                            aria-expanded="false">
                             <img src="{% static 'todo_tasks/icons/list.svg' %}" data-toggle="tooltip"

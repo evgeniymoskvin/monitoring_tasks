@@ -41,7 +41,7 @@
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title" id="staticBackdropLabel">Укажите причину отказа</h5>
+                            <h5 class="modal-title" id="staticBackdropLabel">Укажите причину</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal"
                                     aria-label="Закрыть"></button>
                         </div>
@@ -58,7 +58,9 @@
 
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
-                            <input type="submit" class="btn btn-danger" name="not_incoming_button" value="Отправить">
+                            <input id="button_back" type="submit" class="btn btn-warning" name="not_incoming_button"
+                                   value="Отправить комментарий">
+                            {#                            <input id="button_back" type="submit" class="btn btn-danger" name="not_incoming_button" value="Отправить">#}
                         </div>
                     </div>
                 </div>
@@ -72,6 +74,17 @@
             // инициализации подсказок для всех элементов на странице, имеющих атрибут data-toggle="tooltip"
             $('[data-toggle="tooltip"]').tooltip();
             $('[data-bs-toggle="tooltip"]').tooltip();
+            var checkbox = document.getElementById("flexCheckDefault");
+            var back_button = document.getElementById("button_back");
+            checkbox.addEventListener('change', function () {
+                if (this.checked) {
+                    back_button.value = ("Вернуть")
+                    back_button.className = 'btn btn-danger'
+                } else {
+                    back_button.value = ("Отправить сообщение")
+                    back_button.className = 'btn btn-warning'
+                }
+            });
         });
     </script>
 {% endblock %}

@@ -36,6 +36,7 @@ def get_count_task_incoming_to_sign(user):
             count_task_incoming_to_sign = f'{count_tasks}'
     return count_task_incoming_to_sign
 
+
 @register.simple_tag()
 def get_count_task_workers_to_sign(user):
     count_task_to_workers = ''
@@ -49,10 +50,11 @@ def get_count_task_workers_to_sign(user):
         #     incoming_status=True).filter(task_workers=False).count()
         # Если надо указать все задания, где надо назначит исполнителей, следующую строчку закомментировать
         count_tasks = TaskModel.objects.get_queryset().filter(task_status=2).filter(
-                incoming_dep=user.department).filter(task_workers=False).count()
+            incoming_dep=user.department).filter(task_workers=False).count()
         if count_tasks > 0:
             count_task_to_workers = f'{count_tasks}'
     return count_task_to_workers
+
 
 @register.simple_tag()
 def unread_inbox(user):
@@ -63,16 +65,17 @@ def unread_inbox(user):
     return count_unread
 
 
-
 @register.simple_tag()
 def need_approve(user):
     count_unread = ''
-    tasks_to_approve = ApproveModel.objects.get_queryset().filter(approve_user_id=user.id).filter(approve_status=False).count()
+    tasks_to_approve = ApproveModel.objects.get_queryset().filter(approve_user_id=user.id).filter(
+        approve_status=False).count()
 
     if tasks_to_approve > 0:
         count_unread = f'{tasks_to_approve}'
 
     return count_unread
+
 
 @register.simple_tag()
 def need_to_reed_my_tasks(user):
@@ -83,9 +86,21 @@ def need_to_reed_my_tasks(user):
         count_my_unread = f'{tasks_id_unread}'
     return count_my_unread
 
+
 @register.simple_tag()
-def split_filename(value:str):
+def split_filename(value: str):
     return str(value).split('/')[-1]
+
+
+@register.simple_tag()
+def need_to_change_my_tasks(user):
+    count_my_change = ''
+    tasks_id_change = TaskModel.objects.get_queryset().filter(author=user).filter(task_status=1).filter(
+        back_to_change=True).count()
+
+    if tasks_id_change > 0:
+        count_my_change = f'{tasks_id_change}'
+    return count_my_change
 
 # count_task_to_workers = ''
 # count_task_incoming_to_sign = ''

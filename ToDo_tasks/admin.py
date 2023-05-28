@@ -1,7 +1,7 @@
 from django.contrib import admin
 from .models import TaskModel, Employee, OrdersModel, ObjectModel, ContractModel, StageModel, JobTitleModel, CpeModel, \
     CanAcceptModel, CommandNumberModel, TaskNumbersModel, GroupDepartmentModel, MarkDocModel, WorkerModel, \
-    BackCommentModel, ApproveModel, FavoritesListModel, TasksInFavoritesModel, FavoritesShareModel
+    BackCommentModel, ApproveModel, FavoritesListModel, TasksInFavoritesModel, FavoritesShareModel, CanChangeWorkersModel
 
 
 class TaskAdmin(admin.ModelAdmin):
@@ -42,6 +42,9 @@ class CpeAdmin(admin.ModelAdmin):
 class ObjectAdmin(admin.ModelAdmin):
     ordering = ['object_name']
 
+class CanChangeWorkersAdmin(admin.ModelAdmin):
+    ordering = ['dep_accept']
+
 
 admin.site.register(TaskModel, TaskAdmin)
 admin.site.register(Employee, EmployeeAdmin)
@@ -62,3 +65,4 @@ admin.site.register(ApproveModel)
 admin.site.register(FavoritesListModel)
 admin.site.register(TasksInFavoritesModel)
 admin.site.register(FavoritesShareModel)
+admin.site.register(CanChangeWorkersModel)

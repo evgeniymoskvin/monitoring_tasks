@@ -85,7 +85,7 @@ def email_after_cpe_sign(pk):
             incom_users_list.append(incom_user.user_accept)
         for incoming_user in incom_users_list:
             # Отправка сообщения всем, кто может подписывать задание в отделе
-            if Employee.objects.get(id=incoming_user.user_id).mailing_list_check is True:
+            if Employee.objects.get(user_id=incoming_user.user_id).mailing_list_check is True:
                 if task.cpe_comment:
                     email_incoming = EmailMessage(f'Направлено задание  {task.task_number}.',
                                                   f'{incoming_user}, Вам направлено задание {task.task_number}. Прошу рассмотреть и принять в работу. \n Посмотрите {LINK_FOR_EMAIL}/incoming_to_sign_details/{task.id}. \nКомментарий ГИп-а {task.cpe_comment}',
@@ -200,7 +200,8 @@ def email_change_task(obj, approved_user_list):
 
     #  Отправка сообщения согласователям
     for approve_user_id in approved_user_list:
-        if Employee.objects.get(id=approve_user_id).mailing_list_check is True:
+        print(approve_user_id.approve_user)
+        if Employee.objects.get(id=approve_user_id.approve_user.id).mailing_list_check is True:
             email_approve = EmailMessage(f'Согласование задания {obj.task_number}.',
                                          f'{approve_user_id.approve_user}, задание {obj.task_number} отредактировано. Прошу рассмотреть и согласовать его. \n Посмотрите {LINK_FOR_EMAIL}/approve_details/{number_id}',
                                          to=[approve_user_id.approve_user.user.email])

@@ -74,7 +74,10 @@
 <li class="has-subnav" id="my_tasks_on_sign" style="display: none">
     <a href="{% url 'my_tasks_on_sign' %}">
         <i class="fa">
-            <div class="icon-angle-up-solid-menu"></div>
+            <div class="icon-angle-up-solid-menu">
+                                <p class="text-menu-sidebar numberCircle" id="my_tasks_change_num_inbox"
+                   style="display: none">{% need_to_change_my_tasks user %}</p>
+            </div>
         </i>
         <span class="nav-text text-menu-sidebar" style="text-transform: uppercase">
                             Мои задания на подписи

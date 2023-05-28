@@ -94,6 +94,14 @@
         const workers_to_sign_num = document.getElementById('workers_to_sign_num')
         const my_tasks_num = document.getElementById('my_tasks_num')
         const my_tasks_num_inbox = document.getElementById('my_tasks_num_inbox')
+        const my_tasks_change_num_inbox = document.getElementById('my_tasks_change_num_inbox')
+
+        try {
+            if (!(my_tasks_change_num_inbox.innerText === '')) {
+                my_tasks_change_num_inbox.style.display = 'block'
+            }
+        } catch (e) {
+        }
 
         try {
             if (!(outgoing_num.innerText === '')) {
@@ -126,6 +134,10 @@
 
         }
 
+        if (!(my_tasks_num_inbox.innerText === '') || !(my_tasks_change_num_inbox.innerText === '')) {
+            my_tasks_num.innerText = Number(my_tasks_num_inbox.innerText) + Number(my_tasks_change_num_inbox.innerText)
+        }
+
         try {
             if (!(my_tasks_num.innerText === '')) {
                 my_tasks_num.style.display = 'block'
@@ -141,6 +153,8 @@
         } catch (e) {
 
         }
+
+
     }
 
 
