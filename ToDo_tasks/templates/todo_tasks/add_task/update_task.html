@@ -6,7 +6,7 @@
 {% endblock %}
 
 {% block content %}
-    {% if obj.task_status == 1 %}
+    {% if obj.task_status == 1 and user.check_edit and obj.department_number == user.department %}
         <br>
         <h4 class="text-1-task" style="margin-top: 25px;">Отредактировать задание {{ obj.task_number }}</h4>
         <form id="formAdd" method="post" data-contracts-url="{% url 'ajax_load_contracts' %}"

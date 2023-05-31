@@ -1,78 +1,96 @@
 {% extends "todo_tasks/base.html" %}
+{% load static %}
 
 {% block title %}
     Добавить задание
 {% endblock %}
 
 {% block content %}
-    <br>
-    <h2 class="m-3, text-center">Выдать изменение к {{ obj.task_number }}</h2>
-    <br>
-    <form id="formAdd" method="post" data-contracts-url="{% url 'ajax_load_contracts' %}"
-          data-stages-url="{% url 'ajax_load_stages' %}">
-        <div class="container">
+    {% if user.check_edit and obj.department_number == user.department %}
+        <br>
+        <h4 class="text-1-task" style="margin-top: 25px;">Выдать изменение к {{ obj.task_number }}</h4>
+        <form id="formAdd" method="post" data-contracts-url="{% url 'ajax_load_contracts' %}"
+              data-stages-url="{% url 'ajax_load_stages' %}">
+            <div class="container">
 
-            <div class="row justify-content-center">
-                <div class="col-5">
-                    {% csrf_token %}
+                <div class="row justify-content-center">
+                    <div class="col-5">
+                        {% csrf_token %}
 
+                        <span class="text-3" style="display: inline-block; text-transform: uppercase; margin-top: 10px">Текст задания:</span>
+                        {{ form.text_task }}
+
+                        {#                    Здесь должно быть поле для загрузки файла#}
+                    </div>
+                </div>
+                <br>
+                <br>
+                <div class="row justify-content-center">
+                    <div class="col-2">
+                        <span class="text-4-book-left">Первый руководитель:</span>
+                    </div>
+                    <div class="col-3">
+                        {{ form.first_sign_user }}
+                    </div>
+                </div>
+
+                <br>
+                <div class="row justify-content-center">
+                    <div class="col-2">
+                        <span class="text-4-book-left">Второй руководитель:</span>
+                    </div>
+                    <div class="col-3">
+                        {{ form.second_sign_user }}
+                    </div>
+                </div>
+
+                <br>
+
+                <div class="row justify-content-center">
+                    <div class="col-2">
+                        <span class="text-4-book-left">Принимающий отдел:</span>
+                    </div>
+                    <div class="col-3">
+                        {{ form.incoming_dep }}
+                    </div>
+                </div>
+
+                <br>
+
+                <div class="row justify-content-center">
+                    <div class="col">
+                        <figure class="text-center">
+                            <p class="text-index-book-p" style="font-size: 15px; margin-top: 0; margin-bottom: 25px"> Задание {{ obj.task_number }} аннулируется автоматически </p>
+                            <a href="{% url "details" pk=obj.id %}" class="button-cancel-a ">Отмена</a>
+                            <button type="submit" class="button-success" href="{% url 'change' pk=obj.id %}">Выдать
+                                задание
+                            </button>
+                        </figure>
+                    </div>
+                </div>
+            </div>
+
+
+        </form>
+    {% else %}
+
+        <div class="centered_div">
+            <h4 class="text-1-task" style="margin-top: 25px;">{{ obj.task_number }}</h4>
+            <div class="row " style="margin-top: 20px">
+                <div class="col" style="display: inline-block; text-align: center">
+                    <img src="{% static 'todo_tasks/icons/circle-xmark-solid.svg' %}" width="50px">
                     <br>
+                    <span class="text-index-book"
+                          style="display: inline-block; text-transform: uppercase; margin-top: 30px">Это задание нельзя отредактировать</span>
+                </div>
 
-
-                    Текст задания:
-                    {{ form.text_task }}
-                    <br>
-                    {#                    Здесь должно быть поле для загрузки файла#}
-                </div>
-            </div>
-            <br>
-            <br>
-            <div class="row justify-content-center">
-                <div class="col-2">
-                    Первый руководитель:
-                </div>
-                <div class="col-3">
-                    {{ form.first_sign_user }}
-                </div>
-            </div>
-
-            <div class="row justify-content-center">
-                <div class="col-2">
-                    Второй руководитель:
-                </div>
-                <div class="col-3">
-                    {{ form.second_sign_user }}
-                </div>
-            </div>
-
-            <br>
-
-                        <div class="row justify-content-center">
-                <div class="col-2">
-                    Принимает:
-                </div>
-                <div class="col-3">
-                    {{ form.incoming_dep }}
-                </div>
-            </div>
-            <br>
-
-            <div class="row justify-content-center">
-                <div class="col">
-                    <figure class="text-center">
-                        <p> Задание {{ obj.task_number }} аннулируется автоматически </p>
-                        <a href="{% url "details" pk=obj.id %}" class="btn btn-secondary">Отмена</a>
-                        <button type="submit" class="btn btn-success" href="{% url 'change' pk=obj.id%}">Выдать задание
-                        </button>
-                    </figure>
+                <div>
+                    <p class="text-5-bold" style="text-transform: uppercase"
+                       onclick="location.href='{% url "details" pk=obj.id %}';">Перейти к заданию</p>
                 </div>
             </div>
         </div>
-
-
-    </form>
-
-
+    {% endif %}
 
 {% endblock %}
 

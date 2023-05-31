@@ -29,7 +29,7 @@
     </script>
 {% endblock %}
 {% block content %}
-    {% if obj.task_status == 1 %}
+    {% if obj.task_status == 1 and user.check_edit and obj.department_number == user.department  %}
         <br>
         <h3 class="text-1-task" style="margin-top: 25px; ">Файлы к заданию {{ obj.task_number }}</h3>
         <h3 class="text-1-task" style="margin-top: 0px; font-size: 12px">Редактирование</h3>
@@ -75,7 +75,7 @@
                     <img src="{% static 'todo_tasks/icons/circle-xmark-solid.svg' %}" width="50px">
                     <br>
                     <span class="text-index-book"
-                          style="display: inline-block; text-transform: uppercase; margin-top: 30px">Файлы уже нельзя отредактировать</span>
+                          style="display: inline-block; text-transform: uppercase; margin-top: 30px">Файлы нельзя отредактировать</span>
                 </div>
 
                 <div>

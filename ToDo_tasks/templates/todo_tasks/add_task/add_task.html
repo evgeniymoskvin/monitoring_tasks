@@ -23,131 +23,160 @@
 {% endblock %}
 
 {% block content %}
+    {% if user.can_make_task %}
 
+        <br>
+        <h3 class="text-1-task" style="margin-top: 25px">Выдать задание</h3>
+        <br>
+        <div id="formadd">
+            <form id="formAdd" method="post" enctype="multipart/form-data"
+                  data-contracts-url="{% url 'ajax_load_contracts' %}"
+                  data-stages-url="{% url 'ajax_load_stages' %}" data-incoming-emp-url="{% url 'ajax_load_inc_emp' %}">
+                <div class="container">
 
-    <br>
-    <h3 class="text-1-task" style="margin-top: 25px">Выдать задание</h3>
-    <br>
-    <div id="formadd">
-        <form id="formAdd" method="post" enctype="multipart/form-data"
-              data-contracts-url="{% url 'ajax_load_contracts' %}"
-              data-stages-url="{% url 'ajax_load_stages' %}" data-incoming-emp-url="{% url 'ajax_load_inc_emp' %}">
-            <div class="container">
+                    <div class="row">
+                        <div class="col">
+                            {% csrf_token %}
 
-                <div class="row">
-                    <div class="col">
-                        {% csrf_token %}
+                            <span class="text-3"
+                                  style="display: inline-block; text-transform: uppercase; margin-top: 10px">Объект:</span>
+                            {{ form.task_object }}
+                            <span class="text-3"
+                                  style="display: inline-block; text-transform: uppercase; margin-top: 10px">Номер договора:</span>
+                            {{ form.task_contract }}
+                            <span class="text-3"
+                                  style="display: inline-block; text-transform: uppercase; margin-top: 10px">Этап:</span>
+                            {{ form.task_stage }}
+                            <span class="text-3"
+                                  style="display: inline-block; text-transform: uppercase; margin-top: 10px">Номер заказа:</span>
+                            {{ form.task_order }}
+                            <span class="text-3"
+                                  style="display: inline-block; text-transform: uppercase; margin-top: 10px">Вид документации:</span>
+                            {{ form.task_type_work }}
+                            <span class="text-3"
+                                  style="display: inline-block; text-transform: uppercase; margin-top: 10px">Марка документации:</span>
+                            {{ form.task_mark_doc }}
+                            <span class="text-3"
+                                  style="display: inline-block; text-transform: uppercase; margin-top: 10px">Здание:</span>
+                            {{ form.task_building }}
 
-                        <span class="text-3" style="display: inline-block; text-transform: uppercase; margin-top: 10px">Объект:</span>
-                        {{ form.task_object }}
-                        <span class="text-3" style="display: inline-block; text-transform: uppercase; margin-top: 10px">Номер договора:</span>
-                        {{ form.task_contract }}
-                        <span class="text-3" style="display: inline-block; text-transform: uppercase; margin-top: 10px">Этап:</span>
-                        {{ form.task_stage }}
-                        <span class="text-3" style="display: inline-block; text-transform: uppercase; margin-top: 10px">Номер заказа:</span>
-                        {{ form.task_order }}
-                        <span class="text-3" style="display: inline-block; text-transform: uppercase; margin-top: 10px">Вид документации:</span>
-                        {{ form.task_type_work }}
-                        <span class="text-3" style="display: inline-block; text-transform: uppercase; margin-top: 10px">Марка документации:</span>
-                        {{ form.task_mark_doc }}
-                        <span class="text-3" style="display: inline-block; text-transform: uppercase; margin-top: 10px">Здание:</span>
-                        {{ form.task_building }}
-
-                    </div>
-                    <div class="col">
-                        <span class="text-3" style="display: inline-block; text-transform: uppercase; margin-top: 10px">Текст задания:</span>
-                        {{ form.text_task }}
-                    </div>
-                </div>
-
-                <br>
-                <div style="justify-content: center; align-items: center; margin-left: -150px">
-                    <div class="row justify-content-center">
-                        <div class="col-2">
-                            <span class="text-4-book-left">Первый руководитель:</span>
                         </div>
-                        <div class="col-3">
-                            {#                            <span class="text-4-book-left" style="display: inline;"> </span>#}
-                            {{ form.first_sign_user }}
-                        </div>
-                    </div>
-                    <div class="row justify-content-center" style="margin-top: 15px">
-                        <div class="col-2">
-                            <span class="text-4-book-left">Второй руководитель:</span>
-                        </div>
-                        <div class="col-3">
-                            {{ form.second_sign_user }}
+                        <div class="col">
+                            <span class="text-3"
+                                  style="display: inline-block; text-transform: uppercase; margin-top: 10px">Текст задания:</span>
+                            {{ form.text_task }}
                         </div>
                     </div>
 
-                    <div class="row justify-content-center" style="margin-top: 15px">
-                        <div class="col-2">
-                            <span class="text-4-book-left">Принимающий отдел:</span>
-                        </div>
-                        <div class="col-3">
-                            {{ form.incoming_dep }}
-                        </div>
-                    </div>
-
-                    <div>
-                        <div class="row justify-content-center" style="margin-top: 15px">
-                            <div class="col-2">
-                                <span class="text-4-book-left">Добавьте файлы:</span>
-
-                            </div>
-                            <div class="col-3">
-                                {{ file_form.file }}
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row justify-content-center" style="margin-top: 15px">
-                        <div class="col-2">
-                            <span class="text-4-book-left">Требуются согласователи?:</span>
-
-                        </div>
-
-                        <div class="col-3" style="margin-top: 10px">
-                            {{ form.task_need_approve }}
-                        </div>
-
-                    </div>
-
-
-                    <div id="approve" style="display: none; margin-top: 15px; margin-left: 6px">
+                    <br>
+                    <div style="justify-content: center; align-items: center; margin-left: -150px">
                         <div class="row justify-content-center">
                             <div class="col-2">
-                                <span class="text-4-book-left">Выберете согласователей:</span>
-
+                                <span class="text-4-book-left">Первый руководитель:</span>
                             </div>
-
                             <div class="col-3">
-                                {{ approve_form.approve_user }}
+                                {#                            <span class="text-4-book-left" style="display: inline;"> </span>#}
+                                {{ form.first_sign_user }}
                             </div>
-                            <
                         </div>
-                    </div>
+                        <div class="row justify-content-center" style="margin-top: 15px">
+                            <div class="col-2">
+                                <span class="text-4-book-left">Второй руководитель:</span>
+                            </div>
+                            <div class="col-3">
+                                {{ form.second_sign_user }}
+                            </div>
+                        </div>
 
-                </div>
-                <div style="margin-top: 15px">
-                    <div class="row justify-content-center; ">
-                        <div class="col">
-                            <figure class="text-center">
-                                <a class="button-cancel-a" href="{% url 'index' %}" role="button">Отмена</a>
-                                <button class="button-success" type="submit">Выдать
-                                    задание
-                                </button>
-                            </figure>
+                        <div class="row justify-content-center" style="margin-top: 15px">
+                            <div class="col-2">
+                                <span class="text-4-book-left">Принимающий отдел:</span>
+                            </div>
+                            <div class="col-3">
+                                {{ form.incoming_dep }}
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="row justify-content-center" style="margin-top: 15px">
+                                <div class="col-2">
+                                    <span class="text-4-book-left">Добавьте файлы:</span>
+
+                                </div>
+                                <div class="col-3">
+                                    {{ file_form.file }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row justify-content-center" style="margin-top: 15px">
+                            <div class="col-2">
+                                <span class="text-4-book-left">Требуются согласователи?:</span>
+
+                            </div>
+
+                            <div class="col-3" style="margin-top: 10px">
+                                {{ form.task_need_approve }}
+                            </div>
+
+                        </div>
+
+
+                        <div id="approve" style="display: none; margin-top: 15px; margin-left: 6px">
+                            <div class="row justify-content-center">
+                                <div class="col-2">
+                                    <span class="text-4-book-left">Выберете согласователей:</span>
+
+                                </div>
+
+                                <div class="col-3">
+                                    {{ approve_form.approve_user }}
+                                </div>
+                                <
+                            </div>
+                        </div>
+
+                    </div>
+                    <div style="margin-top: 15px">
+                        <div class="row justify-content-center; ">
+                            <div class="col">
+                                <figure class="text-center">
+                                    <a class="button-cancel-a" href="{% url 'index' %}" role="button">Отмена</a>
+                                    <button class="button-success" type="submit">Выдать
+                                        задание
+                                    </button>
+                                </figure>
+                            </div>
                         </div>
                     </div>
+                </div>
+            </form>
+        </div>
+        <div style="display: none;" id="loaderspin">
+            <span class="loader"></span>
+        </div>
+
+
+    {% else %}
+
+        <div class="centered_div">
+            <h4 class="text-1-task" style="margin-top: 25px;">Отказано в доступе</h4>
+            <div class="row " style="margin-top: 20px">
+                <div class="col" style="display: inline-block; text-align: center">
+                    <img src="{% static 'todo_tasks/icons/circle-xmark-solid.svg' %}" width="50px">
+                    <br>
+                    <span class="text-index-book"
+                          style="display: inline-block; text-transform: uppercase; margin-top: 30px">Вы не можете выдавать задания</span>
+                </div>
+
+                <div>
+                    <p class="text-5-bold" style="text-transform: uppercase"
+                       onclick="location.href='{% url "index" %}';">На главную</p>
                 </div>
             </div>
-        </form>
-    </div>
-    <div style="display: none;" id="loaderspin">
-        <span class="loader"></span>
-    </div>
+        </div>
 
+    {% endif %}
 
 
 {% endblock %}

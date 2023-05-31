@@ -43,6 +43,7 @@
                 <th class="th_tables" scope="col">Объект</th>
                 <th class="th_tables" scope="col">Здание</th>
                 <th class="th_tables" scope="col">Текст задания</th>
+                <th class="th_tables" scope="col">Статус</th>
             </tr>
             </thead>
             <tbody>
@@ -58,6 +59,7 @@
                               title="{{ obj.favorite_task.text_task|truncatechars:500 }}">{{ obj.favorite_task.text_task|truncatechars:100 }}
                         </span>
                     </td>
+                    <td class="td_tables">{{ obj.favorite_task.get_task_status_display }}</td>
                 </tr>
             {% endfor %}
 
