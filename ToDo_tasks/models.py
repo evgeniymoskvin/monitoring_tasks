@@ -23,19 +23,6 @@ class JobTitleModel(models.Model):
         return f'{self.job_title}'
 
 
-class CommandNumberModel(models.Model):
-    """Номера отделов"""
-    command_number = models.CharField("Номер отдела/Сокращение", max_length=15)
-    command_name = models.CharField("Наименование отдела", max_length=150)
-
-    def __str__(self):
-        return f'{self.command_number}, {self.command_name}'
-
-    class Meta:
-        verbose_name = _("номер отдела")
-        verbose_name_plural = _("номера отделов")
-
-
 class GroupDepartmentModel(models.Model):
     """Список управлений"""
     group_dep_abr = models.CharField("Сокращенное название управления", max_length=10)
@@ -47,6 +34,22 @@ class GroupDepartmentModel(models.Model):
     class Meta:
         verbose_name = _("управление")
         verbose_name_plural = _("управления")
+
+
+class CommandNumberModel(models.Model):
+    """Номера отделов"""
+    command_number = models.CharField("Номер отдела/Сокращение", max_length=15)
+    command_name = models.CharField("Наименование отдела", max_length=150)
+    department = models.ForeignKey(GroupDepartmentModel, verbose_name="Управление", on_delete=models.SET_NULL,
+                                   null=True,
+                                   blank=True)
+
+    def __str__(self):
+        return f'{self.command_number}, {self.command_name}'
+
+    class Meta:
+        verbose_name = _("номер отдела")
+        verbose_name_plural = _("номера отделов")
 
 
 class Employee(models.Model):
@@ -63,6 +66,7 @@ class Employee(models.Model):
     last_name = models.CharField("Фамилия", max_length=150)
     first_name = models.CharField("Имя", max_length=150)
     middle_name = models.CharField("Отчество", max_length=150)
+    personnel_number = models.CharField("Табельный номер", max_length=20, null=True, blank=True, default=None)
     job_title = models.ForeignKey(JobTitleModel, on_delete=models.PROTECT, null=True, verbose_name="Должность")
     department = models.ForeignKey(CommandNumberModel, on_delete=models.PROTECT, null=True, verbose_name="№ отдела")
     user_phone = models.IntegerField("№ телефона", null=True, default=None)
@@ -336,12 +340,14 @@ class FavoritesListModel(models.Model):
     favorite_list_name = models.CharField("Название списка", max_length=25)
     favorite_list_holder = models.ForeignKey(Employee, on_delete=models.SET_NULL, verbose_name="Владелец списка",
                                              null=True)
+
     class Meta:
         verbose_name = _("список избранного")
         verbose_name_plural = _("списки избранного")
 
     def __str__(self):
         return f'{self.favorite_list_name}'
+
 
 class TasksInFavoritesModel(models.Model):
     """Список задание находящихся в избранном"""
@@ -371,5 +377,3 @@ class FavoritesShareModel(models.Model):
 
     def __str__(self):
         return f'{self.favorite_list}: {self.favorite_share_user}'
-
-

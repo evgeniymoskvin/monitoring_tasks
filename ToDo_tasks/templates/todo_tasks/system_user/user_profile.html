@@ -22,6 +22,12 @@
 
             <p>
             <span class="text-3"
+                  style="display: inline; text-transform: uppercase;">Табельный номер:</span>
+                <span class="text-4-book-left"> {{ user.personnel_number }} </span>
+            </p>
+
+            <p>
+            <span class="text-3"
                   style="display: inline; text-transform: uppercase;">Должность:</span>
                 <span class="text-4-book-left"> {{ user.job_title }} </span>
             </p>
@@ -82,41 +88,41 @@
         </div>
     </div>
 
-        {#    {{ form.as_table }}#}
+    {#    {{ form.as_table }}#}
 
-        <!-- Модальное окно -->
-        <div class="modal fade" id="NotificationModal" tabindex="-1" aria-labelledby="exampleModalLabel"
-             aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">Настройка уведомлений</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
-                    </div>
-
-                    <form method="POST">
-                        {% csrf_token %}
-                        <div class="modal-body">
-                            Уведомления на почту:
-
-                            {% if user.mailing_list_check %}
-                                <input type="checkbox" name="mailing_check" checked>
-                            {% else %}
-                                <input type="checkbox" name="mailing_check">
-                            {% endif %}
-                            <br>
-                            <span class="text-3" style="display: inline; text-transform: uppercase;">ВАЖНО!</span>
-
-                            Отключить комментарии к заданию и "отказ в подписании задания" невозможно
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Закрыть
-                            </button>
-                            <button type="submit" class="btn btn-outline-success">Сохранить изменения</button>
-                        </div>
-                    </form>
+    <!-- Модальное окно -->
+    <div class="modal fade" id="NotificationModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Настройка уведомлений</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
                 </div>
+
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="modal-body">
+                        Уведомления на почту:
+
+                        {% if user.mailing_list_check %}
+                            <input type="checkbox" name="mailing_check" checked>
+                        {% else %}
+                            <input type="checkbox" name="mailing_check">
+                        {% endif %}
+                        <br>
+                        <span class="text-3" style="display: inline; text-transform: uppercase;">ВАЖНО!</span>
+
+                        Отключить комментарии к заданию и "отказ в подписании задания" невозможно
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Закрыть
+                        </button>
+                        <button type="submit" class="btn btn-outline-success">Сохранить изменения</button>
+                    </div>
+                </form>
             </div>
         </div>
+    </div>
 
 {% endblock %}

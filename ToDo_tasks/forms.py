@@ -395,6 +395,9 @@ class UserProfileForm(ModelForm):
             'middle_name': TextInput(attrs={"class": "form-control",
                                             "aria-label": "Отчество"
                                             }),
+            "personnel_number": TextInput(attrs={"class": "form-control",
+                                            "aria-label": "Табельный номер"
+                                            }),
             "job_title": Select(attrs={"class": "form-select",
                                        "aria-label": "Должность"}),
             "department_group": Select(attrs={"class": "form-select",

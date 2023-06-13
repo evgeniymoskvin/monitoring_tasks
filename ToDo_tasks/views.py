@@ -1094,6 +1094,7 @@ class EditProfileUserView(View):
                 employee.department = employee.department
                 employee.department_group = employee_form.department_group
                 employee.user_phone = employee_form.user_phone
+                employee.personnel_number = employee_form.personnel_number
                 employee.work_status = True
                 employee.save()
             else:
