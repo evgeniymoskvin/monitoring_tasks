@@ -142,7 +142,7 @@ class ObjectModel(models.Model):
 class ContractModel(models.Model):
     """Таблица договоров"""
     contract_object = models.ForeignKey(ObjectModel, on_delete=models.PROTECT, verbose_name="Объект", default=1)
-    contract_name = models.CharField(max_length=250, verbose_name="Номер договора")
+    contract_name = models.CharField(max_length=650, verbose_name="Номер договора")
 
     class Meta:
         verbose_name = _("номер договора")

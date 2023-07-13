@@ -255,7 +255,11 @@ class AddTaskView(View):
                 new_post.author = Employee.objects.get(user=request.user)  # добавляем пользователя из request
                 new_post.department_number = new_post.author.department  # добавляем номер отдела пользователя, пока не знаю зачем
                 # Получаем номер последнего задания из таблицы TaskNumbers
-                last_number = TaskNumbersModel.objects.get(command_number=new_post.department_number)
+                try:
+                    last_number = TaskNumbersModel.objects.get(command_number=new_post.department_number)
+                except:
+                    TaskNumbersModel.objects.create(command_number=new_post.department_number, count_of_task=0).save()
+                    last_number = TaskNumbersModel.objects.get(command_number=new_post.department_number)
                 today_year = datetime.datetime.today().year  # выносим в отдельную переменную, что бы каждый раз не вызывалась функция
                 # Проверяем год. Если отличается от нынешнего, обнуляем счетчик заданий
                 if last_number.year_of_task == today_year:
