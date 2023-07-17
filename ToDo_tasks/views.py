@@ -1,6 +1,7 @@
 import datetime
 import mimetypes
 import os.path
+import copy
 
 from django.shortcuts import render, redirect
 from django.utils import timezone
@@ -282,7 +283,8 @@ class AddTaskView(View):
                 email_create_task(new_post, approved_user_list)
                 # Добавляем файлы, если есть
                 if request.FILES:
-                    for f in request.FILES.getlist('file'):
+                    list_copy_files = copy.deepcopy(request.FILES.getlist('file'))
+                    for f in list_copy_files:
                         obj = AttachmentFilesModel(file=f, task_id=number_id)
                         obj.save()
                 if len(approved_user_list) > 0:
