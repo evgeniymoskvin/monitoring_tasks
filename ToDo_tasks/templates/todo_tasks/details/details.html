@@ -22,6 +22,12 @@
         <div class="col" style="margin-top: 25px">
             <div class="d-flex justify-content-end">
                 <h4>
+
+                    <a href="#" onclick="copyLink()"><img class="hover-mouse-icon"
+                                                          src="{% static 'todo_tasks/icons/share.svg' %}"
+                                                          data-toggle="tooltip"
+                                                          title="Поделиться"></a>
+
                     <a href="#" onclick="openFavoriteListModal()"><img class="hover-mouse-icon"
                                                                        src="{% static 'todo_tasks/icons/bookmark.svg' %}"
                                                                        data-toggle="tooltip"
@@ -30,8 +36,8 @@
                                                                                      src="{% static 'todo_tasks/icons/file-earmark-pdf.svg' %}"
                                                                                      data-toggle="tooltip"
                                                                                      title="Скачать бланк"></a>
-                                        {% if flag == True and user.department == obj.department_number or user.department == obj.incoming_dep %}
-{#                    {% if flag == True and user.department == obj.department_number %}#}
+                    {% if flag == True and user.department == obj.department_number or user.department == obj.incoming_dep %}
+                        {#                    {% if flag == True and user.department == obj.department_number %}#}
                         <a href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
                            aria-expanded="false">
                             <img src="{% static 'todo_tasks/icons/list.svg' %}" data-toggle="tooltip"
@@ -351,6 +357,23 @@
     </div>
 
 
+    <!-- Уведомление о скопированной ссылке -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3" style="margin-right: 50px">
+        <div id="alertCopyLink" class="toast" role="alert" aria-live="assertive" aria-atomic="true" style="">
+{#            <div class="toast-header" style="background-color: #585858">#}
+{#                <img src="..." class="rounded me-2" alt="...">#}
+{#                <strong class="me-auto">ДРОЗД</strong>#}
+{#                <small>Сейчас</small>#}
+{#                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Закрыть"></button>#}
+{#            </div>#}
+            <div class="toast-body" style="background-color: #282828; color: white">
+                Ссылка скопирована
+            </div>
+        </div>
+    </div>
+
+
+
     {#<span data-toggle="tooltip" title="другой текст подсказки">некоторый текст</span>#}
     <script>
         // после загрузки страницы
@@ -363,6 +386,27 @@
         function openFavoriteListModal() {
             $('#to_favorites').modal('show');
         }
+
+        function copyLink() {
+            new bootstrap.Alert(alert)
+            var link_name = window.location.hostname + '/details/' + {{ obj.id }};
+            console.log(link_name)
+
+            navigator.clipboard
+                .writeText(link_name)
+                .then(() => {
+                    const toastLiveExample = document.getElementById('alertCopyLink')
+                    const toastBootstrap = bootstrap.Toast.getOrCreateInstance(toastLiveExample)
+                    toastBootstrap.show()
+
+                    // Успех!
+                })
+                .catch(() => {
+                    // Неудача :(
+                });
+
+        }
+
 
     </script>
 

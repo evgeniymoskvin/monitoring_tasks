@@ -227,6 +227,7 @@ class AddTaskView(View):
         # Из исходного пост запроса получаем список отделов, куда надо выдать задания
         incoming_deps_list = request.POST.getlist('incoming_dep')
         approved_user_list = request.POST.getlist('approve_user')
+
         # Перебираем отделы в которые направляются задания
         for dep in incoming_deps_list:
             # Меняем значение отдела, на нужное нам из списка
@@ -270,6 +271,9 @@ class AddTaskView(View):
                     last_number.count_of_task = 1
                 last_number.save()  # сохраняем в таблице счетчиков (TaskNumbersModel) обновленные данные
                 if new_post.task_need_approve is False:
+                    new_post.task_approved = True
+                elif len(approved_user_list) == 0 and new_post.task_need_approve is True:
+                    new_post.task_need_approve = False
                     new_post.task_approved = True
                 new_post.task_last_edit = datetime.datetime.now()  # Присваиваем дату последнего изменения
 
