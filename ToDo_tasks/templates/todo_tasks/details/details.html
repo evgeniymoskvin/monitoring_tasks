@@ -360,12 +360,12 @@
     <!-- Уведомление о скопированной ссылке -->
     <div class="toast-container position-fixed bottom-0 end-0 p-3" style="margin-right: 50px">
         <div id="alertCopyLink" class="toast" role="alert" aria-live="assertive" aria-atomic="true" style="">
-{#            <div class="toast-header" style="background-color: #585858">#}
-{#                <img src="..." class="rounded me-2" alt="...">#}
-{#                <strong class="me-auto">ДРОЗД</strong>#}
-{#                <small>Сейчас</small>#}
-{#                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Закрыть"></button>#}
-{#            </div>#}
+            {#            <div class="toast-header" style="background-color: #585858">#}
+            {#                <img src="..." class="rounded me-2" alt="...">#}
+            {#                <strong class="me-auto">ДРОЗД</strong>#}
+            {#                <small>Сейчас</small>#}
+            {#                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Закрыть"></button>#}
+            {#            </div>#}
             <div class="toast-body" style="background-color: #282828; color: white">
                 Ссылка скопирована
             </div>
@@ -392,19 +392,28 @@
             var link_name = window.location.hostname + '/details/' + {{ obj.id }};
             console.log(link_name)
 
-            navigator.clipboard
-                .writeText(link_name)
-                .then(() => {
-                    const toastLiveExample = document.getElementById('alertCopyLink')
-                    const toastBootstrap = bootstrap.Toast.getOrCreateInstance(toastLiveExample)
-                    toastBootstrap.show()
+            const textarea = document.createElement('textarea');
+            textarea.value = link_name;
 
-                    // Успех!
-                })
-                .catch(() => {
-                    // Неудача :(
-                });
+            // Move the textarea outside the viewport to make it invisible
+            textarea.style.position = 'absolute';
+            textarea.style.left = '-99999999px';
 
+            document.body.prepend(textarea);
+
+            // highlight the content of the textarea element
+            textarea.select();
+
+            try {
+                document.execCommand('copy');
+                const toastLiveExample = document.getElementById('alertCopyLink')
+                const toastBootstrap = bootstrap.Toast.getOrCreateInstance(toastLiveExample)
+                toastBootstrap.show()
+            } catch (err) {
+                console.log("Не получилось")
+            } finally {
+                textarea.remove();
+            }
         }
 
 

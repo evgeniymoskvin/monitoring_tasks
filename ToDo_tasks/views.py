@@ -291,6 +291,7 @@ class AddTaskView(View):
                     for f in list_copy_files:
                         obj = AttachmentFilesModel(file=f, task_id=number_id)
                         obj.save()
+                    del list_copy_files
                 if len(approved_user_list) > 0:
                     for app_user in approved_user_list:
                         obj = ApproveModel(approve_task_id=number_id, approve_user_id=app_user)
