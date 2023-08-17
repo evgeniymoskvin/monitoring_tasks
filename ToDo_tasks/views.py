@@ -646,10 +646,14 @@ class IncomingSignDetails(View):
         sign_user = Employee.objects.get(user=request.user)
         queryset = CanAcceptModel.objects.get_queryset().filter(user_accept=sign_user)
         list_departments = []
+
         for dep in queryset:
-            list_departments.append(dep.dep_accept_id)
-        if sign_user.department_id in list_departments:
+            list_departments.append(dep.dep_accept)
+            print(dep.dep_accept)
+        if content['obj'].incoming_dep in list_departments:
             content['can_sign'] = True
+        # elif sign_user.department_id in list_departments:
+        #     content['can_sign'] = True
         else:
             content['can_sign'] = False
 
