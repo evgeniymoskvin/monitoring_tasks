@@ -91,3 +91,4 @@ venv/
 db.sqlite3
 .env
 monitoring_tasks/settings.py
+media/

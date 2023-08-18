@@ -155,7 +155,7 @@ class ContractModel(models.Model):
 class StageModel(models.Model):
     """Таблица этапов"""
     stage_contract = models.ForeignKey(ContractModel, on_delete=models.PROTECT, verbose_name="Номер договора")
-    stage_name = models.CharField(max_length=250, verbose_name="Наименование этапа")
+    stage_name = models.CharField(max_length=650, verbose_name="Наименование этапа")
 
     class Meta:
         verbose_name = _("наименование этапа")
