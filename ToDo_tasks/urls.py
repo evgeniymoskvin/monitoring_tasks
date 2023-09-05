@@ -49,7 +49,12 @@ urlpatterns = [
     path('favorites/<int:pk>', views.CurrentFavoritesListView.as_view(), name='favorite_list'),
     path('share_favorites/<int:pk>', views.ShareFavoritesListView.as_view(), name='share_favorites'),
     path('edit_favorites/<int:pk>', views.EditFavoriteListView.as_view(), name='edit_favorites'),
-    path('delete_share_favorites/<int:pk>', views.DeleteShareFavoritesListView.as_view(), name='delete_share_favorites'),
+    path('delete_share_favorites/<int:pk>', views.DeleteShareFavoritesListView.as_view(),
+         name='delete_share_favorites'),
     path('add_task_to_favorites/<int:pk>', views.AddTaskFavoritesListView.as_view(), name='add_task_to_favorites'),
-    path('delete_task_from_favorites/<int:pk>', views.DeleteTaskFromFavoriteView.as_view(), name='delete_task_from_favorites'),
+    path('delete_task_from_favorites/<int:pk>', views.DeleteTaskFromFavoriteView.as_view(),
+         name='delete_task_from_favorites'),
+    path('delete_self/<int:pk>', views.DeleteApproveSelf.as_view(), name='delete_self'),
+    path('ajax/load_employee', views.load_empolyee, name="ajax_load_employee"),
+    path('add_approve_redirect/<int:pk>', views.RedirectApproveUserView.as_view(), name='redirect_approve')
 ]

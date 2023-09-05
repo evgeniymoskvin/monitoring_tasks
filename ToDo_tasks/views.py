@@ -106,7 +106,7 @@ class OutgoingTasksView(View):
     @method_decorator(login_required(login_url='login'))
     def get(self, request):
         user = Employee.objects.get(user=request.user)
-        data_to_sign = TaskModel.objects.get_queryset().filter(department_number=user.department).filter(task_status=1)
+        data_to_sign = TaskModel.objects.get_queryset().filter(department_number=user.department).filter(task_status=1).order_by('-id')
         content = {'data_to_sign': data_to_sign,
                    'user': user}
         return render(request, 'todo_tasks/department_tasks/outgoing_tasks.html', content)
@@ -119,7 +119,7 @@ class IncomingDepView(View):
     def get(self, request):
         user = Employee.objects.get(user=request.user)  # Получаем пользователя из запроса
         user_dep = user.department_id  # получаем id номер отдела
-        data_have_workers = TaskModel.objects.get_queryset().filter(incoming_dep=user_dep).filter(task_status=2)
+        data_have_workers = TaskModel.objects.get_queryset().filter(incoming_dep=user_dep).filter(task_status=2).order_by('-id')
         content = {'data_have_workers': data_have_workers,
                    'user': user}
         return render(request, 'todo_tasks/department_tasks/incoming_to_dep.html', content)
@@ -130,7 +130,7 @@ class UserTaskView(View):
 
     @method_decorator(login_required(login_url='login'))
     def get(self, request):
-        data_user = TaskModel.objects.get_queryset().filter(author__user=request.user).filter(task_status=2)
+        data_user = TaskModel.objects.get_queryset().filter(author__user=request.user).filter(task_status=2).order_by('-id')
         user = Employee.objects.get(user=request.user)
         text_status = f"выданные"
         content = {'data_user': data_user,
@@ -144,7 +144,7 @@ class UserTaskOnSignView(View):
 
     @method_decorator(login_required(login_url='login'))
     def get(self, request):
-        data_user = TaskModel.objects.get_queryset().filter(author__user=request.user).filter(task_status=1)
+        data_user = TaskModel.objects.get_queryset().filter(author__user=request.user).filter(task_status=1).order_by('-id')
         user = Employee.objects.get(user=request.user)
         text_status = f"исходящие"
         content = {'data_user': data_user,
@@ -483,8 +483,8 @@ class MyInboxListView(View):
     def get(self, request):
         user = Employee.objects.get(user=request.user)
         # Формируем 2 списка прочтенных и не прочтенных заданий
-        tasks_id_unread = WorkerModel.objects.get_queryset().filter(worker_user=user).filter(read_status=False)
-        tasks_id_read = WorkerModel.objects.get_queryset().filter(worker_user=user).filter(read_status=True)
+        tasks_id_unread = WorkerModel.objects.get_queryset().filter(worker_user=user).filter(read_status=False).order_by('-id')
+        tasks_id_read = WorkerModel.objects.get_queryset().filter(worker_user=user).filter(read_status=True).order_by('-id')
         # Переводим в список
         task_list_unread = []
         for task in tasks_id_unread:
@@ -823,7 +823,7 @@ class ApproveListView(View):
     def get(self, request):
         sign_user = Employee.objects.get(user=request.user)  # получаем пользователя
         tasks = ApproveModel.objects.get_queryset().filter(approve_user_id=sign_user.id).filter(
-            approve_status=False)  # Получаем queryset с заданиями
+            approve_status=False).order_by('-id')  # Получаем queryset с заданиями
         tasks_list = []
         for task in tasks:
             tasks_list.append(task.approve_task_id)
@@ -865,6 +865,17 @@ class ApproveDetailView(View):
                 check_and_send_to_cpe(pk)
         if 'modal_text' in request.POST:
             approve_give_comment_email(pk, request.user, request.POST.get('modal_text'))
+        return redirect(request.META['HTTP_REFERER'])
+
+
+class DeleteApproveSelf(View):
+    """Удаление самого себе из списка согласователей"""
+
+    def get(self, request, pk):
+        user = Employee.objects.get(user=request.user)
+        obj = ApproveModel.objects.filter(approve_task_id=pk).filter(approve_user=user)
+        obj.delete()
+        print(pk)
         return redirect(request.META['HTTP_REFERER'])
 
 
@@ -970,9 +981,14 @@ class EditApproveUserView(View):
         print(request.POST.get('approve_user'))
         new_approve_emp = ApproveModel()
         new_approve_emp.approve_user_id = int(request.POST.get('approve_user'))
-        new_approve_emp.approve_task_id = pk
-        new_approve_emp.save()
-        email_add_approver(pk, int(request.POST.get('approve_user')))
+        status_approve_emp = ApproveModel.objects.get_queryset().filter(approve_task_id=pk).filter(approve_user_id=int(request.POST.get('approve_user'))).exists()
+        if status_approve_emp:
+            print("Такой пользователь уже добавлен в согласователи")
+        else:
+            new_approve_emp.approve_task_id = pk
+            new_approve_emp.save()
+            print(new_approve_emp)
+            email_add_approver(pk, int(request.POST.get('approve_user')))
         old_approve = ApproveModel.objects.get_queryset().filter(approve_task_id=pk)
         content = {
             'old_approve': old_approve,
@@ -988,6 +1004,23 @@ class EditApproveUserView(View):
             'old_approve': old_approve,
         }
         return render(request, 'todo_tasks/htmx/list_approve.html', content)
+
+
+class RedirectApproveUserView(View):
+    """Добавление сотрудников для согласования самим согласователем"""
+    def post(self, request, pk):
+        new_approve_emp = ApproveModel()
+        new_approve_emp.approve_user_id = int(request.POST.get('approve_user'))
+        status_approve_emp = ApproveModel.objects.get_queryset().filter(approve_task_id=pk).filter(approve_user_id=int(request.POST.get('approve_user'))).exists()
+        if status_approve_emp:
+            print("Такой пользователь уже добавлен в согласователи")
+        else:
+            new_approve_emp.approve_task_id = pk
+            new_approve_emp.save()
+            print(new_approve_emp)
+            email_add_approver(pk, int(request.POST.get('approve_user')))
+
+        return redirect(request.META['HTTP_REFERER'])
 
 
 class ObjectTasksListView(View):
@@ -1274,3 +1307,10 @@ class DeleteTaskFromFavoriteView(View):
         task_to_delete = TasksInFavoritesModel.objects.get(id=pk)
         task_to_delete.delete()
         return redirect(request.META['HTTP_REFERER'])
+
+def load_empolyee(request):
+    """Фнкуия загрузки списка сотрудников"""
+    approve_form = ApproveEditForm()
+    content = {'approve_form': approve_form}
+    return render (request, 'todo_tasks/ajax/load_list_employee.html', content)
+

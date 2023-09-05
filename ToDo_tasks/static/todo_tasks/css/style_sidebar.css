@@ -37,7 +37,8 @@
 }
 
 .main-menu {
-    background: #282828;
+    /*background: #282828;*/
+    background: #1D222A;
     border-right: 0px solid #e5e5e5;
     position: fixed;
     top: 0;

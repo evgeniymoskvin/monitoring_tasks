@@ -47,7 +47,7 @@ class TaskForm(ModelForm):
                                                'disabled': 'disabled'}),
                    "text_task": Textarea(attrs={"placeholder": "Введите текст задания",
                                                 "class": "form-control",
-                                                "style": "height:410px;"}),
+                                                "style": "height:442px;"}),
                    "task_type_work": Select(attrs={"class": "form-select",
                                                    "aria-label": "Вид документации"}),
                    "first_sign_user": Select(attrs={"class": "form-select",
@@ -71,7 +71,7 @@ class TaskForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['task_order'].queryset = OrdersModel.objects.order_by('order')
-        self.fields['incoming_dep'].queryset = CommandNumberModel.objects.order_by('command_number')
+        self.fields['incoming_dep'].queryset = CommandNumberModel.objects.filter(show=True).order_by('command_number')
         self.fields['task_mark_doc'].queryset = MarkDocModel.objects.order_by("mark_doc")
         self.fields['task_contract'].queryset = ContractModel.objects.order_by("contract_name")  # подгрузка значений
         self.fields['task_stage'].queryset = StageModel.objects.order_by("stage_name")  # подгрузка значений
@@ -212,6 +212,10 @@ class TaskEditForm(ModelForm):
                    "incoming_dep": Select(attrs={"class": "form-select",
                                                  "aria-label": "Кому"}),
                    }
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['incoming_dep'].queryset = CommandNumberModel.objects.filter(show=True).order_by('command_number')
+
 
 
 class DateInput(DateTimeInput):
@@ -328,6 +332,10 @@ class ApproveForm(ModelForm):
                                                   "style": "width: 500px"}),
         }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['approve_user'].queryset = Employee.objects.filter(work_status=True).order_by('last_name')
+
 
 class FilesUploadForm(ModelForm):
     class Meta:
@@ -352,6 +360,10 @@ class ApproveEditForm(ModelForm):
                                           "aria-label": "Первый руководитель"}),
         }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['approve_user'].queryset = Employee.objects.filter(work_status=True).order_by('last_name')
+
 
 class ApproveFormForSave(ModelForm):
     """Форма для добавления согласователей """
@@ -367,6 +379,10 @@ class ApproveFormForSave(ModelForm):
             "approve_user": Select(attrs={"class": "form-select",
                                           "aria-label": "Согласователь"}),
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['approve_user'].queryset = Employee.objects.filter(work_status=True).order_by('last_name')
 
 
 class UserProfileForm(ModelForm):
@@ -396,8 +412,8 @@ class UserProfileForm(ModelForm):
                                             "aria-label": "Отчество"
                                             }),
             "personnel_number": TextInput(attrs={"class": "form-control",
-                                            "aria-label": "Табельный номер"
-                                            }),
+                                                 "aria-label": "Табельный номер"
+                                                 }),
             "job_title": Select(attrs={"class": "form-select",
                                        "aria-label": "Должность"}),
             "department_group": Select(attrs={"class": "form-select",
@@ -449,6 +465,7 @@ class ShareFavoriteListForm(ModelForm):
                                                         "aria-label": "Сотрудник"
                                                         }),
                    "can_change_list": CheckboxInput()}
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['favorite_share_user'].queryset = Employee.objects.order_by("last_name").filter(work_status=True)
@@ -463,8 +480,9 @@ class AddMyFavoriteForm(ModelForm):
                   ]
 
         widgets = {"favorite_list": Select(attrs={"class": "form-select",
-                                                        "aria-label": "Сотрудник"
-                                                        })}
+                                                  "aria-label": "Сотрудник"
+                                                  })}
+
 
 class AddShareFavoriteForm(ModelForm):
     """Форма создания списков избранного"""
@@ -475,6 +493,5 @@ class AddShareFavoriteForm(ModelForm):
                   ]
 
         widgets = {"favorite_list": Select(attrs={"class": "form-select",
-                                                        "aria-label": "Сотрудник"
-                                                        })}
-
+                                                  "aria-label": "Сотрудник"
+                                                  })}

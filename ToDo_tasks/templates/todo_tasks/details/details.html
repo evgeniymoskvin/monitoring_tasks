@@ -111,7 +111,7 @@
                 </div>
 
                 {% if obj.first_sign_status %}
-                    <div class="col bg-success text-white text-right">
+                    <div class="col text-white text-right" style="background: #5FAD05; margin-right: 11px">
                         <span data-toggle="tooltip" title="{{ obj.first_sign_date }}">Подписано</span>
                     </div>
                 {% else %}
@@ -134,7 +134,7 @@
                           title="{{ obj.second_sign_user }} (тел. {{ obj.second_sign_user.user_phone }})">{{ sign_info.second_sign_name }}</span>
                 </div>
                 {% if obj.second_sign_status %}
-                    <div class="col bg-success text-white text-right">
+                    <div class="col text-white text-right" style="background: #5FAD05; margin-right: 11px">
                         <span data-toggle="tooltip" title="{{ obj.second_sign_date }}">Подписано</span>
                     </div>
                 {% else %}
@@ -157,11 +157,11 @@
                               title="{{ obj.cpe_sign_user }} (тел. {{ obj.cpe_sign_user.user_phone }})">{{ sign_info.cpe_sign_name }}</span>
                 </div>
                 {% if obj.cpe_sign_status %}
-                    <div class="col bg-success text-white text-right">
+                    <div class="col text-white text-right" style="background: #5FAD05; margin-right: 11px">
                         <span data-toggle="tooltip" title="{{ obj.cpe_sign_date }}">Подписано</span>
                     </div>
                 {% else %}
-                    <div class="col bg-light text-right ">
+                    <div class="col bg-light text-right">
                         Не подписано
                     </div>
                 {% endif %}
@@ -178,7 +178,7 @@
                               title="{{ obj.incoming_employee }} (тел. {{ obj.incoming_employee.user_phone }})">{{ sign_info.incom_sign_name }}</span>
                 </div>
                 {% if obj.incoming_status %}
-                    <div class="col bg-success text-white text-right">
+                    <div class="col text-white text-right" style="background: #5FAD05; margin-right: 11px">
                         <span data-toggle="tooltip" title="{{ obj.incoming_date }}">Подписано</span>
                     </div>
                 {% else %}
@@ -192,7 +192,7 @@
             <div class="row">
                 <div class="col">
                     {% if obj.cpe_comment %}
-                        <div class="alert alert-success mt-2">
+                        <div class="alert alert-success mt-2" style="background: #8CCE5A; border-color: #8CCE5A">
                             <p class="h5">Комментарий ГИП-а<br>
                             <p>{{ obj.cpe_comment }}</p>
                         </div>
@@ -210,10 +210,11 @@
               style="display: inline-block; text-transform: uppercase; margin-top: 25px">Приложенные файлы:</span>
         <ul class="list-group">
             {% for file in files %}
-                <li class="list-group-item d-flex justify-content-start align-items-center hover-mouse">
-                    <img src="{% static 'todo_tasks/icons/file-arrow-down.svg' %}">
-                    <a href="{% url 'download_file' file.id %}"
-                       class="nav-link text-black" download>{% split_filename file.file %}</a>
+                <li class="list-group-item d-flex justify-content-start align-items-center hover-mouse" onclick="window.open('{% url 'download_file' file.id %}', '_blank')" style="cursor: pointer">
+                    <img src="{% static 'todo_tasks/icons/file-arrow-down.svg' %}" style="margin-right: 10px">
+{#                    <a href="{% url 'download_file' file.id %}"#}
+{#                       class="nav-link text-black" download>{% split_filename file.file %}</a>#}
+                {% split_filename file.file %}
                 </li>
             {% endfor %}
         </ul>
@@ -360,12 +361,6 @@
     <!-- Уведомление о скопированной ссылке -->
     <div class="toast-container position-fixed bottom-0 end-0 p-3" style="margin-right: 50px">
         <div id="alertCopyLink" class="toast" role="alert" aria-live="assertive" aria-atomic="true" style="">
-            {#            <div class="toast-header" style="background-color: #585858">#}
-            {#                <img src="..." class="rounded me-2" alt="...">#}
-            {#                <strong class="me-auto">ДРОЗД</strong>#}
-            {#                <small>Сейчас</small>#}
-            {#                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Закрыть"></button>#}
-            {#            </div>#}
             <div class="toast-body" style="background-color: #282828; color: white">
                 Ссылка скопирована
             </div>

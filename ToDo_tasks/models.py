@@ -43,6 +43,7 @@ class CommandNumberModel(models.Model):
     department = models.ForeignKey(GroupDepartmentModel, verbose_name="Управление", on_delete=models.SET_NULL,
                                    null=True,
                                    blank=True)
+    show = models.BooleanField("Отображать отдел", default=True)
 
     def __str__(self):
         return f'{self.command_number}, {self.command_name}'

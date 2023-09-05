@@ -103,12 +103,12 @@ def get_list_to_sign(sign_user) -> list:
     после чего формируем единый список без повторений"""
     # Получаем объекты по трем фильтрам: пользователь, не подписано, не возращено на исправление
     to_sign_objects_first = TaskModel.objects.get_queryset().filter(first_sign_user=sign_user.id).filter(
-        first_sign_status=False).filter(back_to_change=False)
+        first_sign_status=False).filter(back_to_change=False).order_by('-id')
     to_sign_objects_second = TaskModel.objects.get_queryset().filter(second_sign_user=sign_user.id).filter(
-        second_sign_status=False).filter(back_to_change=False)
+        second_sign_status=False).filter(back_to_change=False).order_by('-id')
     to_sign_objects_cpe = TaskModel.objects.get_queryset().filter(cpe_sign_user=sign_user.id).filter(
         cpe_sign_status=False).filter(first_sign_status=True).filter(second_sign_status=True).filter(
-        back_to_change=False)
+        back_to_change=False).order_by('-id')
     # Формируем перебором список заданий
     sign_list = []
     for obj in to_sign_objects_first:
@@ -126,7 +126,7 @@ def get_list_to_sign(sign_user) -> list:
 def get_list_to_sign_cpe(sign_user):
     """Функция возвращающая queryset из заданий, которые ожидают подписи ГИП-а"""
     # Получаем из таблицы CpeModel список объектов, где может подписываться данный пользователь
-    objects_queryset = CpeModel.objects.get_queryset().filter(cpe_user=sign_user)
+    objects_queryset = CpeModel.objects.get_queryset().filter(cpe_user=sign_user).order_by('-id')
     # Формируем список id этих объектов
     list_objects = []
     for object in objects_queryset:
@@ -134,7 +134,7 @@ def get_list_to_sign_cpe(sign_user):
     # Фильтруем задания: объект в списке, подписи ГИП-а нет, первый и второй пользователь подписали, не возвращено на доработку
     to_sign_objects_cpe = TaskModel.objects.get_queryset().filter(task_object__in=list_objects).filter(
         cpe_sign_status=False).filter(first_sign_status=True).filter(second_sign_status=True).filter(
-        back_to_change=False).filter(task_approved=True)
+        back_to_change=False).filter(task_approved=True).order_by('-id')
     return to_sign_objects_cpe
 
 
@@ -161,7 +161,7 @@ def get_list_incoming_tasks_to_sign(sign_user):
         list_departments.append(dep.dep_accept_id)
     # Формируем queryset этих заданий: отдел в списке, ГИП подписал, статус принятия False
     return TaskModel.objects.get_queryset().filter(incoming_dep_id__in=list_departments).filter(
-        cpe_sign_status=True).filter(incoming_status=False).filter(back_to_change=False)
+        cpe_sign_status=True).filter(incoming_status=False).filter(back_to_change=False).order_by('-id')
 
 
 def get_list_incoming_tasks_to_workers(sign_user):
@@ -170,7 +170,7 @@ def get_list_incoming_tasks_to_workers(sign_user):
     for dep in queryset:
         list_departments.append(dep.dep_accept_id)
     return TaskModel.objects.get_queryset().filter(incoming_dep_id__in=list_departments).filter(
-        incoming_status=True).filter(task_workers=False)
+        incoming_status=True).filter(task_workers=False).order_by('id')
 
 
 def get_list_to_change_workers(sign_user):

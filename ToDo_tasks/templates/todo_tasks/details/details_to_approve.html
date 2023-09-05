@@ -1,8 +1,16 @@
-{#{% extends "todo_tasks/base.html" %}#}
 {% extends 'todo_tasks/details/details.html' %}
+{#{% extends "todo_tasks/base.html" %}#}
+
+{% load static %}
 {#{% block title %}#}
 {#    Подробности#}
 {#{% endblock %}#}
+
+{% block css_stuff %}
+    <link href="{% static 'todo_tasks/select2/select2.min.css' %}" rel="stylesheet"/>
+    <script src="{% static 'todo_tasks/select2/select2.min.js' %}"></script>
+{% endblock %}
+
 {% block buttons %}
     <br>
     <form method="POST">
@@ -12,16 +20,21 @@
             <div class="col">
 
                 <figure class="text-center">
-
-
                     {% if approve_flag is True %}
                         <button type="button" class="button-warning" data-bs-toggle="modal"
                                 data-bs-target="#comment_modal"
                                 data-toggle="tooltip" title="Отправить замечание автору на почту">
                             Замечание
                         </button>
+                        <button type="button" class="button-warning" data-toggle="tooltip"
+                                title="Добавить согласователя" onclick="openAddApproveModal()">Добавить
+                            согласователя
+                        </button>
                         <input type="submit" class="button-success" name="approve_sign" value="Подписать"
                                data-toggle="tooltip" title="Подписать">
+                        <div style="margin-top: 25px"><span
+                                class="text-5-book-warning"
+                                onclick="openDontApproveModal()">Согласование не требуется</span></div>
                     {% endif %}
                 </figure>
             </div>
@@ -30,9 +43,10 @@
 
 
         <!-- Модальное окно -->
-        <div class="modal fade" id="comment_modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+        <div class="modal fade" id="comment_modal"
+             tabindex="-1"
              aria-labelledby="staticBackdropLabel" aria-hidden="true">
-            <div class="modal-dialog">
+            <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="staticBackdropLabel">Замечание автору задания</h5>
@@ -40,18 +54,73 @@
                     </div>
                     <div class="modal-body">
                         <textarea class="form-control" rows="4" name="modal_text"></textarea>
-                        <p><small>Текст данного сообщения придет автору на электронную почту</small></p>
+                        <p class="text-3-golos">Текст данного сообщения придет автору на электронную почту</p>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
-                        <input type="submit" class="btn btn-warning" name="back_modal_button" value="Отправить">
+                        <button type="button" class="button-cancel-rusatom" data-bs-dismiss="modal">Отмена</button>
+                        <input type="submit" class="button-primary-rusatom" name="back_modal_button" value="Отправить">
                     </div>
                 </div>
             </div>
         </div>
-
-
     </form>
+
+    <!--Модальное окно отказа согласования-->
+
+    <div class="modal fade" id="dont_approve"
+         tabindex="-1"
+         aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" style="box-shadow: 0px 10px 38px 0px rgba(0, 0, 0, 0.2);">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5 text-header-modal">Не должен подписывать</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="modalBody">
+                    <span>Если Вас ошибочно добавили в список согласователей, или Вы уже переназначили согласователей, Вы можете отказаться от подписи и удалиться из списка согласователей.
+                </div>
+                <div class="modal-footer">
+
+                    <form action="{% url "delete_self" obj.id %}">
+                        <button type="button" class="button-cancel-rusatom" data-bs-dismiss="modal">Отмена</button>
+                        <button type="submit" class="button-danger-rusatom" data-bs-dismiss="modal">Удалить
+                        </button>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--Модальное окно добавления согласователей -->
+
+
+    <div class="modal fade" id="add_approve"
+         tabindex="-1"
+         aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" style="box-shadow: 0px 10px 38px 0px rgba(0, 0, 0, 0.2);">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5 text-header-modal">Добавить согласователей</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form method="post" action="{% url "redirect_approve" obj.id %}">
+                    {% csrf_token %}
+                    <div class="modal-body" id="modalBody">
+                        <div id="employee_div" data-ajax-url="{% url 'ajax_load_employee' %}">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+
+                        <button type="button" class="button-cancel-rusatom" data-bs-dismiss="modal">Отмена</button>
+                        <button type="submit" class="button-primary-rusatom" data-bs-dismiss="modal">Добавить
+                        </button>
+
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 
     <script>
         // после загрузки страницы
@@ -60,8 +129,39 @@
             $('[data-toggle="tooltip"]').tooltip();
             $('[data-bs-toggle="tooltip"]').tooltip();
         });
+
+        function showAddAproveModal() {
+            $('#add_approve').modal('show');
+        }
+
+        function openDontApproveModal() {
+            $('#dont_approve').modal('show');
+        }
+
+        function openAddApproveModal() {
+
+            var url = $("#employee_div").attr("data-ajax-url");
+            $.ajax({ // формируем AJAX запрос
+                url: url,                    // подгружаем URL адрес для запроса
+                /*data: {
+                    'pk': pk       // добавляем objectID в query параметры GET запроса
+                },*/
+                success: function (data) {   // `data` результат выполнения  функции
+                    $("#employee_div").html(data);  // помещаем результат
+
+                }
+            });
+            $('#id_approve_user').select2({
+                placeholder: 'Выберите отдел/отделы',
+            });
+
+            showAddAproveModal();
+        }
+
+
     </script>
 {% endblock %}
+
 
 
 

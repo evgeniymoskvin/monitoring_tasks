@@ -17,6 +17,16 @@
     font-style: normal;
 }
 
+@font-face {
+    font-family: 'golos_400';
+    src: url('../fonts/golos/golos_400_font.woff2') format('woff2'),
+    url('../fonts/golos/golos_400_font.woff') format('woff'),
+    url('../fonts/golos/golos_400_font.ttf') format('ttf');
+    url('../fonts/golos/golos_400_font.eot') format('eot');
+    font-weight: bold;
+    font-style: normal;
+}
+
 @keyframes fade-in {
     0% {
         opacity: 0;
@@ -80,6 +90,13 @@
 }
 
 
+.text-3-golos {
+    font-family: "golos_400", serif;
+    font-size: 15px;
+    margin-top: 15px;
+    transition: .05s ease-in-out;
+}
+
 .text-3 {
     font-family: "p22_underground_cy_prodemi", serif;
     font-size: 15px;
@@ -122,6 +139,20 @@
 
 .text-5-book:hover {
     color: #0a53be;
+}
+
+.text-5-book-warning {
+    font-family: "p22_underground_cy_probook", serif;
+    font-size: 15px;
+    cursor: pointer;
+    text-align: center;
+    margin-top: 20px;
+    transition-duration: .1s;
+
+}
+
+.text-5-book-warning:hover {
+    color: #E35454;
 }
 
 .text-5-bold {

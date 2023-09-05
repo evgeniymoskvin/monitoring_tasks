@@ -14,7 +14,7 @@
                     <figure class="text-center">
 
                         {% if can_sign == True and obj.incoming_status == 0 %}
-                            <button type="button" class="button-danger" data-bs-toggle="modal"
+                            <button type="button" class="button-danger-rusatom-border" data-bs-toggle="modal"
                                     data-bs-target="#back_modal"
                                     data-toggle="tooltip"
                                     title="Отказаться подписывать и направить комментарий автору задания">
@@ -36,9 +36,9 @@
 
 
             <!-- Модальное окно комментария -->
-            <div class="modal fade" id="back_modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+            <div class="modal fade" id="back_modal" tabindex="-1"
                  aria-labelledby="staticBackdropLabel" aria-hidden="true">
-                <div class="modal-dialog">
+                <div class="modal-dialog modal-lg">
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title" id="staticBackdropLabel">Укажите причину</h5>
@@ -46,7 +46,7 @@
                                     aria-label="Закрыть"></button>
                         </div>
                         <div class="modal-body">
-                            <textarea class="form-control" rows="4" name="comment_modal_text"></textarea>
+                            <textarea class="form-control" rows="4" name="comment_modal_text" style="margin-bottom: 10px"></textarea>
                             <input class="form-check-input" type="checkbox" name="checkbox" value="need_edit"
                                    id="flexCheckDefault">
                             <label class="form-check-label" for="flexCheckDefault">
@@ -57,8 +57,8 @@
                         </div>
 
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
-                            <input id="button_back" type="submit" class="btn btn-warning" name="not_incoming_button"
+                            <button type="button" class="button-cancel-rusatom" data-bs-dismiss="modal">Отмена</button>
+                            <input id="button_back" type="submit" class="button-primary-rusatom" name="not_incoming_button"
                                    value="Отправить комментарий">
                             {#                            <input id="button_back" type="submit" class="btn btn-danger" name="not_incoming_button" value="Отправить">#}
                         </div>

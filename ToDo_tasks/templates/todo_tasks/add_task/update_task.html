@@ -61,10 +61,10 @@
                 <div class="row justify-content-center">
                     <div class="col">
                         <figure class="text-center">
-                            <button type="button" class="button-danger" data-bs-toggle="modal"
+                            <button type="button" class="button-danger-rusatom" data-bs-toggle="modal"
                                     data-bs-target="#staticBackdrop">Удалить
                             </button>
-                            <a href="{% url "details" pk=obj.id %}" class="button-cancel-a">Отмена</a>
+                            <button onclick="location.href={% url "details" pk=obj.id %}" class="button-cancel-fill">Отмена</button>
                             <button type="button" class="button-success" data-bs-toggle="modal"
                                     data-bs-target="#ConfirmModal">Сохранить
                             </button>

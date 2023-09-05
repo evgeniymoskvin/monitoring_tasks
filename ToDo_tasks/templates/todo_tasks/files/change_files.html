@@ -48,8 +48,8 @@
             {{ file_form.file }}
             <br>
             <figure class="text-center">
-                <a class="button-cancel-a" onclick="location.href='{% url 'details' pk=obj.id %}';"
-                   style="cursor: context-menu;">К заданию</a>
+                <button class="button-cancel-fill-border" type="button" onclick="location.href='{% url 'details' pk=obj.id %}';"
+                   style="cursor: context-menu;">К заданию</button>
                 <button class="button-success" type="submit" onclick="showloader()" style="cursor: context-menu;"
                         hx-target="task_files" id="button_add">
                     Добавить

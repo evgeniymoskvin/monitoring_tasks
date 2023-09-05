@@ -73,12 +73,12 @@
     font-family: "p22_underground_cy_probook", serif;
     /*text-transform: uppercase;*/
     font-size: 16px;
-    border-radius: 5px;
+    border-radius: 6px;
     text-align: center;
-    border: 2px solid darkgreen;
-    background-color: white;
-    transition: all .3s ease-in-out;
-    color: darkgreen;
+    border: 2px solid #5FAD05;
+    background-color: #5FAD05;
+    transition: all .1s ease-in-out;
+    color: white;
     text-decoration: none;
     padding-left: 15px;
     padding-right: 15px;
@@ -89,19 +89,101 @@
 .button-success:hover {
     border-radius: 6px;
     text-align: center;
-    background-color: darkgreen;
-    border: 2px solid darkgreen;
+    background-color: #559b05;
+    border: 2px solid #559b05;
     color: white;
-    box-shadow: 0px 10px 38px 0px rgba(0, 0, 0, 0.2);
+    /*scale: 1.05;*/
+    /*box-shadow: 0px 10px 38px 0px rgba(0, 0, 0, 0.2);*/
 }
+
+
+.button-primary-rusatom {
+    font-family: "p22_underground_cy_probook", serif;
+    /*text-transform: uppercase;*/
+    font-size: 16px;
+    border-radius: 6px;
+    text-align: center;
+    border: 0px solid #4480F3;
+    background-color: #4480F3;
+    transition: all .1s ease-in-out;
+    color: white;
+    text-decoration: none;
+    padding-left: 15px;
+    padding-right: 15px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.button-primary-rusatom:hover {
+    border-radius: 6px;
+    text-align: center;
+    background-color: #3b6ed2;
+    border: 0px solid #3b6ed2;
+    color: white;
+    /*box-shadow: 0px 10px 38px 0px rgba(0, 0, 0, 0.1);*/
+}
+
+.button-danger-rusatom {
+    font-family: "p22_underground_cy_probook", serif;
+    /*text-transform: uppercase;*/
+    font-size: 16px;
+    border-radius: 6px;
+    text-align: center;
+    border: 0px solid #E35454;
+    background-color: #E35454;
+    transition: all .1s ease-in-out;
+    color: white;
+    text-decoration: none;
+    padding-left: 15px;
+    padding-right: 15px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.button-danger-rusatom:hover {
+    /*border-radius: 8px;*/
+    text-align: center;
+    background-color: #d34e4e;
+    border: 0px solid #d34e4e;
+    color: white;
+    /*box-shadow: 0px 10px 38px 0px rgba(0, 0, 0, 0.1);*/
+}
+
+
+.button-danger-rusatom-border {
+    font-family: "p22_underground_cy_probook", serif;
+    /*text-transform: uppercase;*/
+    font-size: 16px;
+    border-radius: 6px;
+    text-align: center;
+    border: 2px solid #E35454;
+    background-color: #E35454;
+    transition: all .1s ease-in-out;
+    color: white;
+    text-decoration: none;
+    padding-left: 15px;
+    padding-right: 15px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.button-danger-rusatom-border:hover {
+    /*border-radius: 8px;*/
+    text-align: center;
+    background-color: #d34e4e;
+    border: 2px solid #d34e4e;
+    color: white;
+    /*box-shadow: 0px 10px 38px 0px rgba(0, 0, 0, 0.1);*/
+}
+
 
 .button-cancel {
     font-family: "p22_underground_cy_probook", serif;
     /*text-transform: uppercase;*/
     font-size: 16px;
-    border-radius: 5px;
+    border-radius: 6px;
     text-align: center;
-    border: 2px solid #7c7c7c;
+    border: 2px solid #80858E;
     background-color: white;
     transition: all .3s ease-in-out;
     color: black;
@@ -113,13 +195,114 @@
 }
 
 .button-cancel:hover {
-    border-radius: 6px;
+    border-radius: 8px;
     text-align: center;
-    background-color: #7c7c7c;
+    background-color: #72767e;
     color: white;
-    box-shadow: 0px 10px 38px 0px rgba(0, 0, 0, 0.2);
+    /*box-shadow: 0px 10px 38px 0px rgba(0, 0, 0, 0.2);*/
 }
 
+.button-cancel-fill {
+    font-family: "p22_underground_cy_probook", serif;
+    /*text-transform: uppercase;*/
+    font-size: 16px;
+    border-radius: 6px;
+    text-align: center;
+    border: 0px solid #80858E;
+    background-color: #80858E;
+    transition: all .1s ease-in-out;
+    color: white;
+    text-decoration: none;
+    padding-left: 15px;
+    padding-right: 15px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.button-cancel-fill:hover {
+    text-align: center;
+    background-color: #5e6167;
+    border: 0px solid #5e6167;
+    color: white;
+    /*box-shadow: 0px 10px 38px 0px rgba(0, 0, 0, 0.2);*/
+}
+
+.button-cancel-fill-border {
+    font-family: "p22_underground_cy_probook", serif;
+    /*text-transform: uppercase;*/
+    font-size: 16px;
+    border-radius: 6px;
+    text-align: center;
+    border: 2px solid #80858E;
+    background-color: #80858E;
+    transition: all .1s ease-in-out;
+    color: white;
+    text-decoration: none;
+    padding-left: 15px;
+    padding-right: 15px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.button-cancel-fill-border:hover {
+    text-align: center;
+    background-color: #5e6167;
+    border: 2px solid #5e6167;
+    color: white;
+    /*box-shadow: 0px 10px 38px 0px rgba(0, 0, 0, 0.2);*/
+}
+
+
+.button-cancel-rusatom {
+    font-family: "p22_underground_cy_probook", serif;
+    /*text-transform: uppercase;*/
+    font-size: 16px;
+    border-radius: 6px;
+    text-align: center;
+    border: 0px solid rgba(68, 128, 243, 0.12);
+    background-color: rgba(68, 128, 243, 0.12);
+    transition: all .1s ease-in-out;
+    color: #4480F3;
+    text-decoration: none;
+    padding-left: 15px;
+    padding-right: 15px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.button-cancel-rusatom:hover {
+    border-radius: 6px;
+    text-align: center;
+    background-color: rgba(68, 128, 243, 0.08);
+    color: #4480F3;
+    /*box-shadow: 0px 10px 38px 0px rgba(0, 0, 0, 0.2);*/
+}
+
+
+.button-cancel-rusatom {
+    font-family: "p22_underground_cy_probook", serif;
+    /*text-transform: uppercase;*/
+    font-size: 16px;
+    border-radius: 6px;
+    text-align: center;
+    border: 0px solid rgba(68, 128, 243, 0.12);
+    background-color: rgba(68, 128, 243, 0.12);
+    transition: all .1s ease-in-out;
+    color: #4480F3;
+    text-decoration: none;
+    padding-left: 15px;
+    padding-right: 15px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.button-cancel-rusatom:hover {
+    border-radius: 6px;
+    text-align: center;
+    background-color: rgba(68, 128, 243, 0.08);
+    color: #4480F3;
+    /*box-shadow: 0px 10px 38px 0px rgba(0, 0, 0, 0.2);*/
+}
 
 .button-cancel-a {
     font-family: "p22_underground_cy_probook", serif;
@@ -140,9 +323,9 @@
 }
 
 .button-cancel-a:hover {
-    border-radius: 6px;
+    border-radius: 8px;
     text-align: center;
-    background-color: #7c7c7c;
+    background-color: #80858E;
     color: white;
     box-shadow: 0px 10px 38px 0px rgba(0, 0, 0, 0.2);
 }
@@ -151,12 +334,12 @@
     font-family: "p22_underground_cy_probook", serif;
     /*text-transform: uppercase;*/
     font-size: 16px;
-    border-radius: 5px;
+    border-radius: 6px;
     text-align: center;
-    border: 2px solid #bd7700;
-    background-color: white;
-    transition: all .3s ease-in-out;
-    color: #bd7700;
+    border: 2px solid #D1AE00;
+    background-color: #D1AE00;
+    transition: all .1s ease-in-out;
+    color: white;
     text-decoration: none;
     padding-left: 15px;
     padding-right: 15px;
@@ -165,12 +348,12 @@
 }
 
 .button-warning:hover {
-    border-radius: 6px;
+    border-radius: 8px;
     text-align: center;
-    background-color: #ffaf00;
-    border: 2px solid #ffaf00;
+    background-color: #bd9d00;
+    border: 2px solid #bd9d00;
     color: white;
-    box-shadow: 0px 10px 38px 0px rgba(0, 0, 0, 0.2);
+    /*box-shadow: 0px 10px 38px 0px rgba(0, 0, 0, 0.2);*/
 }
 
 .button-primary {
@@ -203,7 +386,7 @@
     font-family: "p22_underground_cy_probook", serif;
     /*text-transform: uppercase;*/
     font-size: 16px;
-    border-radius: 5px;
+    border-radius: 6px;
     text-align: center;
     border: 2px solid #c50000;
     background-color: white;
@@ -217,10 +400,10 @@
 }
 
 .button-danger:hover {
-    border-radius: 6px;
+    border-radius: 8px;
     text-align: center;
     background-color: #c50000;
     border: 2px solid #c50000;
     color: white;
-    box-shadow: 0px 10px 38px 0px rgba(0, 0, 0, 0.2);
+    /*box-shadow: 0px 10px 38px 0px rgba(0, 0, 0, 0.2);*/
 }

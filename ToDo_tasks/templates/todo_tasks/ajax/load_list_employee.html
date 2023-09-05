@@ -1,0 +1,25 @@
+{% load static %}
+
+{% block css_stuff %}
+    <link href="{% static 'todo_tasks/select2/select2.min.css' %}" rel="stylesheet"/>
+    <script src="{% static 'todo_tasks/select2/select2.min.js' %}"></script>
+{% endblock %}
+
+<div class="row justify-content-center">
+    <span class="text-4-book-left">Выберете согласователей:</span>
+    <span>
+        {{ approve_form.approve_user }}</span>
+
+{#    <script>#}
+{#        $(document).ready(function () {#}
+{#            $('#id_approve_user').select2({#}
+{#                placeholder: 'Выберите сотрудника',#}
+{#            });#}
+{#            document.getElementById("id_approve_user").style.width = "100"#}
+{#        });#}
+{#    </script>#}
+</div>
+
+
+
+

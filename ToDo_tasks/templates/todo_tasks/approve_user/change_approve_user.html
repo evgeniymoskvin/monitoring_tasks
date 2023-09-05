@@ -13,12 +13,31 @@
     <script src="{% static 'todo_tasks/select2/select2.min.js' %}"></script>
 
     <script type="text/javascript" src="{% static 'todo_tasks/htmx/htmx.min.js' %}"></script>
+    <script>
+        function showloader() {
+            spinloader = document.getElementById('loaderspin')
+            console.log(spinloader)
+            spinloader.style.display = 'block'
+
+            buttonadd = document.getElementById('button_add')
+            buttonadd.style.visibility = 'hidden'
+        }
+
+        function hideloader() {
+            spinloader = document.getElementById('loaderspin')
+            console.log(spinloader)
+            spinloader.style.display = 'none'
+
+            buttonadd = document.getElementById('button_add')
+            buttonadd.style.visibility = 'visible'
+        }
+    </script>
 {% endblock %}
 
 
 
 {% block content %}
-    {% if obj.task_status == 1  and user.check_edit and obj.department_number == user.department   %}
+    {% if obj.task_status == 1  and user.check_edit and obj.department_number == user.department %}
         <br>
         <h3 class="text-1-task" style="margin-top: 25px; ">Согласователи задания {{ obj.task_number }}</h3>
         <h3 class="text-1-task" style="margin-top: 0px; font-size: 12px">Редактирование</h3>
@@ -33,10 +52,15 @@
             {{ form.approve_user }}
             <br>
             <figure class="text-center">
-                <a class="button-cancel-a" onclick="location.href='{% url 'details' pk=obj.id %}';" style="cursor: context-menu;">К заданию</a>
-                <button class="button-success" style="margin-top: 25px; cursor: context-menu;" type="submit" hx-target="task_approve">Добавить
+                <button type="button" class="button-cancel-fill-border" onclick="location.href='{% url 'details' pk=obj.id %}';"
+                   style="cursor: context-menu;">К заданию</button>
+                <button class="button-success" style="margin-top: 25px; cursor: context-menu;" type="submit"
+                        hx-target="task_approve" onclick="showloader()" id="button_add">Добавить
                 </button>
             </figure>
+            <div style="display: none;" id="loaderspin">
+                <span class="loader"></span>
+            </div>
         </form>
 
         <div id="task_approve">
