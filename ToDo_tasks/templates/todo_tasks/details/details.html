@@ -230,7 +230,7 @@
             <ul class="list-group">
                 {% for user in approve_users %}
                     {% if user.approve_status %}
-                        <li class="list-group-item d-flex justify-content-between align-items-center bg-success bg-opacity-10">
+                        <li class="list-group-item d-flex justify-content-between align-items-center" style="background: rgba(95,173,5,0.1)">
                             {% else %}
                         <li class="list-group-item d-flex justify-content-between align-items-center">
                     {% endif %}
@@ -266,7 +266,7 @@
 
     {% if obj.task_status == 2 or obj.task_status == 3  and obj.department_number.id == user.department.id %}
         <!-- Модальное окно аннулирование задания-->
-        <div class="modal fade" id="cancel_task" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+        <div class="modal fade" id="cancel_task" tabindex="-1"
              aria-labelledby="staticBackdropLabel" aria-hidden="true">
             <div class="modal-dialog">
 
@@ -283,8 +283,8 @@
                         <form method="POST">
 
                             {% csrf_token %}
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
-                            <input type="submit" class="btn btn-danger" name="cancel_modal_button"
+                            <button type="button" class="button-cancel-fill-border" data-bs-dismiss="modal">Отмена</button>
+                            <input type="submit" class="button-danger-rusatom-border" name="cancel_modal_button"
                                    value="Аннулировать">
                         </form>
                     </div>
@@ -294,7 +294,7 @@
 
 
         <!-- Модальное окно сообщиь о корректировке-->
-        <div class="modal fade" id="correction_task" data-bs-backdrop="static" data-bs-keyboard="false"
+        <div class="modal fade" id="correction_task"
              tabindex="-1"
              aria-labelledby="staticBackdropLabel" aria-hidden="true">
             <div class="modal-dialog">
@@ -312,8 +312,8 @@
                         <form method="POST">
 
                             {% csrf_token %}
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
-                            <input type="submit" class="btn btn-danger" name="correction_modal_button"
+                            <button type="button" class="button-cancel-fill-border" data-bs-dismiss="modal">Отмена</button>
+                            <input type="submit" class="button-danger-rusatom-border" name="correction_modal_button"
                                    value="Сообщить о планируемом изменении">
                         </form>
                     </div>
@@ -326,10 +326,10 @@
 
     <!-- Модальное окно добавить в избранное -->
 
-    <div class="modal fade" id="to_favorites" data-bs-backdrop="static" data-bs-keyboard="false"
+    <div class="modal fade" id="to_favorites"
          tabindex="-1"
          aria-labelledby="staticBackdropLabel" aria-hidden="true">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-lg">
 
             <div class="modal-content">
                 <div class="modal-header">
@@ -348,8 +348,8 @@
                     <div class="modal-footer">
 
                         {% csrf_token %}
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
-                        <input type="submit" class="btn btn-success" name="correction_modal_button"
+                        <button type="button" class="button-cancel-rusatom" data-bs-dismiss="modal">Отмена</button>
+                        <input type="submit" class="button-primary-rusatom" name="correction_modal_button"
                                value="Добавить">
                 </form>
             </div>

@@ -75,9 +75,9 @@
                 </form>
             </div>
             <div style="margin-top: 10px">
-                <form action="{% url 'edit_profile' %}">
-                    <button class="button-edit-profile" type="submit">Редактировать профиль</button>
-                </form>
+{#                <form action="{% url 'edit_profile' %}">#}
+{#                    <button class="button-edit-profile" type="submit">Редактировать профиль</button>#}
+{#                </form>#}
             </div>
             <!-- Кнопка-триггер модального окна -->
             <div style="margin-top: 10px">
@@ -93,7 +93,7 @@
     <!-- Модальное окно -->
     <div class="modal fade" id="NotificationModal" tabindex="-1" aria-labelledby="exampleModalLabel"
          aria-hidden="true">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="exampleModalLabel">Настройка уведомлений</h5>
@@ -113,12 +113,12 @@
                         <br>
                         <span class="text-3" style="display: inline; text-transform: uppercase;">ВАЖНО!</span>
 
-                        Отключить комментарии к заданию и "отказ в подписании задания" невозможно
+                        Отключить комментарии к заданию и "отказ в подписании задания" невозможно.
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Закрыть
+                        <button type="button" class="button-cancel-rusatom" data-bs-dismiss="modal">Закрыть
                         </button>
-                        <button type="submit" class="btn btn-outline-success">Сохранить изменения</button>
+                        <button type="submit" class="button-primary-rusatom">Сохранить изменения</button>
                     </div>
                 </form>
             </div>

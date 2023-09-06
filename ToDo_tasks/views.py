@@ -418,6 +418,14 @@ class EditTaskFiles(View):
         task_id = file.task_id
         os.remove(os.path.join(settings.MEDIA_ROOT, str(file.file)))
         AttachmentFilesModel.objects.get(id=pk).delete()
+        #  Получаем список согласователей
+        approve_emp = ApproveModel.objects.get_queryset().filter(approve_task_id=task_id)
+        obj = TaskModel.objects.get(pk=task_id)
+        email_change_task(obj, approve_emp)
+        for emp in approve_emp:
+            # Аннулируем статус согласованности
+            emp.approve_status = False
+            emp.save()
         old_files = AttachmentFilesModel.objects.get_queryset().filter(task_id=task_id)
         content = {"old_files": old_files}
         return render(request, 'todo_tasks/htmx/list_files.html', content)
@@ -557,7 +565,7 @@ class ToSignDetailView(View):
     def post(self, request, pk):
         obj = TaskModel.objects.get(pk=pk)
         if 'sign1' in request.POST:
-            print(pk, ' sign')
+            print(pk, ' sign', obj)
             obj.first_sign_status = True
             obj.first_sign_date = timezone.now()
             obj.save()
@@ -567,7 +575,7 @@ class ToSignDetailView(View):
             obj.second_sign_date = timezone.now()
             obj.save()
             check_and_send_to_cpe(pk)
-            print(pk, ' sign')
+            print(pk, ' sign', obj)
         elif 'sign3' in request.POST:
             obj.cpe_sign_status = True
             obj.cpe_sign_date = timezone.now()
