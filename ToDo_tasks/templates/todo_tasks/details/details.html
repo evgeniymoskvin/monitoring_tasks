@@ -401,6 +401,7 @@
 
             try {
                 document.execCommand('copy');
+                /*navigator.clipboard.writeText(link_name)*/ /*Для HTTPS*/
                 const toastLiveExample = document.getElementById('alertCopyLink')
                 const toastBootstrap = bootstrap.Toast.getOrCreateInstance(toastLiveExample)
                 toastBootstrap.show()

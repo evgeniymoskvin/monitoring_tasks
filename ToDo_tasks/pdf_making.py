@@ -99,7 +99,7 @@ def pdf_gen(pk):
     pdf.add_font('times', '', os.path.join(settings.BASE_DIR, 'ToDo_tasks', 'pdf_making', 'times.ttf'), uni=True)
     pdf.set_font('times', '', 14)
     pdf.add_font('timesbd', '', os.path.join(settings.BASE_DIR, 'ToDo_tasks', 'pdf_making', 'timesbd.ttf'), uni=True)
-    pdf.image(os.path.join(settings.BASE_DIR, 'ToDo_tasks', 'pdf_making', 'image', 'w.jpg'), x=10, y=10, w=2.76 * 30,
+    pdf.image(os.path.join(settings.BASE_DIR, 'ToDo_tasks', 'pdf_making', 'image', 'w.jpg'), x=10, y=10, w=2.2 * 30,
               h=30)
 
     pdf.x = 10
