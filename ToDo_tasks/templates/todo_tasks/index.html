@@ -8,11 +8,23 @@
     <form method="POST">
         <div class="centered_div">
             {% csrf_token %}
+{#            <div class="row" style="margin-top: -250px">#}
+{#                <div style="height: 100px">#}
+{#                    <img src="{% static 'todo_tasks/icons/logo.png' %}" style="height: 60%">#}
+{#                </div>#}
+{#            </div>#}
+{#            <div class="row" style="margin-top: -100px">#}
+{#                <h1 class="text-index" id="ed_reestr" style="font-size: 15px">еДиный Реестр</h1>#}
+{#                <h1 class="text-index" style="margin-top: -5px; font-size: 15px" id="obmen_zadan">Обмена ЗаДаниями</h1>#}
+{#                <p class="text-index-book" style="margin-top: -5px">«ДРОЗД»</p>#}
+{#            </div>#}
+
             <div class="row" style="margin-top: -350px">
                 <h1 class="text-index" id="ed_reestr" style="font-size: 15px">еДиный Реестр</h1>
                 <h1 class="text-index" style="margin-top: -5px; font-size: 15px" id="obmen_zadan">Обмена ЗаДаниями</h1>
                 <p class="text-index-book" style="margin-top: -5px">«ДРОЗД»</p>
             </div>
+
             <div class="row">
                 <div class="col-12">
                     <h1 class="text-main-page-demi">{{ user }}</h1>
@@ -32,7 +44,7 @@
 
             <div class="row text-main-page-small" style="margin-top: 20px">
                 <div class="col-12" id="registr-check" style="opacity: 0; transition-duration: 0.5s">
-{#                    <p>Чувствителен к регистру</p>#}
+                    {#                    <p>Чувствителен к регистру</p>#}
                 </div>
             </div>
 
