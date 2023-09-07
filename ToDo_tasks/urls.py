@@ -56,5 +56,6 @@ urlpatterns = [
          name='delete_task_from_favorites'),
     path('delete_self/<int:pk>', views.DeleteApproveSelf.as_view(), name='delete_self'),
     path('ajax/load_employee', views.load_empolyee, name="ajax_load_employee"),
-    path('add_approve_redirect/<int:pk>', views.RedirectApproveUserView.as_view(), name='redirect_approve')
+    path('add_approve_redirect/<int:pk>', views.RedirectApproveUserView.as_view(), name='redirect_approve'),
+    path('ajax/load_favorites', views.load_favorite_list, name="ajax_load_favorites")
 ]

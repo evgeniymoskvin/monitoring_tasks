@@ -36,6 +36,15 @@
     }
 }
 
+.hide-scroll{
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.hide-scroll::-webkit-scrollbar {
+    display: none;
+}
+
 /* Теперь можно использовать шрифт */
 
 .text-index {

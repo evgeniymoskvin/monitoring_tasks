@@ -1322,3 +1322,20 @@ def load_empolyee(request):
     content = {'approve_form': approve_form}
     return render (request, 'todo_tasks/ajax/load_list_employee.html', content)
 
+
+def load_favorite_list(request):
+    """Функция загрузки списка избранного"""
+    user_id = int(request.GET.get("user_id"))
+    to_my_favorite_form = AddMyFavoriteForm()
+    # Получаем список чужих избранных в которые можем вносить изменения
+    sharing_favorite_list = FavoritesShareModel.objects.get_queryset().filter(
+        favorite_share_user_id=user_id).filter(can_change_list=True)
+    list_sharing_favorites = [i.favorite_list.id for i in sharing_favorite_list]
+    sharing_favorite_list_to_form = FavoritesListModel.objects.filter(id__in=list_sharing_favorites)
+    # Получаем список своих избранных и добавляем к ним чужие
+    to_my_favorite_form.fields['favorite_list'].queryset = FavoritesListModel.objects.filter(
+        favorite_list_holder=user_id).union(sharing_favorite_list_to_form)
+    content = {
+        'to_my_favorite_form': to_my_favorite_form
+    }
+    return render(request, 'todo_tasks/ajax/load_favorite_list.html', content)

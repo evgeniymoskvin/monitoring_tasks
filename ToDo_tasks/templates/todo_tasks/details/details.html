@@ -28,10 +28,10 @@
                                                           data-toggle="tooltip"
                                                           title="Поделиться"></a>
 
-                    <a href="#" onclick="openFavoriteListModal()"><img class="hover-mouse-icon"
-                                                                       src="{% static 'todo_tasks/icons/bookmark.svg' %}"
-                                                                       data-toggle="tooltip"
-                                                                       title="Добавить в избранное"></a>
+                    <a href="#" onclick="openFavoriteListModal({{ user.id }})"><img class="hover-mouse-icon"
+                                                                                 src="{% static 'todo_tasks/icons/bookmark.svg' %}"
+                                                                                 data-toggle="tooltip"
+                                                                                 title="Добавить в избранное"></a>
                     <a href="{% url 'download_blank' obj.id %}" target="_blank"><img class="hover-mouse-icon"
                                                                                      src="{% static 'todo_tasks/icons/file-earmark-pdf.svg' %}"
                                                                                      data-toggle="tooltip"
@@ -98,7 +98,7 @@
             Дата последнего изменения: {{ obj.task_last_edit }}
             <br>
             <br>
-            <! Формирование строку с первым подписантом>
+            <!-- Формирование строку с первым подписантом-->
 
             <div class="row">
                 <div class="col">
@@ -115,7 +115,7 @@
                         <span data-toggle="tooltip" title="{{ obj.first_sign_date }}">Подписано</span>
                     </div>
                 {% else %}
-                    <div class="col bg-light text-right ">
+                    <div class="col bg-light text-right" style=" margin-right: 11px">
                         Не подписано
                     </div>
                 {% endif %}
@@ -138,7 +138,7 @@
                         <span data-toggle="tooltip" title="{{ obj.second_sign_date }}">Подписано</span>
                     </div>
                 {% else %}
-                    <div class="col bg-light text-right ">
+                    <div class="col bg-light text-right"  style=" margin-right: 11px">
                         Не подписано
                     </div>
                 {% endif %}
@@ -161,7 +161,7 @@
                         <span data-toggle="tooltip" title="{{ obj.cpe_sign_date }}">Подписано</span>
                     </div>
                 {% else %}
-                    <div class="col bg-light text-right">
+                    <div class="col bg-light text-right" style=" margin-right: 11px">
                         Не подписано
                     </div>
                 {% endif %}
@@ -182,7 +182,7 @@
                         <span data-toggle="tooltip" title="{{ obj.incoming_date }}">Подписано</span>
                     </div>
                 {% else %}
-                    <div class="col bg-light text-right ">
+                    <div class="col bg-light text-right" style=" margin-right: 11px">
                         Не подписано
                     </div>
                 {% endif %}
@@ -210,11 +210,12 @@
               style="display: inline-block; text-transform: uppercase; margin-top: 25px">Приложенные файлы:</span>
         <ul class="list-group">
             {% for file in files %}
-                <li class="list-group-item d-flex justify-content-start align-items-center hover-mouse" onclick="window.open('{% url 'download_file' file.id %}', '_blank')" style="cursor: pointer">
+                <li class="list-group-item d-flex justify-content-start align-items-center hover-mouse"
+                    onclick="window.open('{% url 'download_file' file.id %}', '_blank')" style="cursor: pointer">
                     <img src="{% static 'todo_tasks/icons/file-arrow-down.svg' %}" style="margin-right: 10px">
-{#                    <a href="{% url 'download_file' file.id %}"#}
-{#                       class="nav-link text-black" download>{% split_filename file.file %}</a>#}
-                {% split_filename file.file %}
+                    {#                    <a href="{% url 'download_file' file.id %}"#}
+                    {#                       class="nav-link text-black" download>{% split_filename file.file %}</a>#}
+                    {% split_filename file.file %}
                 </li>
             {% endfor %}
         </ul>
@@ -230,7 +231,8 @@
             <ul class="list-group">
                 {% for user in approve_users %}
                     {% if user.approve_status %}
-                        <li class="list-group-item d-flex justify-content-between align-items-center" style="background: rgba(95,173,5,0.1)">
+                        <li class="list-group-item d-flex justify-content-between align-items-center"
+                            style="background: rgba(95,173,5,0.1)">
                             {% else %}
                         <li class="list-group-item d-flex justify-content-between align-items-center">
                     {% endif %}
@@ -283,7 +285,8 @@
                         <form method="POST">
 
                             {% csrf_token %}
-                            <button type="button" class="button-cancel-fill-border" data-bs-dismiss="modal">Отмена</button>
+                            <button type="button" class="button-cancel-fill-border" data-bs-dismiss="modal">Отмена
+                            </button>
                             <input type="submit" class="button-danger-rusatom-border" name="cancel_modal_button"
                                    value="Аннулировать">
                         </form>
@@ -312,7 +315,8 @@
                         <form method="POST">
 
                             {% csrf_token %}
-                            <button type="button" class="button-cancel-fill-border" data-bs-dismiss="modal">Отмена</button>
+                            <button type="button" class="button-cancel-fill-border" data-bs-dismiss="modal">Отмена
+                            </button>
                             <input type="submit" class="button-danger-rusatom-border" name="correction_modal_button"
                                    value="Сообщить о планируемом изменении">
                         </form>
@@ -341,9 +345,10 @@
                     <div class="modal-body">
 
                         Список:
-                        {{ to_my_favorite_form }}
-
-                        {#                    {{ to_share_favorite_form.favorite_list }}#}
+                        <div id="list_favorites" data-ajax-url="{% url 'ajax_load_favorites' %}">
+{#                        {{ to_my_favorite_form }}#}
+                        </div>
+                        {#                    {{ to_share_favorite_form }}#}
                     </div>
                     <div class="modal-footer">
 
@@ -378,7 +383,18 @@
         });
 
 
-        function openFavoriteListModal() {
+        function openFavoriteListModal(user_id) {
+            console.log(user_id)
+            var url = $("#list_favorites").attr("data-ajax-url");
+            $.ajax({ // формируем AJAX запрос
+                url: url,                    // подгружаем URL адрес для запроса
+                data: {
+                    'user_id': user_id       // добавляем objectID в query параметры GET запроса
+                },
+                success: function (data) {   // `data` результат выполнения  функции `load_contract`
+                    $("#list_favorites").html(data);  // помещаем результат в выпадающее меню
+                }
+            });
             $('#to_favorites').modal('show');
         }
 
