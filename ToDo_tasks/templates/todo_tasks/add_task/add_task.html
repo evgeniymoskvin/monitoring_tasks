@@ -141,10 +141,12 @@
                         <div class="row justify-content-center; ">
                             <div class="col">
                                 <figure class="text-center">
-{#                                    <button class="button-cancel-rusatom" onclick="location.href='{% url 'index' %}'"#}
-{#                                            role="button">Отмена#}
-{#                                    </button>#}
-                                    <button class="button-primary-rusatom" type="submit" style="width: 740px; margin-left: 10px">Выдать задание</button>
+                                    {#                                    <button class="button-cancel-rusatom" onclick="location.href='{% url 'index' %}'"#}
+                                    {#                                            role="button">Отмена#}
+                                    {#                                    </button>#}
+                                    <button id="submit_button" class="button-primary-rusatom" type="submit"
+                                            style="width: 740px; margin-left: 10px" disabled>Выдать задание
+                                    </button>
                                 </figure>
                             </div>
                         </div>
@@ -236,8 +238,26 @@
 
         }
 
+        function checkParams() {
+            /*Функция активации кнопки*/
+            var objectId = $("#id_task_object").val();
+            var id_task_contract = $("#id_task_contract").val();
 
-        // JS для фильтрации списка контрактов
+            var type_workId = $("#id_task_type_work").val();
+            var id_task_building = $("#id_task_building").val().length;
+            var id_text_task = $("#id_text_task").val().length;
+            var id_first_sign_user = $("#id_first_sign_user").val();
+            var id_second_sign_user = $("#id_second_sign_user").val();
+            var id_incoming_dep = $("#id_incoming_dep").val();
+            if (id_incoming_dep.length > 0 && objectId > 0 && id_task_contract > 0 && type_workId > 0 && id_task_building > 0 && id_text_task > 0 && id_first_sign_user > 0 && id_second_sign_user > 0){
+                document.getElementById("submit_button").disabled = false
+            } else {
+                document.getElementById("submit_button").disabled = true
+            }
+        }
+
+
+        /* JS для фильтрации списка контрактов */
         $("#id_task_object").change(function () {
             var url = $("#formAdd").attr("data-contracts-url");
             var objectId = $(this).val();  // получаем object ID из HTML input
@@ -254,7 +274,7 @@
             });
 
         });
-        //!JS для фильтрации списка этапов
+        /*!JS для фильтрации списка этапов*/
         $("#id_task_contract").change(function () {
             var url = $("#formAdd").attr("data-stages-url");
             var conractId = $(this).val();
