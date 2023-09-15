@@ -1,0 +1,42 @@
+<div id="draft_list_without_button" style="display: block">
+    <ul class="list-group">
+        {% for draft in obj %}
+            <li class="list-group-item d-flex justify-content-start align-items-center hover-mouse"
+                onclick="loadCurrentDraft({{ draft.id }})" style="cursor: context-menu; display: inline;">
+                <span style="margin-top: 3px; margin-bottom: 4px">{{ draft.draft_name }} ({{ draft.draft_create_date }})</span>
+            </li>
+
+
+        {% endfor %}
+    </ul>
+</div>
+
+
+<div id="draft_list_with_button" style="display: none">
+
+
+    <button class="button-danger-rusatom" style="width: 100%; margin-top: 10px; margin-bottom: 10px" onclick="showAllDelete()">
+        Удалить все
+    </button>
+
+    <ul class="list-group">
+        {% for draft in obj %}
+            <li class="list-group-item d-flex justify-content-between align-items-center hover-mouse"
+                style="cursor: context-menu; display: inline; background-color: ">
+                <span>{{ draft.draft_name }} ({{ draft.draft_create_date }})</span>
+                <div>
+                    <button class="btn btn-outline-success btn-sm" onclick="loadCurrentDraft({{ draft.id }})"
+                            type="button">
+                        Загрузить
+                    </button>
+                    <button class="btn btn-outline-danger btn-sm"
+                            onclick="onClickShowDeleteDraft({{ draft.id }}, '{{ draft.draft_name }}')" type="button">
+                        Удалить
+                    </button>
+                </div>
+            </li>
+
+
+        {% endfor %}
+    </ul>
+</div>

@@ -1,0 +1,26 @@
+{% extends "todo_tasks/base.html" %}
+{% load static %}
+{% load task_tags %}
+{% block title %}
+    Черновики пользователя {{ user }}
+{% endblock %}
+
+
+
+{% block content %}
+    <br>
+    <h3 class="text-1-task" style="margin-top: 25px">Черновики</h3>
+    <br>
+
+    <ul class="list-group" id="drafts_list_ul" data-ajax-url="{% url 'ajax_load_current_draft' %}">
+        {% for draft in obj %}
+            <li class="list-group-item d-flex justify-content-start align-items-center hover-mouse"
+                onclick="loadCurrentDraft({{ draft.id }})" style="cursor: context-menu">
+                {#            <img src="{% static 'todo_tasks/icons/file-arrow-down.svg' %}" style="margin-right: 10px">#}
+                {#                    <a href="{% url 'download_file' file.id %}"#}
+                {#                       class="nav-link text-black" download>{% split_filename file.file %}</a>#}
+                {{ draft.draft_name }} ({{ draft.draft_create_date }})
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock %}

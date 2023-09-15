@@ -29,9 +29,9 @@
                                                           title="Поделиться"></a>
 
                     <a href="#" onclick="openFavoriteListModal({{ user.id }})"><img class="hover-mouse-icon"
-                                                                                 src="{% static 'todo_tasks/icons/bookmark.svg' %}"
-                                                                                 data-toggle="tooltip"
-                                                                                 title="Добавить в избранное"></a>
+                                                                                    src="{% static 'todo_tasks/icons/bookmark.svg' %}"
+                                                                                    data-toggle="tooltip"
+                                                                                    title="Добавить в избранное"></a>
                     <a href="{% url 'download_blank' obj.id %}" target="_blank"><img class="hover-mouse-icon"
                                                                                      src="{% static 'todo_tasks/icons/file-earmark-pdf.svg' %}"
                                                                                      data-toggle="tooltip"
@@ -138,7 +138,7 @@
                         <span data-toggle="tooltip" title="{{ obj.second_sign_date }}">Подписано</span>
                     </div>
                 {% else %}
-                    <div class="col bg-light text-right"  style=" margin-right: 11px">
+                    <div class="col bg-light text-right" style=" margin-right: 11px">
                         Не подписано
                     </div>
                 {% endif %}
@@ -346,7 +346,7 @@
 
                         Список:
                         <div id="list_favorites" data-ajax-url="{% url 'ajax_load_favorites' %}">
-{#                        {{ to_my_favorite_form }}#}
+                            {#                        {{ to_my_favorite_form }}#}
                         </div>
                         {#                    {{ to_share_favorite_form }}#}
                     </div>
@@ -356,11 +356,12 @@
                         <button type="button" class="button-cancel-rusatom" data-bs-dismiss="modal">Отмена</button>
                         <input type="submit" class="button-primary-rusatom" name="correction_modal_button"
                                value="Добавить">
+                    </div>
                 </form>
             </div>
         </div>
     </div>
-    </div>
+
 
 
     <!-- Уведомление о скопированной ссылке -->

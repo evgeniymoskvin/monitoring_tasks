@@ -144,6 +144,111 @@
     /*box-shadow: 0px 10px 38px 0px rgba(0, 0, 0, 0.1);*/
 }
 
+.dropdown-primary-rusatom-item {
+    cursor: context-menu;
+}
+
+
+.button-primary-rusatom-v2 {
+    font-family: "p22_underground_cy_probook", serif;
+    /*text-transform: uppercase;*/
+    font-size: 16px;
+    border-radius: 6px;
+    text-align: center;
+    border: 0;
+    border-left: 1px solid #eaeaea;
+    background-color: #4480F3;
+    transition: all .1s ease-in-out;
+    color: white;
+    text-decoration: none;
+    padding-left: 15px;
+    padding-right: 15px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.button-primary-rusatom-v2:hover {
+    border-radius: 6px;
+    text-align: center;
+    background-color: #3b6ed2;
+    /*border: 0px solid #3b6ed2;*/
+    color: white;
+    /*box-shadow: 0px 10px 38px 0px rgba(0, 0, 0, 0.1);*/
+}
+
+
+.pdf_button {
+    font-family: "p22_underground_cy_probook", serif;
+    border-radius: 6px;
+    text-align: center;
+    border: 0px solid #E35454;
+    background-color: #E35454;
+    color: white;
+    width: 120px;
+    opacity: 0.32;
+}
+
+.pdf_button:hover {
+    font-family: "p22_underground_cy_probook", serif;
+    /*border-radius: 25px;*/
+    text-align: center;
+    background-color: #d34e4e;
+    border: 0px solid #d34e4e;
+    color: white;
+    opacity: 1;
+    /*box-shadow: 0px 10px 38px 0px rgba(0, 0, 0, 0.1);*/
+}
+
+.pdf_button_icon {
+    box-sizing: content-box;
+    /*padding: .25em .25em;*/
+    margin-top: 13px;
+    mask-image: url('../icons/filetype-pdf.svg');
+    mask-position: center;
+    mask-repeat: no-repeat;
+    mask-size: contain;
+    background: #000;
+    background-position: center center;
+    background-repeat: no-repeat;
+    border: 0px;
+    height: 25px;
+    /*width: 10px;*/
+    padding-left: 16px; /* Or size of icon + spacing */
+    opacity: .5;
+    transition: all .1s ease-in-out;
+}
+
+.pdf_button_icon:hover {
+    background: #E35454;
+    text-decoration: none;
+    opacity: 1
+}
+
+
+.exel_button_icon {
+    box-sizing: content-box;
+    /*padding: .25em .25em;*/
+    margin-top: 13px;
+    mask-image: url('../icons/filetype-xls.svg');
+    mask-position: center;
+    mask-repeat: no-repeat;
+    mask-size: contain;
+    background: #000;
+    background-position: center center;
+    background-repeat: no-repeat;
+    border: 0px;
+    height: 25px;
+    /*width: 10px;*/
+    padding-left: 16px; /* Or size of icon + spacing */
+    opacity: .5;
+    transition: all .1s ease-in-out;
+}
+
+.exel_button_icon:hover {
+    background: #5FAD05;
+    text-decoration: none;
+    opacity: 1
+}
 
 
 .button-danger-rusatom {
@@ -429,4 +534,28 @@
     border: 2px solid #c50000;
     color: white;
     /*box-shadow: 0px 10px 38px 0px rgba(0, 0, 0, 0.2);*/
+}
+
+
+.icon-edit {
+    box-sizing: content-box;
+    padding: .25em .25em;
+    mask-image: url('../icons/gear.svg');
+    mask-position: center;
+    mask-repeat: no-repeat;
+    mask-size: contain;
+    background: #000;
+    background-position: center center;
+    background-repeat: no-repeat;
+    border: 0px;
+    height: 21px;
+    padding-left: 16px; /* Or size of icon + spacing */
+    opacity: .5;
+    transition: all .1s ease-in-out;
+}
+
+.icon-edit:hover {
+    color: #000;
+    text-decoration: none;
+    opacity: .75
 }

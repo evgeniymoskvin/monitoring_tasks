@@ -1,7 +1,7 @@
 from django.contrib import admin
 from .models import TaskModel, Employee, OrdersModel, ObjectModel, ContractModel, StageModel, JobTitleModel, CpeModel, \
     CanAcceptModel, CommandNumberModel, TaskNumbersModel, GroupDepartmentModel, MarkDocModel, WorkerModel, \
-    BackCommentModel, ApproveModel, FavoritesListModel, TasksInFavoritesModel, FavoritesShareModel, CanChangeWorkersModel
+    BackCommentModel, ApproveModel, FavoritesListModel, TasksInFavoritesModel, FavoritesShareModel, CanChangeWorkersModel, DraftTaskModel
 
 
 class TaskAdmin(admin.ModelAdmin):
@@ -66,3 +66,4 @@ admin.site.register(FavoritesListModel)
 admin.site.register(TasksInFavoritesModel)
 admin.site.register(FavoritesShareModel)
 admin.site.register(CanChangeWorkersModel)
+admin.site.register(DraftTaskModel)

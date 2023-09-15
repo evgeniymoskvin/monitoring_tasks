@@ -57,5 +57,10 @@ urlpatterns = [
     path('delete_self/<int:pk>', views.DeleteApproveSelf.as_view(), name='delete_self'),
     path('ajax/load_employee', views.load_empolyee, name="ajax_load_employee"),
     path('add_approve_redirect/<int:pk>', views.RedirectApproveUserView.as_view(), name='redirect_approve'),
-    path('ajax/load_favorites', views.load_favorite_list, name="ajax_load_favorites")
+    path('ajax/load_favorites', views.load_favorite_list, name="ajax_load_favorites"),
+    path('ajax/save_draft', views.save_draft, name="ajax_save_draft"),
+    path('ajax/load_drafts', views.load_drafts, name="ajax_load_drafts"),
+    path('ajax/load_current_draft', views.load_current_draft, name="ajax_load_current_draft"),
+    path('ajax/delete_current_draft', views.delete_current_draft, name="ajax_delete_current_draft"),
+    path('ajax/delete_all_drafts', views.delete_all_drafts, name="ajax_delete_all_drafts"),
 ]

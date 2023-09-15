@@ -131,6 +131,7 @@ class OrdersModel(models.Model):
 class ObjectModel(models.Model):
     """Таблица с наименованиями объектов"""
     object_name = models.CharField("Наименование объекта", max_length=250, default=None)
+    show = models.BooleanField("Отображать объект", default=True)
 
     class Meta:
         verbose_name = _("наименование объекта")
@@ -144,6 +145,7 @@ class ContractModel(models.Model):
     """Таблица договоров"""
     contract_object = models.ForeignKey(ObjectModel, on_delete=models.PROTECT, verbose_name="Объект", default=1)
     contract_name = models.CharField(max_length=650, verbose_name="Номер договора")
+    show = models.BooleanField("Отображать договор", default=True)
 
     class Meta:
         verbose_name = _("номер договора")
@@ -277,6 +279,34 @@ class TaskNumbersModel(models.Model):
     class Meta:
         verbose_name = _("счетчик заданий")
         verbose_name_plural = _("счетчики заданий")
+
+
+class DraftTaskModel(models.Model):
+    """Черновики пользователей"""
+    draft_name = models.CharField("Названеие черновика", max_length=250, null=True)
+    author = models.ForeignKey(Employee, on_delete=models.PROTECT, verbose_name="Автор задания")
+    draft_text = models.TextField("Текст задания", max_length=5000, null=True, blank=True)
+    draft_object = models.ForeignKey(ObjectModel, on_delete=models.PROTECT, verbose_name="Наименование объекта", null=True, blank=True)
+    draft_contract = models.ForeignKey(ContractModel, on_delete=models.PROTECT, verbose_name="Номер контракта",
+                                      null=True, blank=True)
+    draft_stage = models.ForeignKey(StageModel, on_delete=models.PROTECT, verbose_name="Этап договора", null=True,
+                                   blank=True)
+    draft_building = models.CharField("Здание", max_length=150,  null=True, blank=True)
+    first_sign_user = models.ForeignKey(Employee, on_delete=models.PROTECT,  null=True, blank=True,
+                                        verbose_name="Первый руководитель", related_name="draft_first_sign_user_employee")
+    second_sign_user = models.ForeignKey(Employee, on_delete=models.PROTECT,  null=True, blank=True,
+                                         verbose_name="Второй руководитель", related_name="draft_second_sign_user_employee")
+    draft_create_date = models.DateTimeField("Дата создания черновика", auto_now_add=True, null=True)
+    draft_mark_doc = models.ForeignKey(MarkDocModel, verbose_name="Марка документации", on_delete=models.CASCADE,
+                                       null=True, blank=True)
+    draft_type_work = models.IntegerField("Вид документации:", default=0,  null=True, blank=True)
+
+    def __str__(self):
+        return f'{self.author}: {self.draft_name}'
+
+    class Meta:
+        verbose_name = _("черновик пользователя")
+        verbose_name_plural = _("черновики пользователей")
 
 
 class WorkerModel(models.Model):

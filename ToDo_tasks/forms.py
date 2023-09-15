@@ -1,6 +1,6 @@
 from .models import TaskModel, ObjectModel, ContractModel, StageModel, OrdersModel, Employee, CanAcceptModel, \
     WorkerModel, ApproveModel, AttachmentFilesModel, CommandNumberModel, MarkDocModel, FavoritesListModel, \
-    FavoritesShareModel, TasksInFavoritesModel
+    FavoritesShareModel, TasksInFavoritesModel, DraftTaskModel
 from django.forms import ModelForm, TextInput, Textarea, CheckboxInput, Select, ChoiceField, Form, PasswordInput, \
     CharField, ModelChoiceField, modelformset_factory, ModelMultipleChoiceField, MultipleChoiceField, SelectMultiple, \
     FileField, ClearableFileInput, FileInput, DateTimeField, DateTimeInput
@@ -72,8 +72,9 @@ class TaskForm(ModelForm):
         super().__init__(*args, **kwargs)
         self.fields['task_order'].queryset = OrdersModel.objects.order_by('order')
         self.fields['incoming_dep'].queryset = CommandNumberModel.objects.filter(show=True).order_by('command_number')
+        self.fields['task_object'].queryset = ObjectModel.objects.filter(show=True).order_by('object_name')
         self.fields['task_mark_doc'].queryset = MarkDocModel.objects.order_by("mark_doc")
-        self.fields['task_contract'].queryset = ContractModel.objects.order_by("contract_name")  # подгрузка значений
+        self.fields['task_contract'].queryset = ContractModel.objects.filter(show=True).order_by("contract_name")  # подгрузка значений
         self.fields['task_stage'].queryset = StageModel.objects.order_by("stage_name")  # подгрузка значений
         self.fields['task_contract'].choices = [(0, 'Сначала выберете объект')]  # исходное отображение
         self.fields['task_stage'].choices = [(0, 'Сначала выберете № договора')]  # исходное отображение
@@ -200,17 +201,17 @@ class TaskEditForm(ModelForm):
             "cpe_sign_user"
         ]
         widgets = {"task_building": TextInput(attrs={"class": "form-control",
-                                                     "aria-label": "Здание"}),
+                                                     "aria-label": "Здание", "onchange": "checkParams()"}),
                    "text_task": Textarea(attrs={"placeholder": "Введите текст задания",
-                                                "class": "form-control"}),
+                                                "class": "form-control", "onchange": "checkParams()"}),
                    "first_sign_user": Select(attrs={"class": "form-select",
-                                                    "aria-label": "Первый руководитель"}),
+                                                    "aria-label": "Первый руководитель", "onchange": "checkParams()"}),
                    "second_sign_user": Select(attrs={"class": "form-select",
-                                                     "aria-label": "Второй руководитель"}),
+                                                     "aria-label": "Второй руководитель", "onchange": "checkParams()"}),
                    # "cpe_sign_user": Select(attrs={"class": "form-select",
                    #                                "aria-label": "ГИП"}),
                    "incoming_dep": Select(attrs={"class": "form-select",
-                                                 "aria-label": "Кому"}),
+                                                 "aria-label": "Кому", "onchange": "checkParams()"}),
                    }
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -495,3 +496,16 @@ class AddShareFavoriteForm(ModelForm):
         widgets = {"favorite_list": Select(attrs={"class": "form-select",
                                                   "aria-label": "Сотрудник"
                                                   })}
+
+
+class SaveDraftForm(ModelForm):
+    """Форма создания списков избранного"""
+
+    class Meta:
+        model = DraftTaskModel
+        fields = ['draft_name',
+                  ]
+
+        widgets = {"draft_name": TextInput(attrs={"class": "form-control",
+                                                 "aria-label": "Название черновика"
+                                                 })}

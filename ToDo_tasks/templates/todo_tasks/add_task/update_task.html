@@ -61,13 +61,24 @@
                 <div class="row justify-content-center">
                     <div class="col">
                         <figure class="text-center">
-                            <button type="button" class="button-danger-rusatom" data-bs-toggle="modal"
-                                    data-bs-target="#staticBackdrop">Удалить
-                            </button>
-                            <button onclick="location.href={% url "details" pk=obj.id %}" class="button-cancel-fill">Отмена</button>
-                            <button type="button" class="button-success" data-bs-toggle="modal"
-                                    data-bs-target="#ConfirmModal">Сохранить
-                            </button>
+                            <div>
+                                <button id="submit_button" type="button" class="button-primary-rusatom" data-bs-toggle="modal"
+                                        data-bs-target="#ConfirmModal" style="width: 520px" disabled>Сохранить
+                                </button>
+                            </div>
+                            <div style="margin-top: 5px">
+                                <button onclick="window.history.back()" class="button-cancel-rusatom"
+                                        style="width: 520px">
+                                    Отмена
+                                </button>
+                            </div>
+                            <div style="margin-top: 25px"><span
+                                    class="text-5-book-warning"
+                                    onclick="$('#staticBackdrop').modal('show');">Удалить задание</span></div>
+                            {#                            <button onclick="location.href={% url "details" pk=obj.id %}" class="button-cancel-fill">#}
+                            {#                                Отмена#}
+                            {#                            </button>#}
+
 
                         </figure>
                     </div>
@@ -77,7 +88,7 @@
 
             <!-- Modal -->
 
-            <div class="modal fade" id="ConfirmModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+            <div class="modal fade" id="ConfirmModal" tabindex="-1"
                  aria-labelledby="staticBackdropLabel" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
@@ -91,13 +102,13 @@
                         <div class="modal-body">
 
                             <p class="text-index-book-p" style="font-size: 15px; margin-top: 0">После изменения, все
-                                подписи
-                                исчезнут.</p>
+                                подписи исчезнут.</p>
                         </div>
                         <div class="modal-footer">
-                            <button type="submit" class="button-success" href="{% url 'change' pk=obj.id %}">Сохранить
+                            <button type="submit" class="button-primary-rusatom" href="{% url 'change' pk=obj.id %}">
+                                Сохранить
                             </button>
-                            <button type="button" class="button-cancel" data-bs-dismiss="modal">Отмена</button>
+                            <button type="button" class="button-cancel-rusatom" data-bs-dismiss="modal">Отмена</button>
                         </div>
                     </div>
                 </div>
@@ -106,24 +117,26 @@
 
 
 
-        <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+        <div class="modal fade" id="staticBackdrop" tabindex="-1"
              aria-labelledby="staticBackdropLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h1 class="modal-title fs-5" id="staticBackdropLabel">
                                                             <span class="text-3"
-                                      style="display: inline-block; text-transform: uppercase;">Удаление</span></h1>
+                                                                  style="display: inline-block; text-transform: uppercase;">Удаление</span>
+                        </h1>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <p class="text-index-book-p" style="font-size: 15px; margin-top: 0">Вы точно хотите удалить запись?</p>
+                        <p class="text-index-book-p" style="font-size: 15px; margin-top: 0">Вы точно хотите удалить
+                            запись?</p>
                     </div>
                     <div class="modal-footer">
                         <form method="post">
                             {% csrf_token %}
-                            <input type="submit" class="button-danger" name="delete_number" value="Удалить">
-                            <button type="button" class="button-cancel" data-bs-dismiss="modal">Отмена</button>
+                            <input type="submit" class="button-danger-rusatom" name="delete_number" value="Удалить">
+                            <button type="button" class="button-cancel-rusatom" data-bs-dismiss="modal">Отмена</button>
                         </form>
                     </div>
                 </div>
@@ -161,6 +174,26 @@
 
     <!JS для фильтрации списка контрактов>
     <script>
+
+    window.onload = function () {
+        checkParams()
+    }
+
+        function checkParams() {
+            /*Функция активации кнопки*/
+            var id_task_building = $("#id_task_building").val().length;
+            var id_text_task = $("#id_text_task").val().length;
+            var id_first_sign_user = $("#id_first_sign_user").val();
+            var id_second_sign_user = $("#id_second_sign_user").val();
+            var id_incoming_dep = $("#id_incoming_dep").val();
+            if (id_task_building > 0 && id_text_task > 0 && id_first_sign_user > 0 && id_second_sign_user > 0 && id_incoming_dep > 0) {
+                document.getElementById("submit_button").disabled = false
+            } else {
+                document.getElementById("submit_button").disabled = true
+            };
+        };
+
+
         $("#id_task_object").change(function () {
             var url = $("#formAdd").attr("data-contracts-url");  // url of the `load_contact` view
             var objectId = $(this).val();  // получаем object ID из HTML input

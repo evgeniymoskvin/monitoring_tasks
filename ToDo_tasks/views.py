@@ -17,10 +17,10 @@ from django.contrib.auth import authenticate, login
 
 from .models import Employee, TaskModel, ContractModel, ObjectModel, StageModel, TaskNumbersModel, CommandNumberModel, \
     CpeModel, CanAcceptModel, WorkerModel, ApproveModel, AttachmentFilesModel, FavoritesListModel, \
-    TasksInFavoritesModel, FavoritesShareModel, CanChangeWorkersModel
+    TasksInFavoritesModel, FavoritesShareModel, CanChangeWorkersModel, DraftTaskModel
 from .forms import TaskForm, TaskEditForm, SearchForm, WorkerForm, WorkersEditForm, \
     TaskFormForSave, ApproveForm, FilesUploadForm, UserProfileForm, ApproveEditForm, LoginForm, CreateFavoriteListForm, \
-    ShareFavoriteListForm, AddMyFavoriteForm, AddShareFavoriteForm
+    ShareFavoriteListForm, AddMyFavoriteForm, AddShareFavoriteForm, SaveDraftForm
 from .functions import get_data_for_detail, get_list_to_sign, get_task_edit_form, \
     get_list_to_sign_cpe, get_list_incoming_tasks_to_sign, get_list_incoming_tasks_to_workers, save_to_worker_list, \
     get_list_to_change_workers, is_valid_queryparam, get_can_change_favorites_access
@@ -106,7 +106,8 @@ class OutgoingTasksView(View):
     @method_decorator(login_required(login_url='login'))
     def get(self, request):
         user = Employee.objects.get(user=request.user)
-        data_to_sign = TaskModel.objects.get_queryset().filter(department_number=user.department).filter(task_status=1).order_by('-id')
+        data_to_sign = TaskModel.objects.get_queryset().filter(department_number=user.department).filter(
+            task_status=1).order_by('-id')
         content = {'data_to_sign': data_to_sign,
                    'user': user}
         return render(request, 'todo_tasks/department_tasks/outgoing_tasks.html', content)
@@ -119,7 +120,8 @@ class IncomingDepView(View):
     def get(self, request):
         user = Employee.objects.get(user=request.user)  # Получаем пользователя из запроса
         user_dep = user.department_id  # получаем id номер отдела
-        data_have_workers = TaskModel.objects.get_queryset().filter(incoming_dep=user_dep).filter(task_status=2).order_by('-id')
+        data_have_workers = TaskModel.objects.get_queryset().filter(incoming_dep=user_dep).filter(
+            task_status=2).order_by('-id')
         content = {'data_have_workers': data_have_workers,
                    'user': user}
         return render(request, 'todo_tasks/department_tasks/incoming_to_dep.html', content)
@@ -130,7 +132,8 @@ class UserTaskView(View):
 
     @method_decorator(login_required(login_url='login'))
     def get(self, request):
-        data_user = TaskModel.objects.get_queryset().filter(author__user=request.user).filter(task_status=2).order_by('-id')
+        data_user = TaskModel.objects.get_queryset().filter(author__user=request.user).filter(task_status=2).order_by(
+            '-id')
         user = Employee.objects.get(user=request.user)
         text_status = f"выданные"
         content = {'data_user': data_user,
@@ -144,7 +147,8 @@ class UserTaskOnSignView(View):
 
     @method_decorator(login_required(login_url='login'))
     def get(self, request):
-        data_user = TaskModel.objects.get_queryset().filter(author__user=request.user).filter(task_status=1).order_by('-id')
+        data_user = TaskModel.objects.get_queryset().filter(author__user=request.user).filter(task_status=1).order_by(
+            '-id')
         user = Employee.objects.get(user=request.user)
         text_status = f"исходящие"
         content = {'data_user': data_user,
@@ -212,12 +216,20 @@ class AddTaskView(View):
         form.fields['second_sign_user'].queryset = Employee.objects.filter(department=department_user).filter(
             right_to_sign=True)  # получаем во 2ое поле список пользователей по двум фильтрам
         file_form = FilesUploadForm()
+        draft_form = SaveDraftForm()
         objects = ObjectModel.objects.all()
+        draft_contract_flag = 0
+        draft_stage_flag = 0
+        draft_object_flag = 0
         context = {'form': form,
                    "file_form": file_form,
+                   "draft_form": draft_form,
                    'user': Employee.objects.get(user=request.user),
                    'objects': objects,
-                   "approve_form": approve_form
+                   "approve_form": approve_form,
+                   "draft_contract_flag": draft_contract_flag,
+                   "draft_stage_flag": draft_stage_flag,
+                   "draft_object_flag": draft_object_flag,
                    }
         return render(request, 'todo_tasks/add_task/add_task.html', context)
 
@@ -491,8 +503,10 @@ class MyInboxListView(View):
     def get(self, request):
         user = Employee.objects.get(user=request.user)
         # Формируем 2 списка прочтенных и не прочтенных заданий
-        tasks_id_unread = WorkerModel.objects.get_queryset().filter(worker_user=user).filter(read_status=False).order_by('-id')
-        tasks_id_read = WorkerModel.objects.get_queryset().filter(worker_user=user).filter(read_status=True).order_by('-id')
+        tasks_id_unread = WorkerModel.objects.get_queryset().filter(worker_user=user).filter(
+            read_status=False).order_by('-id')
+        tasks_id_read = WorkerModel.objects.get_queryset().filter(worker_user=user).filter(read_status=True).order_by(
+            '-id')
         # Переводим в список
         task_list_unread = []
         for task in tasks_id_unread:
@@ -989,7 +1003,8 @@ class EditApproveUserView(View):
         print(request.POST.get('approve_user'))
         new_approve_emp = ApproveModel()
         new_approve_emp.approve_user_id = int(request.POST.get('approve_user'))
-        status_approve_emp = ApproveModel.objects.get_queryset().filter(approve_task_id=pk).filter(approve_user_id=int(request.POST.get('approve_user'))).exists()
+        status_approve_emp = ApproveModel.objects.get_queryset().filter(approve_task_id=pk).filter(
+            approve_user_id=int(request.POST.get('approve_user'))).exists()
         if status_approve_emp:
             print("Такой пользователь уже добавлен в согласователи")
         else:
@@ -1016,10 +1031,12 @@ class EditApproveUserView(View):
 
 class RedirectApproveUserView(View):
     """Добавление сотрудников для согласования самим согласователем"""
+
     def post(self, request, pk):
         new_approve_emp = ApproveModel()
         new_approve_emp.approve_user_id = int(request.POST.get('approve_user'))
-        status_approve_emp = ApproveModel.objects.get_queryset().filter(approve_task_id=pk).filter(approve_user_id=int(request.POST.get('approve_user'))).exists()
+        status_approve_emp = ApproveModel.objects.get_queryset().filter(approve_task_id=pk).filter(
+            approve_user_id=int(request.POST.get('approve_user'))).exists()
         if status_approve_emp:
             print("Такой пользователь уже добавлен в согласователи")
         else:
@@ -1045,7 +1062,7 @@ def load_contracts(request):
     # print("ajax load contracts пришел")  # Проверка, сработал ли ajax с отправкой данных
     object_id = request.GET.get("object")  # достаем значение объекта из запроса
     contracts = ContractModel.objects.filter(
-        contract_object=int(object_id))  # получаем все контракты для данного объекта
+        contract_object=int(object_id)).filter(show=True)  # получаем все контракты для данного объекта
     return render(request, 'todo_tasks/dropdown_update/contracts_dropdown_list_update.html', {'contracts': contracts})
 
 
@@ -1203,7 +1220,7 @@ class CurrentFavoritesListView(View):
         can_change_favorites = FavoritesShareModel.objects.get_queryset().filter(favorite_list_id=pk).filter(
             favorite_share_user=user).filter(can_change_list=True)
 
-        #Получение флагов, для управления избранным
+        # Получение флагов, для управления избранным
         if (list_name.favorite_list_holder == user) or (can_view_favorites):
             access_flag = True
             data_all_favorites = TasksInFavoritesModel.objects.get_queryset().filter(favorite_list_id=pk)
@@ -1316,11 +1333,12 @@ class DeleteTaskFromFavoriteView(View):
         task_to_delete.delete()
         return redirect(request.META['HTTP_REFERER'])
 
+
 def load_empolyee(request):
     """Фнкуия загрузки списка сотрудников"""
     approve_form = ApproveEditForm()
     content = {'approve_form': approve_form}
-    return render (request, 'todo_tasks/ajax/load_list_employee.html', content)
+    return render(request, 'todo_tasks/ajax/load_list_employee.html', content)
 
 
 def load_favorite_list(request):
@@ -1339,3 +1357,135 @@ def load_favorite_list(request):
         'to_my_favorite_form': to_my_favorite_form
     }
     return render(request, 'todo_tasks/ajax/load_favorite_list.html', content)
+
+
+def save_draft(request):
+    """Сохранение черновиков"""
+    new_draft = DraftTaskModel()
+    new_draft.author_id = int(request.GET.get("user_id"))
+    if request.GET.get("id_text_task") != "NaN":
+        new_draft.draft_text = str(request.GET.get("id_text_task"))
+    if request.GET.get("id_task_building") != "NaN":
+        new_draft.draft_building = str(request.GET.get("id_task_building"))
+    if request.GET.get("id_draft_name") != "NaN":
+        new_draft.draft_name = str(request.GET.get("id_draft_name"))
+
+    # Проверка численных значений пришедших с фронтенда
+    try:
+        if int(request.GET.get("objectId")) > 0:
+            new_draft.draft_object_id = int(request.GET.get("objectId"))
+    except Exception as e:
+        print(f'{e}, objectId {request.GET.get("objectId")}')
+    try:
+        if int(request.GET.get("id_task_contract")) > 0:
+            new_draft.draft_contract_id = int(request.GET.get("id_task_contract"))
+    except Exception as e:
+        print(f'{e}, id_task_contract {request.GET.get("id_task_contract")}')
+
+    try:
+        if int(request.GET.get("id_task_type_work")):
+            new_draft.draft_type_work = int(request.GET.get("id_task_type_work"))
+    except Exception as e:
+        print(f'{e}, id_task_type_work {request.GET.get("id_task_type_work")}')
+
+    try:
+        if int(request.GET.get("id_first_sign_user")) > 0:
+            new_draft.first_sign_user_id = int(request.GET.get("id_first_sign_user"))
+    except Exception as e:
+        print(f'{e}, id_first_sign_user {request.GET.get("id_first_sign_user")}')
+
+    try:
+        if int(request.GET.get("id_second_sign_user")) > 0:
+            new_draft.second_sign_user_id = int(request.GET.get("id_second_sign_user"))
+    except Exception as e:
+        print(f'{e}, id_second_sign_user {request.GET.get("id_second_sign_user")}')
+
+    try:
+        if int(request.GET.get("id_task_mark_doc")) > 0:
+            new_draft.draft_mark_doc_id = int(request.GET.get("id_task_mark_doc"))
+    except Exception as e:
+        print(f'{e}, id_task_mark_doc {request.GET.get("id_task_mark_doc")}')
+
+    try:
+        if int(request.GET.get("id_task_stage")) > 0:
+            new_draft.draft_stage_id = int(request.GET.get("id_task_stage"))
+    except Exception as e:
+        print(f'{e}, id_task_stage {request.GET.get("id_task_stage")}')
+    new_draft.save()
+    print(f'Черновик {new_draft} создан')
+    return render(request, 'todo_tasks/ajax/save_draft_notification.html')
+
+
+def load_drafts(request):
+    """Загрузка списка черновиков пользователя"""
+    user = int(request.GET.get("user_id"))
+    obj = DraftTaskModel.objects.get_queryset().filter(author_id=user).order_by('-id')
+    content = {
+        'obj': obj,
+    }
+    return render(request, 'todo_tasks/ajax/load_drafts_list.html', content)
+
+
+def load_current_draft(request):
+    """Загрузка конктректного черновика"""
+    draft_id = int(request.GET.get("draft_id"))
+    draft = DraftTaskModel.objects.get(id=draft_id)
+    form = TaskForm()  # Форма задания
+    approve_form = ApproveForm()  # Форма согласователей
+    approve_form.fields['approve_user'].queryset = Employee.objects.filter(cpe_flag=False).filter(
+        work_status=True).order_by("last_name")
+    # Фильтруем поля руководителей в соответствии с отделом пользователя
+    department_user = Employee.objects.get(user=request.user).department  # получаем номер отдела
+    form.fields['first_sign_user'].queryset = Employee.objects.filter(department=department_user).filter(
+        right_to_sign=True)  # получаем в 1ое поле список пользователей по двум фильтрам
+    form.fields['second_sign_user'].queryset = Employee.objects.filter(department=department_user).filter(
+        right_to_sign=True)  # получаем во 2ое поле список пользователей по двум фильтрам
+    form.fields['task_contract'].queryset = ContractModel.objects
+    file_form = FilesUploadForm()
+    objects = ObjectModel.objects.all()
+    draft_object_flag = 0
+    draft_contract_flag = 0
+    draft_stage_flag = 0
+    if draft.draft_contract:
+        draft_contract_flag = draft.draft_contract_id
+    if draft.draft_stage:
+        draft_stage_flag = draft.draft_stage_id
+    if draft.draft_object:
+        draft_object_flag = draft.draft_object_id
+    form = TaskForm(initial={'text_task': draft.draft_text,
+                             'task_object': draft.draft_object_id,
+                             'task_building': draft.draft_building,
+                             'first_sign_user': draft.first_sign_user_id,
+                             'second_sign_user': draft.second_sign_user_id,
+                             'task_mark_doc': draft.draft_mark_doc_id,
+                             'task_type_work': draft.draft_type_work,
+                             'task_contract': draft.draft_contract_id,
+                             "task_stage": draft.draft_stage_id})
+    content = {'form': form,
+               "file_form": file_form,
+               'objects': objects,
+               "approve_form": approve_form,
+               "draft_contract_flag": draft_contract_flag,
+               "draft_stage_flag": draft_stage_flag,
+               "draft_object_flag": draft_object_flag,
+               }
+    return render(request, 'todo_tasks/add_task/add_form.html', content)
+
+
+def delete_current_draft(request):
+    """Удаление конкретного черновика"""
+    delete_draft_id = int(request.GET.get("draft_id"))
+    draft = DraftTaskModel.objects.get(id=delete_draft_id)
+    print(f"Черновик {draft} удален")
+    draft.delete()
+    return HttpResponse('')
+
+
+def delete_all_drafts(request):
+    """Удаление всех черновиков"""
+    user = int(request.GET.get("user_id"))
+    drafts = DraftTaskModel.objects.get_queryset().filter(author_id=user)
+    for draft in drafts:
+        draft.delete()
+    print(f"Черновики пользователя id={user} удален")
+    return HttpResponse('')

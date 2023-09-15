@@ -33,122 +33,46 @@
                   data-contracts-url="{% url 'ajax_load_contracts' %}"
                   data-stages-url="{% url 'ajax_load_stages' %}" data-incoming-emp-url="{% url 'ajax_load_inc_emp' %}">
                 <div class="container">
-
-                    <div class="row">
-                        <div class="col">
-                            {% csrf_token %}
-
-                            <span class="text-3"
-                                  style="display: inline-block; text-transform: uppercase; margin-top: 10px">Объект:</span>
-                            {{ form.task_object }}
-                            <span class="text-3"
-                                  style="display: inline-block; text-transform: uppercase; margin-top: 10px">Номер договора:</span>
-                            {{ form.task_contract }}
-                            <span class="text-3"
-                                  style="display: inline-block; text-transform: uppercase; margin-top: 10px">Этап:</span>
-                            {{ form.task_stage }}
-                            <span class="text-3"
-                                  style="display: inline-block; text-transform: uppercase; margin-top: 10px">Номер заказа:</span>
-                            {{ form.task_order }}
-                            <span class="text-3"
-                                  style="display: inline-block; text-transform: uppercase; margin-top: 10px">Вид документации:</span>
-                            {{ form.task_type_work }}
-                            <span class="text-3"
-                                  style="display: inline-block; text-transform: uppercase; margin-top: 10px">Марка документации:</span>
-                            {{ form.task_mark_doc }}
-                            <span class="text-3"
-                                  style="display: inline-block; text-transform: uppercase; margin-top: 10px">Здание:</span>
-                            {{ form.task_building }}
-
-                        </div>
-                        <div class="col">
-                            <span class="text-3"
-                                  style="display: inline-block; text-transform: uppercase; margin-top: 10px">Текст задания:</span>
-                            {{ form.text_task }}
-                        </div>
+                    <div id="update_form">
+                        {% include 'todo_tasks/add_task/add_form.html' %}
                     </div>
+                </div>
+                <div style="margin-top: 15px">
+                    <div class="row justify-content-center; ">
+                        <div class="col">
+                            <figure class="text-center">
+                                <div>
 
-                    <br>
-                    <div style="justify-content: center; align-items: center; margin-left: -150px">
-                        <div class="row justify-content-center">
-                            <div class="col-2">
-                                <span class="text-4-book-left">Первый руководитель:</span>
-                            </div>
-                            <div class="col-3">
-                                {#                            <span class="text-4-book-left" style="display: inline;"> </span>#}
-                                {{ form.first_sign_user }}
-                            </div>
-                        </div>
-                        <div class="row justify-content-center" style="margin-top: 15px">
-                            <div class="col-2">
-                                <span class="text-4-book-left">Второй руководитель:</span>
-                            </div>
-                            <div class="col-3">
-                                {{ form.second_sign_user }}
-                            </div>
-                        </div>
-
-                        <div class="row justify-content-center" style="margin-top: 15px">
-                            <div class="col-2">
-                                <span class="text-4-book-left">Принимающий отдел:</span>
-                            </div>
-                            <div class="col-3">
-                                {{ form.incoming_dep }}
-                            </div>
-                        </div>
-
-                        <div>
-                            <div class="row justify-content-center" style="margin-top: 15px">
-                                <div class="col-2">
-                                    <span class="text-4-book-left">Добавьте файлы:</span>
-
-                                </div>
-                                <div class="col-3">
-                                    {{ file_form.file }}
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row justify-content-center" style="margin-top: 15px">
-                            <div class="col-2">
-                                <span class="text-4-book-left">Требуются согласователи?:</span>
-
-                            </div>
-
-                            <div class="col-3" style="margin-top: 10px">
-                                {{ form.task_need_approve }}
-                            </div>
-
-                        </div>
-
-
-                        <div id="approve" style="display: none; margin-top: 15px; margin-left: 6px">
-                            <div class="row justify-content-center">
-                                <div class="col-2">
-                                    <span class="text-4-book-left">Выберете согласователей:</span>
-
-                                </div>
-
-                                <div class="col-3">
-                                    {{ approve_form.approve_user }}
-                                </div>
-
-                            </div>
-                        </div>
-
-                    </div>
-                    <div style="margin-top: 15px">
-                        <div class="row justify-content-center; ">
-                            <div class="col">
-                                <figure class="text-center">
-                                    {#                                    <button class="button-cancel-rusatom" onclick="location.href='{% url 'index' %}'"#}
-                                    {#                                            role="button">Отмена#}
-                                    {#                                    </button>#}
                                     <button id="submit_button" class="button-primary-rusatom" type="submit"
-                                            style="width: 740px; margin-left: 10px" disabled>Выдать задание
+                                            {#                                                disabled>Выдать задание#}
+                                            style="width: 690px; margin-left: -40px; border-radius: 6px 0 0 6px"
+                                            disabled>Выдать задание
                                     </button>
-                                </figure>
-                            </div>
+
+                                    <div class="dropup" style="position: absolute; display: inline-block;">
+                                        <button id="draft_button" type="button"
+                                                class="button-primary-rusatom"
+                                                data-bs-toggle="dropdown"
+                                                aria-expanded="false"
+                                                style="width: 50px; border-radius: 0 6px 6px 0">
+                                            ...
+                                        </button>
+                                        <ul class="dropdown-menu" style="border-radius: 6px">
+                                            <li onclick="onClickSaveDraft()" id="save-draft"
+                                                data-ajax-url="{% url 'ajax_save_draft' %}"><p
+                                                    class="dropdown-item dropdown-primary-rusatom-item">
+                                                Сохранить
+                                                черновик</p></li>
+                                            <li onclick="onClickLoadDraft()" , id="load-drafts"
+                                                data-ajax-url="{% url 'ajax_load_drafts' %}"><p
+                                                    class="dropdown-item dropdown-primary-rusatom-item">
+                                                Загрузить
+                                                черновик</p></li>
+                                        </ul>
+                                    </div>
+
+                                </div>
+                            </figure>
                         </div>
                     </div>
                 </div>
@@ -156,6 +80,132 @@
         </div>
         <div style="display: none;" id="loaderspin">
             <span class="loader"></span>
+        </div>
+
+        <div id="notification"></div>
+
+        <!-- Модальное окно сохранения черновика -->
+        <div class="modal fade" id="to_draft"
+             tabindex="-1"
+             aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="staticBackdropLabel">Сохранить черновик</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                aria-label="Закрыть"></button>
+                    </div>
+                    <div class="modal-body">
+
+                        Название черновика:
+                        <div style="margin-top: 5px">
+                            {{ draft_form.draft_name }}
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+
+                        {% csrf_token %}
+                        <button type="button" class="button-cancel-rusatom" data-bs-dismiss="modal">Отмена</button>
+                        <button type="button" class="button-primary-rusatom" data-bs-toggle="modal"
+                                onclick="SaveDraft()">
+                            Сохранить
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Модальное окно загрузки черновика -->
+        <div class="modal fade" id="from_draft"
+             tabindex="-1"
+             aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="staticBackdropLabel">Загрузить черновик</h5>
+                        <div>
+                            <button type="button" class="icon-edit" aria-label="Share"
+                                    onclick="changeShowDeleteButton()"></button>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Закрыть"></button>
+                        </div>
+                    </div>
+                    <div class="modal-body">
+                        <div id="drafts_list">dfjhdfl;h</div>
+                        <div id="drafts_list_ul_link" data-ajax-url="{% url 'ajax_load_current_draft' %}" hidden></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Модальное окно удаления черновика -->
+        <div class="modal fade" id="delete_draft"
+             tabindex="-1"
+             aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="staticBackdropLabel">Удалить черновик</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                aria-label="Закрыть"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div style="margin-top: 5px">
+                            Удалить черновик "<span id="name_delete_draft"></span>"?
+                            <div id="id_delete_draft" data-ajax-url="{% url 'ajax_delete_current_draft' %}"
+                                 hidden></div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+
+                        {% csrf_token %}
+                        <button type="button" class="button-cancel-rusatom" data-bs-dismiss="modal"
+                                onclick="$('#from_draft').modal('show');
+                                         $('#delete_draft').modal('hide');">Отмена
+                        </button>
+                        <button type="button" class="button-danger-rusatom"
+                                onclick="confirmDeleteDraft()">
+                            Удалить
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Модальное окно удаления всех черновиков -->
+        <div class="modal fade" id="delete_all_draft"
+             tabindex="-1"
+             aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="staticBackdropLabel">Удалить черновик</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                aria-label="Закрыть"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div style="margin-top: 5px">
+                            Удалить все черновики?
+                            <div id="id_delete_draft" data-ajax-url="{% url 'ajax_delete_current_draft' %}"
+                                 hidden></div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+
+                        {% csrf_token %}
+                        <button type="button" class="button-cancel-rusatom" data-bs-dismiss="modal"
+                                onclick="$('#from_draft').modal('show');
+                                         $('#delete_all_draft').modal('hide');">Отмена
+                        </button>
+                        <button type="button" class="button-danger-rusatom" id="delete_all_drafts"
+                                data-ajax-url="{% url 'ajax_delete_all_drafts' %}"
+                                onclick="allDraftsDelete()">
+                            Удалить
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
 
 
@@ -181,6 +231,8 @@
     {% endif %}
 
 
+
+
 {% endblock %}
 
 
@@ -189,43 +241,76 @@
 
 
     <script>
+
+        function changeShowDeleteButton() {
+            if (document.getElementById("draft_list_with_button").style.display === 'none') {
+                document.getElementById("draft_list_without_button").style.display = 'none'
+                document.getElementById("draft_list_with_button").style.display = 'block'
+            } else {
+                document.getElementById("draft_list_without_button").style.display = 'block'
+                document.getElementById("draft_list_with_button").style.display = 'none'
+            }
+        }
+
+
+        function onClickSaveDraft() {
+            document.getElementById('notification').innerHTML = ''
+            $('#to_draft').modal('show');
+        }
+
+        function onClickShowDeleteDraft(delete_draft_id, delete_draft_name) {
+            console.log(delete_draft_id)
+            console.log(delete_draft_name)
+            document.getElementById('name_delete_draft').innerText = delete_draft_name
+            document.getElementById('id_delete_draft').innerText = delete_draft_id
+            $('#from_draft').modal('hide');
+            $('#delete_draft').modal('show');
+
+        }
+
+        function confirmDeleteDraft() {
+
+            var delete_draft_id = document.getElementById('id_delete_draft').innerText
+            var delete_url = $("#id_delete_draft").attr("data-ajax-url");
+
+            $.ajax({                       // формируем AJAX запрос
+                url: delete_url,                    // подгружаем URL адрес для запроса
+                data: {
+                    'draft_id': delete_draft_id,       // добавляем objectID в query параметры GET запроса
+                },
+                success: function (data) {   // `data` результат выполнения  функции `load_contract`
+                    /*$("#drafts_list").html(data);*/
+                    onClickLoadDraft()
+                    $('#delete_draft').modal('hide');
+                    $('#from_draft').modal('show');
+
+                }
+            });
+            /*console.log(delete_draft_id)*/
+
+        }
+
+        function showAllDelete() {
+            $('#from_draft').modal('hide');
+            $('#delete_all_draft').modal('show');
+        }
+
+        function allDraftsDelete() {
+            var url_all_delete =  $("#delete_all_drafts").attr("data-ajax-url");
+            $('#delete_all_draft').modal('hide');
+            $.ajax({                       // формируем AJAX запрос
+                url: url_all_delete,                    // подгружаем URL адрес для запроса
+                data: {
+                    'user_id': {{user.id}},      // добавляем objectID в query параметры GET запроса
+                },
+                success: function () {   // `data` результат выполнения  функции `load_contract`
+                    console.log('Все черновики пользователя {{ user.id }} удалены')
+                }
+            });
+        }
+
         // JS для поля выбора отделов
-        $(document).ready(function () {
-            $('#id_incoming_dep').select2({
-                placeholder: 'Выберите отдел/отделы',
-            });
-            $('#id_first_sign_user').select2({
-                placeholder: 'Выберите руководителя'
-            });
-            $('#id_second_sign_user').select2({
-                placeholder: 'Выберите руководителя'
-            });
-            $('#id_task_object').select2({
-                placeholder: 'Выберите объект'
-            });
-            $('#id_task_contract').select2({
-                placeholder: 'Выберите № договора'
-            });
-            $('#id_task_stage').select2({
-                placeholder: 'Не указан'
-            });
-            $('#id_task_order').select2({
-                placeholder: 'Не указан'
-            });
-            $('#id_task_type_work').select2({
-                placeholder: 'Выберите тип документации'
-            });
 
-            $('#id_approve_user').select2({
-                placeholder: 'Выберите согласователей'
-            });
-
-            $('#id_task_mark_doc').select2({
-                placeholder: 'Выберите марку документации'
-            });
-
-
-        });
 
         document.getElementById('id_task_need_approve').onchange = toggle;
 
@@ -242,55 +327,105 @@
             /*Функция активации кнопки*/
             var objectId = $("#id_task_object").val();
             var id_task_contract = $("#id_task_contract").val();
-
             var type_workId = $("#id_task_type_work").val();
             var id_task_building = $("#id_task_building").val().length;
             var id_text_task = $("#id_text_task").val().length;
             var id_first_sign_user = $("#id_first_sign_user").val();
             var id_second_sign_user = $("#id_second_sign_user").val();
             var id_incoming_dep = $("#id_incoming_dep").val();
-            if (id_incoming_dep.length > 0 && objectId > 0 && id_task_contract > 0 && type_workId > 0 && id_task_building > 0 && id_text_task > 0 && id_first_sign_user > 0 && id_second_sign_user > 0){
-                document.getElementById("submit_button").disabled = false
+            if (id_incoming_dep.length > 0 && objectId > 0 && id_task_contract > 0 && type_workId > 0 && id_task_building > 0 && id_text_task > 0 && id_first_sign_user > 0 && id_second_sign_user > 0) {
+                document.getElementById("submit_button").disabled = false;
+                const dropdown_dutton = document.getElementById("draft_button")
+                dropdown_dutton.classList.remove("button-primary-rusatom")
+                dropdown_dutton.classList.add("button-primary-rusatom-v2")
             } else {
                 document.getElementById("submit_button").disabled = true
+                const dropdown_dutton = document.getElementById("draft_button")
+                dropdown_dutton.classList.remove("button-primary-rusatom-v2")
+                dropdown_dutton.classList.add("button-primary-rusatom")
             }
         }
 
+        function SaveDraft() {
+            var id_draft_name = $("#id_draft_name").val();
+            console.log(id_draft_name)
+            var objectId = $("#id_task_object").val();
+            console.log(objectId)
+            var id_task_contract = $("#id_task_contract").val();
+            console.log(id_task_contract)
+            var type_workId = $("#id_task_type_work").val();
+            console.log(type_workId)
+            var id_task_building = $("#id_task_building").val();
 
-        /* JS для фильтрации списка контрактов */
-        $("#id_task_object").change(function () {
-            var url = $("#formAdd").attr("data-contracts-url");
-            var objectId = $(this).val();  // получаем object ID из HTML input
+            var id_task_mark_doc = $("#id_task_mark_doc").val();
+            console.log(id_task_building)
+            console.log('id_task_mark_doc: ', id_task_mark_doc);
+            var id_text_task = $("#id_text_task").val();
+            console.log(id_text_task)
+            var id_first_sign_user = $("#id_first_sign_user").val();
+            console.log(id_first_sign_user)
+            var id_second_sign_user = $("#id_second_sign_user").val();
+            console.log(id_second_sign_user)
+            var id_task_stage = $("#id_task_stage").val();
+
+            var url = $("#save-draft").attr("data-ajax-url");
+
+            $.ajax({                       // формируем AJAX запрос
+                url: url,                    // подгружаем URL адрес для запроса
+                method: "GET",
+                data: {
+                    'user_id': Number({{ user.id }}),       // добавляем objectID в query параметры GET запроса
+                    'objectId': Number(objectId),
+                    'id_task_contract': Number(id_task_contract),
+                    'id_task_type_work': Number(type_workId),
+                    'id_task_building': String(id_task_building),
+                    'id_text_task': String(id_text_task),
+                    'id_first_sign_user': Number(id_first_sign_user),
+                    'id_second_sign_user': Number(id_second_sign_user),
+                    'id_draft_name': String(id_draft_name),
+                    'id_task_mark_doc': Number(id_task_mark_doc),
+                    'id_task_stage': Number(id_task_stage),
+                },
+                success: function (data) {   // `data` результат выполнения  функции `load_contract`
+                    $("#notification").html(data);
+                }
+            });
+        };
+
+        function onClickLoadDraft() {
+            var url = $("#load-drafts").attr("data-ajax-url");
 
             $.ajax({                       // формируем AJAX запрос
                 url: url,                    // подгружаем URL адрес для запроса
                 data: {
-                    'object': objectId       // добавляем objectID в query параметры GET запроса
+                    'user_id': {{user.id}},       // добавляем objectID в query параметры GET запроса
                 },
                 success: function (data) {   // `data` результат выполнения  функции `load_contract`
-                    $("#id_task_contract").prop('disabled', false);
-                    $("#id_task_contract").html(data);  // помещаем результат в выпадающее меню
+                    $("#drafts_list").html(data);
+
                 }
             });
 
-        });
-        /*!JS для фильтрации списка этапов*/
-        $("#id_task_contract").change(function () {
-            var url = $("#formAdd").attr("data-stages-url");
-            var conractId = $(this).val();
+            $('#from_draft').modal('show');
+        }
 
-            $.ajax({
-                url: url,
-                data: {
-                    'contract': conractId
-                },
-                success: function (data) {
-                    $("#id_task_stage").prop('disabled', false);
-                    $("#id_task_stage").html(data);
+        function loadCurrentDraft(draft_id) {
+            console.log('load draft_id:', draft_id)
+            var url = $("#drafts_list_ul_link").attr("data-ajax-url");
+            $.ajax({                       // формируем AJAX запрос
+                    url: url,                    // подгружаем URL адрес для запроса
+                    data: {
+                        'draft_id': draft_id,       // добавляем objectID в query параметры GET запроса
+                    },
+                    success: function (data) {   // `data` результат выполнения  функции `load_contract`
+                        $("#update_form").html(data);
+                    }
                 }
-            });
+            )
+            ;
+            $('#from_draft').modal('hide');
+        }
 
-        });
 
     </script>
 {% endblock %}
