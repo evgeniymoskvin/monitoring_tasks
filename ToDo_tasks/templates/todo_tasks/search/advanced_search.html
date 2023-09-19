@@ -95,8 +95,10 @@
                 <div class="row justify-content-center; ">
                     <div class="col">
                         <figure class="text-center">
-                            <button type="button" id="btn-cancel" class="button-cancel-fill-border" href="#" role="button" style="opacity: 0"
-                               onclick="onClickCancel()">Отмена</button>
+                            <button type="button" id="btn-cancel" class="button-cancel-fill-border" href="#"
+                                    role="button" style="opacity: 0"
+                                    onclick="onClickCancel()">Отмена
+                            </button>
                             <button class="button-success" type="submit">Найти</button>
                         </figure>
                     </div>
@@ -195,6 +197,23 @@
     <!-- JS для работы таблицы со всеми заданиями -->
     <script>
 
+        function newStyleButton() {
+            const pdf_button = document.getElementsByClassName("btn btn-secondary buttons-pdf buttons-html5")[0]
+            console.log(pdf_button);
+            pdf_button.classList.remove("btn")
+            pdf_button.classList.remove("btn-secondary")
+            pdf_button.classList.remove("buttons-pdf")
+            pdf_button.classList.remove("buttons-html5")
+            pdf_button.textContent = ''
+            pdf_button.classList.add("pdf_button_icon")
+
+            const exel_button = document.getElementsByClassName("btn btn-secondary buttons-excel buttons-html5")[0]
+            console.log(exel_button);
+            exel_button.classList.remove("btn")
+            exel_button.textContent = ''
+            exel_button.classList.add("exel_button_icon")
+        }
+
         function onClickFilter() {
             document.getElementById("form_search").style.display = 'block'
             document.getElementById("btn-cancel").style.opacity = '1'
@@ -213,7 +232,8 @@
                     dom:
                         "<'row'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-6'f>>" +
                         "<'row'<'col-sm-12'tr>>" +
-                        "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>" + "<'row justify-content-md-center'<'col-sm-2 col-md-2 col-xxl-2'B>>",
+                        "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>"+
+                        "<'col-sm-2 col-md-2 col-xxl-2'B>",
                     "language": {
                         "lengthMenu": "Показать _MENU_",
                         "zeroRecords": "Записи не найдены",
@@ -224,13 +244,14 @@
                             "previous": "Предыдущая"
                         }
                     },
-                    "aLengthMenu": [[1, 3, 5, 10, 25, -1], [1, 3, 5, 10, 25, "All"]],
+                    "aLengthMenu": [[1, 3, 5, 10, 25, -1], [1, 3, 5, 10, 25, "Все"]],
                     "iDisplayLength": 25,
                     buttons: ['pdf', 'excel']
                 }
             );
             table.buttons().container()
                 .appendTo($('.col-sm-6:eq(0)', table.table().container()));
+            newStyleButton()
         });
 
         // JS для фильтрации списка контрактов

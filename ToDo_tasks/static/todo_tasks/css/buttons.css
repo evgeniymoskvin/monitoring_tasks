@@ -202,7 +202,7 @@
 .pdf_button_icon {
     box-sizing: content-box;
     /*padding: .25em .25em;*/
-    margin-top: 13px;
+    margin-top: 3px;
     mask-image: url('../icons/filetype-pdf.svg');
     mask-position: center;
     mask-repeat: no-repeat;
@@ -211,7 +211,7 @@
     background-position: center center;
     background-repeat: no-repeat;
     border: 0px;
-    height: 25px;
+    height: 40px;
     /*width: 10px;*/
     padding-left: 16px; /* Or size of icon + spacing */
     opacity: .5;
@@ -228,7 +228,7 @@
 .exel_button_icon {
     box-sizing: content-box;
     /*padding: .25em .25em;*/
-    margin-top: 13px;
+    margin-top: 3px;
     mask-image: url('../icons/filetype-xls.svg');
     mask-position: center;
     mask-repeat: no-repeat;
@@ -237,7 +237,7 @@
     background-position: center center;
     background-repeat: no-repeat;
     border: 0px;
-    height: 25px;
+    height: 40px;
     /*width: 10px;*/
     padding-left: 16px; /* Or size of icon + spacing */
     opacity: .5;
