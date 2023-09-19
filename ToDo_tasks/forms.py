@@ -32,7 +32,8 @@ class TaskForm(ModelForm):
             "incoming_employee",
             "task_workers",
             "cpe_sign_user",
-            "task_approved"
+            "task_approved",
+            "have_connection"
         ]
         widgets = {"task_order": Select(attrs={"class": "form-select",
                                                "aria-label": "Номер заказа"}),
@@ -107,7 +108,9 @@ class TaskFormForSave(ModelForm):
             "incoming_employee",
             "task_workers",
             "cpe_sign_user",
-            'task_approved'
+            'task_approved',
+            'have_connection'
+
         ]
         widgets = {"task_order": Select(attrs={"class": "form-select",
                                                "aria-label": "Номер заказа"}),
@@ -198,7 +201,8 @@ class TaskEditForm(ModelForm):
             'task_stage',
             'task_type_work',
             'incoming_employee',
-            "cpe_sign_user"
+            "cpe_sign_user",
+            'have_connection'
         ]
         widgets = {"task_building": TextInput(attrs={"class": "form-control",
                                                      "aria-label": "Здание", "onchange": "checkParams()"}),

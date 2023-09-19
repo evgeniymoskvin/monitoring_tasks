@@ -131,7 +131,7 @@
                         </div>
                     </div>
                     <div class="modal-body">
-                        <div id="drafts_list">dfjhdfl;h</div>
+                        <div id="drafts_list">Что-то пошло не так</div>
                         <div id="drafts_list_ul_link" data-ajax-url="{% url 'ajax_load_current_draft' %}" hidden></div>
                     </div>
                 </div>
@@ -312,16 +312,7 @@
         // JS для поля выбора отделов
 
 
-        document.getElementById('id_task_need_approve').onchange = toggle;
 
-        function toggle() {
-            var div = document.getElementById('approve');
-            if (this.checked) {
-                div.style.display = 'block';
-            } else
-                div.style.display = 'none'
-
-        }
 
         function checkParams() {
             /*Функция активации кнопки*/

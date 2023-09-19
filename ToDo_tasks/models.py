@@ -257,6 +257,7 @@ class TaskModel(models.Model):
     task_workers = models.BooleanField("Наличие исполнителей", default=False)
     task_approved = models.BooleanField("Согласовано", default=False)
     task_need_approve = models.BooleanField("Требуются ли согласователи?", default=False)
+    have_connection = models.IntegerField("Номер взаимосвязи с другими заданиями", default=0, null=True, blank=True)
 
     def __str__(self):
         return f'{self.task_number}, {self.task_order}, {self.task_object}, {self.task_contract}'
@@ -408,3 +409,16 @@ class FavoritesShareModel(models.Model):
 
     def __str__(self):
         return f'{self.favorite_list}: {self.favorite_share_user}'
+
+
+class ConnectionTaskModel(models.Model):
+    """Таблица связей заданий"""
+    number_connection = models.IntegerField("Номер взаимосвязи:", default=0,  null=True, blank=True)
+    dependent_task = models.ForeignKey(TaskModel, on_delete=models.CASCADE, verbose_name="Зависимое задание", null=False, related_name="second_dependent_task")
+
+    class Meta:
+        verbose_name = _("взаимосвязь задания")
+        verbose_name_plural = _("взаимосвязи заданий")
+
+    def __str__(self):
+        return f'{self.number_connection}: {self.dependent_task}'

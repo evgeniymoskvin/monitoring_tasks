@@ -22,7 +22,12 @@
         <div class="col" style="margin-top: 25px">
             <div class="d-flex justify-content-end">
                 <h4>
-
+                    {% if have_connection %}
+                        <a href="#" onclick="onClickConnection({{ obj.id }})"><img class="hover-mouse-icon"
+                                                                                   src="{% static 'todo_tasks/icons/exclamation-circle-fill.svg' %}"
+                                                                                   data-toggle="tooltip"
+                                                                                   title="Есть взаимосвязи"></a>
+                    {% endif %}
                     <a href="#" onclick="copyLink()"><img class="hover-mouse-icon"
                                                           src="{% static 'todo_tasks/icons/share.svg' %}"
                                                           data-toggle="tooltip"
@@ -363,6 +368,30 @@
     </div>
 
 
+    <!-- Модальное окно просмотра взаимосвязей -->
+
+    <div class="modal fade" id="connections_tasks"
+         tabindex="-1"
+         aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="staticBackdropLabel">Взаимосвязь задания</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                            aria-label="Закрыть"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="list_connections" data-ajax-url="{% url 'ajax_load_connection' %}">
+                        Что-то пошло не так...
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
 
     <!-- Уведомление о скопированной ссылке -->
     <div class="toast-container position-fixed bottom-0 end-0 p-3" style="margin-right: 50px">
@@ -383,6 +412,20 @@
             $('[data-toggle="tooltip"]').tooltip();
         });
 
+        function onClickConnection(obj_id) {
+            /*var url_connection = $("#list_connections").attr("data-ajax-url");*/
+            var url = $("#list_connections").attr("data-ajax-url");
+            $.ajax({ // формируем AJAX запрос
+                url: url,                    // подгружаем URL адрес для запроса
+                data: {
+                    'obj_id': obj_id       // добавляем objectID в query параметры GET запроса
+                },
+                success: function (data) {   // `data` результат выполнения  функции `load_contract`
+                    $("#list_connections").html(data);  // помещаем результат в выпадающее меню
+                }
+            });
+            $('#connections_tasks').modal('show');
+        }
 
         function openFavoriteListModal(user_id) {
             console.log(user_id)

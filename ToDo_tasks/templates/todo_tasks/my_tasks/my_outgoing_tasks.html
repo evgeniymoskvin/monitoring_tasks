@@ -14,6 +14,7 @@
             <tr>
                 <th class="th_tables" scope="col">#</th>
                 <th class="th_tables" scope="col">Номер задания</th>
+                <th class="th_tables" scope="col">Принимающий<br>отдела</th>
                 <th class="th_tables" scope="col">Текст задания</th>
                 <th class="th_tables" scope="col">Подпись</th>
             </tr>
@@ -23,8 +24,11 @@
             {% for obj in data_user %}
                 <tr class="tr-tables" data-href="{% url 'details' pk=obj.id %}">
                     <th class="th_tables" scope="row">{{ forloop.counter }}</th>
-                    <td class="td_tables">
+                    <td class="td_tables" style="width: 50px">
                         {{ obj.task_number }}</td>
+                <td class="td_tables">
+                        {{ obj.incoming_dep.command_number }}</td>
+
                     <td class="td_tables">
                     <span data-toggle="tooltip"
                           title="{{ obj.text_task|truncatechars:500 }}">{{ obj.text_task|truncatechars:100 }}

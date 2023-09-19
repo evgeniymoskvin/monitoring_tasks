@@ -1,0 +1,8 @@
+<p>Эти задания выдавались одновременно:</p>
+<ul class="list-group">
+    {% for task in list_connection %}
+        <li class="list-group-item d-flex justify-content-start align-items-center hover-mouse" onclick="location.href='{% url "details" pk=task.dependent_task_id %}'">
+            {{ task.dependent_task.task_number }}
+        </li>
+    {% endfor %}
+</ul>

@@ -85,6 +85,10 @@ def get_data_for_detail(request, pk) -> dict:
     approve_users = ApproveModel.objects.get_queryset().filter(approve_task_id=pk)
     workers = WorkerModel.objects.get_queryset().filter(task_id=pk)
     files = AttachmentFilesModel.objects.get_queryset().filter(task_id=pk)
+    if obj.have_connection and obj.have_connection > 0:
+        have_connection = True
+    else:
+        have_connection = False
     return {
         'obj': obj,
         'user': user,
@@ -93,7 +97,8 @@ def get_data_for_detail(request, pk) -> dict:
         "task_status": task_status,
         "workers": workers,
         "approve_users": approve_users,
-        "files": files
+        "files": files,
+        "have_connection": have_connection,
     }
 
 

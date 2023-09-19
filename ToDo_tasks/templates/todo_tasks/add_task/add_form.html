@@ -191,4 +191,16 @@
 
     });
 
+
+    document.getElementById('id_task_need_approve').onchange = toggle;
+
+    function toggle() {
+        var div = document.getElementById('approve');
+        if (this.checked) {
+            div.style.display = 'block';
+        } else
+            div.style.display = 'none'
+
+    }
+
 </script>

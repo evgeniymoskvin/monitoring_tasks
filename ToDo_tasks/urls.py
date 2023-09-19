@@ -63,4 +63,5 @@ urlpatterns = [
     path('ajax/load_current_draft', views.load_current_draft, name="ajax_load_current_draft"),
     path('ajax/delete_current_draft', views.delete_current_draft, name="ajax_delete_current_draft"),
     path('ajax/delete_all_drafts', views.delete_all_drafts, name="ajax_delete_all_drafts"),
+    path('ajax/load_connection', views.load_connection_tasks, name="ajax_load_connection"),
 ]

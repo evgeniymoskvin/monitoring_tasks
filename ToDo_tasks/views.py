@@ -17,7 +17,7 @@ from django.contrib.auth import authenticate, login
 
 from .models import Employee, TaskModel, ContractModel, ObjectModel, StageModel, TaskNumbersModel, CommandNumberModel, \
     CpeModel, CanAcceptModel, WorkerModel, ApproveModel, AttachmentFilesModel, FavoritesListModel, \
-    TasksInFavoritesModel, FavoritesShareModel, CanChangeWorkersModel, DraftTaskModel
+    TasksInFavoritesModel, FavoritesShareModel, CanChangeWorkersModel, DraftTaskModel, ConnectionTaskModel
 from .forms import TaskForm, TaskEditForm, SearchForm, WorkerForm, WorkersEditForm, \
     TaskFormForSave, ApproveForm, FilesUploadForm, UserProfileForm, ApproveEditForm, LoginForm, CreateFavoriteListForm, \
     ShareFavoriteListForm, AddMyFavoriteForm, AddShareFavoriteForm, SaveDraftForm
@@ -239,7 +239,16 @@ class AddTaskView(View):
         # Из исходного пост запроса получаем список отделов, куда надо выдать задания
         incoming_deps_list = request.POST.getlist('incoming_dep')
         approved_user_list = request.POST.getlist('approve_user')
+        # Создаем взаимосвязь, если имеется
+        number_connection = 0
+        if len(incoming_deps_list) > 1:
+            try:
+                number_connection = int(ConnectionTaskModel.objects.get_queryset().last().number_connection)
+            except Exception as e:
+                print(f'Нет запиписей в таблице взаимосвязей: {e}')
+        number_connection += 1
 
+        print(f'длина списка {len(incoming_deps_list)}')
         # Перебираем отделы в которые направляются задания
         for dep in incoming_deps_list:
             # Меняем значение отдела, на нужное нам из списка
@@ -293,9 +302,16 @@ class AddTaskView(View):
                 new_post.task_change_number = 0  # номер изменения присваиваем 0
                 # print(new_post.task_order)
                 # print(new_post.task_number)
+                if len(incoming_deps_list) > 1:
+                    new_post.have_connection = number_connection
                 form.save()  # сохраняем форму в бд
                 # Получаем id номер созданного задания
                 number_id = TaskModel.objects.get(task_number=new_post.task_number).id
+                # Записываем взаимосвязь в таблицу
+                if len(incoming_deps_list) > 1:
+                    connection_post = ConnectionTaskModel(number_connection=number_connection,
+                                                          dependent_task_id=number_id)
+                    connection_post.save()
                 email_create_task(new_post, approved_user_list)
                 # Добавляем файлы, если есть
                 if request.FILES:
@@ -358,6 +374,10 @@ class EditTaskView(View):
             obj.second_sign_status = 0
             obj.cpe_sign_status = 0
             obj.back_to_change = 0
+            # Удаляем зависимость при изменении задания
+            obj.have_connection = 0
+            connection = ConnectionTaskModel.objects.get(dependent_task_id=obj.id)
+            connection.delete()
             obj.task_last_edit = timezone.now()  # обновляем дату последнего изменения
             # Сохраняем новые данные в базу данных
             obj.save()
@@ -1424,6 +1444,17 @@ def load_drafts(request):
         'obj': obj,
     }
     return render(request, 'todo_tasks/ajax/load_drafts_list.html', content)
+
+
+def load_connection_tasks(request):
+    """Получение списка взаимосвязей"""
+    obj_id = int(request.GET.get("obj_id"))
+    number_connection = TaskModel.objects.get(id=obj_id).have_connection
+    list_connection = ConnectionTaskModel.objects.get_queryset().filter(number_connection=number_connection)
+    content = {
+        'list_connection': list_connection,
+    }
+    return render(request, 'todo_tasks/ajax/load_connection_list.html', content)
 
 
 def load_current_draft(request):
