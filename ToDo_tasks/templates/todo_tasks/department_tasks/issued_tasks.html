@@ -1,8 +1,8 @@
 {% extends "todo_tasks/base.html" %}
 {% load static %}
-{#{% block title %}#}
-{#    Главная страница#}
-{#{% endblock %}#}
+{% block title %}
+    Выданные задания отдела {{ user.department.command_number }}
+{% endblock %}
 
 {% block content %}
     {% if data_all %}

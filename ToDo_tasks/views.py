@@ -486,6 +486,7 @@ class AddChangeTaskView(View):
         form = TaskEditForm(request.POST)
         changing_task = TaskModel.objects.get(pk=pk)  # Получаем данные существующего задания
         changing_task.task_status = 0  # аннулируем задание на которое выдается изменение
+        changing_task.have_connection = 0
         changing_task.save()
         new_task_with_change = TaskModel(
             author=Employee.objects.get(user=request.user))  # Новое задание, автор пользователь из запроса

@@ -27,6 +27,7 @@ class GroupDepartmentModel(models.Model):
     """Список управлений"""
     group_dep_abr = models.CharField("Сокращенное название управления", max_length=10)
     group_dep_name = models.CharField("Полное название управления", max_length=250)
+    show = models.BooleanField("Отображать отдел", default=True)
 
     def __str__(self):
         return f'{self.group_dep_abr}, {self.group_dep_name}'

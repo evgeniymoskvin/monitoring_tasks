@@ -1,21 +1,21 @@
-@font-face {
-    font-family: 'p22_underground_cy_prodemi';
-    src: url('../fonts/P22UndergroundCYPro-Demi.woff2') format('woff2'),
-    url('../fonts/P22UndergroundCYPro-Demi.woff') format('woff'),
-    url('../fonts/P22UndergroundCYPro-Demi.otf') format('otf');
-    font-weight: normal;
-    font-style: normal;
+/*@font-face {*/
+/*    font-family: 'p22_underground_cy_prodemi';*/
+/*    src: url('../fonts/P22UndergroundCYPro-Demi.woff2') format('woff2'),*/
+/*    url('../fonts/P22UndergroundCYPro-Demi.woff') format('woff'),*/
+/*    url('../fonts/P22UndergroundCYPro-Demi.otf') format('otf');*/
+/*    font-weight: normal;*/
+/*    font-style: normal;*/
 
-}
+/*}*/
 
-@font-face {
-    font-family: 'p22_underground_cy_probook';
-    src: url('../fonts/P22UndergroundCYPro-Book.woff2') format('woff2'),
-    url('../fonts/P22UndergroundCYPro-Book.woff') format('woff'),
-    url('../fonts/P22UndergroundCYPro-Book.otf') format('otf');
-    font-weight: bold;
-    font-style: normal;
-}
+/*@font-face {*/
+/*    font-family: 'p22_underground_cy_probook';*/
+/*    src: url('../fonts/P22UndergroundCYPro-Book.woff2') format('woff2'),*/
+/*    url('../fonts/P22UndergroundCYPro-Book.woff') format('woff'),*/
+/*    url('../fonts/P22UndergroundCYPro-Book.otf') format('otf');*/
+/*    font-weight: bold;*/
+/*    font-style: normal;*/
+/*}*/
 
 @font-face {
     font-family: 'golos_400';
@@ -26,6 +26,38 @@
     font-weight: bold;
     font-style: normal;
 }
+
+@font-face {
+    font-family: 'p22_underground_cy_prodemi';
+    src: url('../fonts/golos/500/font.woff2') format('woff2'),
+    url('../fonts/golos/500/font.woff') format('woff'),
+    url('../fonts/golos/500/font.ttf') format('ttf');
+    url('../fonts/golos/500/font.eot') format('eot');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+@font-face {
+    font-family: 'p22_underground_cy_probook';
+    src: url('../fonts/golos/400/font.woff2') format('woff2'),
+    url('../fonts/golos/400/font.woff') format('woff'),
+    url('../fonts/golos/400/font.ttf') format('ttf');
+    url('../fonts/golos/400/font.eot') format('eot');
+    font-weight: bold;
+    font-style: normal;
+}
+
+/*@font-face {*/
+/*    font-family: 'golos_400';*/
+/*    src: url('../fonts/golos/golos_400_font.woff2') format('woff2'),*/
+/*    url('../fonts/golos/golos_400_font.woff') format('woff'),*/
+/*    url('../fonts/golos/golos_400_font.ttf') format('ttf');*/
+/*    url('../fonts/golos/golos_400_font.eot') format('eot');*/
+/*    font-weight: bold;*/
+/*    font-style: normal;*/
+/*}*/
+
 
 @keyframes fade-in {
     0% {
