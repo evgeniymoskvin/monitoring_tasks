@@ -749,8 +749,15 @@ class ToAddWorkersDetailView(View):
         sign_user = Employee.objects.get(user=request.user)
         content = get_data_for_detail(request, pk)
         formset = WorkerForm()
-        formset.fields['worker_user'].queryset = Employee.objects.filter(
-            department_group=sign_user.department_group).filter(work_status=True)
+        # formset.fields['worker_user'].queryset = Employee.objects.filter(
+        #     department_group=sign_user.department_group).filter(work_status=True)
+        sign_user_departments = CanAcceptModel.objects.get_queryset().filter(user_accept=sign_user)
+        sign_user_departments_list = [obj.dep_accept for obj in sign_user_departments]
+        if len(sign_user_departments_list) > 0:
+            formset.fields['worker_user'].queryset = Employee.objects.filter(
+                department__in=sign_user_departments_list).filter(work_status=True)
+        elif CanChangeWorkersModel.objects.get_queryset().filter(user_accept=sign_user).count() > 0:
+            formset.fields['worker_user'].queryset = Employee.objects.filter(department=sign_user.department)
         content['data_all'] = WorkerModel.objects.get_queryset().filter(task=pk)
         content["formset"] = formset
         return render(request, 'todo_tasks/workers/details_to_add_workers.html', content)
