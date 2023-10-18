@@ -216,11 +216,10 @@
         <ul class="list-group">
             {% for file in files %}
                 <li class="list-group-item d-flex justify-content-start align-items-center hover-mouse"
-                    onclick="window.open('{% url 'download_file' file.id %}', 'Download')" style="cursor: pointer">
+                    style="cursor: pointer">
                     <img src="{% static 'todo_tasks/icons/file-arrow-down.svg' %}" style="margin-right: 10px">
-                    {#                    <a href="{% url 'download_file' file.id %}"#}
-                    {#                       class="nav-link text-black" download>{% split_filename file.file %}</a>#}
-                    {% split_filename file.file %}
+                    <a href="{% url 'download_file' file.id %}"
+                       class="nav-link text-black" download>{% split_filename file.file %}</a>
                 </li>
             {% endfor %}
         </ul>
