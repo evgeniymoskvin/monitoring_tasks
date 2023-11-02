@@ -66,8 +66,7 @@
                                             <li onclick="onClickLoadDraft()" , id="load-drafts"
                                                 data-ajax-url="{% url 'ajax_load_drafts' %}"><p
                                                     class="dropdown-item dropdown-primary-rusatom-item">
-                                                Загрузить
-                                                черновик</p></li>
+                                                Черновики</p></li>
                                         </ul>
                                     </div>
 
@@ -296,7 +295,7 @@
         }
 
         function allDraftsDelete() {
-            var url_all_delete =  $("#delete_all_drafts").attr("data-ajax-url");
+            var url_all_delete = $("#delete_all_drafts").attr("data-ajax-url");
             $('#delete_all_draft').modal('hide');
             $.ajax({                       // формируем AJAX запрос
                 url: url_all_delete,                    // подгружаем URL адрес для запроса
@@ -310,8 +309,6 @@
         }
 
         // JS для поля выбора отделов
-
-
 
 
         function checkParams() {

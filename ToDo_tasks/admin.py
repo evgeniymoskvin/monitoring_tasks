@@ -14,7 +14,7 @@ class TaskAdmin(admin.ModelAdmin):
 class EmployeeAdmin(admin.ModelAdmin):
     # list_display = ("author", "text_task")
     ordering = ["last_name"]
-    search_fields = ["user"]
+    search_fields = ["last_name"]
     # list_filter = ("author", "task_number")
 
 
