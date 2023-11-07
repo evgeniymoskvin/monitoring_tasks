@@ -15,6 +15,10 @@ from django.conf import settings
 from django.http import HttpResponse, Http404
 from django.contrib.auth import authenticate, login
 
+# Celery tasks
+from .tasks import write_spam, celery_email_create_task
+
+#Models db
 from .models import Employee, TaskModel, ContractModel, ObjectModel, StageModel, TaskNumbersModel, CommandNumberModel, \
     CpeModel, CanAcceptModel, WorkerModel, ApproveModel, AttachmentFilesModel, FavoritesListModel, \
     TasksInFavoritesModel, FavoritesShareModel, CanChangeWorkersModel, DraftTaskModel, ConnectionTaskModel
@@ -312,6 +316,7 @@ class AddTaskView(View):
                     connection_post = ConnectionTaskModel(number_connection=number_connection,
                                                           dependent_task_id=number_id)
                     connection_post.save()
+                # celery_email_create_task.delay(new_post.id, approved_user_list)
                 email_create_task(new_post, approved_user_list)
                 # Добавляем файлы, если есть
                 if request.FILES:

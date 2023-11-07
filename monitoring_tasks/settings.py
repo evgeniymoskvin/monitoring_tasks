@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'ToDo_tasks',
     'login',
+    'cachalot',
 
 ]
 
@@ -153,3 +154,18 @@ EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS')
 SERVER_EMAIL = os.getenv('SERVER_EMAIL')
 DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL')
 # CSRF_TRUSTED_ORIGINS = [host.strip() for host in os.getenv('CSRF_TRUSTED_ORIGINS').split(',')]
+
+CELERY_BROKER_URL = 'redis://localhost:6379//0'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+FORKED_BY_MULTIPROCESSING = 1
+# CELERY_BROKER_URL = 'redis://0.0.0.0:6379//0'
+# CELERY_RESULT_BACKEND = 'redis://0.0.0.0:6379/0'
+# CACHES = {
+#     "default": {
+#         "BACKEND": "django_redis.cache.RedisCache",
+#         "LOCATION": "redis://127.0.0.1:6379/1",
+#         "OPTIONS": {
+#             "CLIENT_CLASS": "django_redis.client.DefaultClient",
+#         }
+#     }
+# }

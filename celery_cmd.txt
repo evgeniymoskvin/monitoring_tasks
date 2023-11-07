@@ -1,0 +1,3 @@
+celery -A monitoring_tasks worker -l info --pool=solo -n worker1@%h
+
+celery -A monitoring_tasks beat -l info

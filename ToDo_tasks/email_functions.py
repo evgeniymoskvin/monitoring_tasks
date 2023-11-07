@@ -1,4 +1,6 @@
 import os
+import asyncio
+from asgiref.sync import sync_to_async
 
 from django.core.mail import EmailMessage
 
@@ -10,11 +12,14 @@ load_dotenv()
 LINK_FOR_EMAIL = os.getenv('LINK_FOR_EMAIL')
 
 
-def email_create_task(new_post, approved_user_list):
+def email_create_task(new_post, approved_user_list):   # без Celery
+# def email_create_task(new_post_id, approved_user_list):  # с использованием Celery
     """Функция рассылки почты при создании задания"""
-    number_id = TaskModel.objects.get(task_number=new_post.task_number).id
+    # new_post = TaskModel.objects.get(id=new_post_id)  # с использованием Celery
+    # number_id = new_post.id  # с использованием Celery
+    number_id = TaskModel.objects.get(task_number=new_post.task_number).id # без Celery
     #  Отправка сообщения автору
-    if Employee.objects.get(id = new_post.author_id).mailing_list_check is True:
+    if Employee.objects.get(id=new_post.author_id).mailing_list_check is True:
         email_author = EmailMessage(f'Задание {new_post.task_number} создано',
                                     f'Задание {new_post.task_number} создано, посмотрите {LINK_FOR_EMAIL}/details/{number_id}',
                                     to=[new_post.author.user.email])
@@ -35,7 +40,7 @@ def email_create_task(new_post, approved_user_list):
                 print('Error send email')
 
     if Employee.objects.get(id=new_post.first_sign_user_id).mailing_list_check is True:
-    #  Отправка письма первому руководителю
+        #  Отправка письма первому руководителю
         email_first_sign = EmailMessage(f'Подписание задания {new_post.task_number}.',
                                         f'{new_post.first_sign_user}, задание {new_post.task_number} зарегистрировано в системе. Прошу рассмотреть и подписать его. \n Посмотрите {LINK_FOR_EMAIL}/details_to_sign/{number_id}',
                                         to=[new_post.first_sign_user.user.email])
@@ -167,7 +172,7 @@ def incoming_not_sign_email(pk, incoming_signer, comment, need_edit=False):
         print('Error send email')
 
 
-def email_not_sign(pk, comment, user, need_edit=False,):
+def email_not_sign(pk, comment, user, need_edit=False, ):
     task = TaskModel.objects.get(id=pk)
     sign_user = Employee.objects.get(user=user)
     str_need_edit = 'не требуется'
@@ -249,10 +254,10 @@ def email_add_approver(pk, approve_user_id):
 def approve_give_comment_email(pk, user, text_comment):
     obj = TaskModel.objects.get(id=pk)
     email_to_author = EmailMessage(f'Согласователь прислал комментарий к заданию {obj.task_number}.',
-                                     f'{obj.author}. '
-                                     f'\n{Employee.objects.get(user=user)} прислал комментарий к заданию  {obj.task_number} '
-                                     f'\nКомментарий: {text_comment}'
-                                     f'\nПосмотрите {LINK_FOR_EMAIL}/details/{obj.id}',
+                                   f'{obj.author}. '
+                                   f'\n{Employee.objects.get(user=user)} прислал комментарий к заданию  {obj.task_number} '
+                                   f'\nКомментарий: {text_comment}'
+                                   f'\nПосмотрите {LINK_FOR_EMAIL}/details/{obj.id}',
                                    to=[obj.author.user.email])
     try:
         email_to_author.send()
@@ -260,3 +265,9 @@ def approve_give_comment_email(pk, user, text_comment):
         print('Error send email')
 
 
+def text_spam(text):
+    email_send = EmailMessage(f'тест Celery', f'Этот текст шлем через Celery: {text}', to=['tttestttsait@yandex.ru'])
+    try:
+        email_send.send()
+    except:
+        print('Error send email')
