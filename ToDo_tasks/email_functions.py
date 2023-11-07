@@ -10,7 +10,7 @@ load_dotenv()
 LINK_FOR_EMAIL = os.getenv('LINK_FOR_EMAIL')
 
 
-async def email_create_task(new_post, approved_user_list):
+def email_create_task(new_post, approved_user_list):
     """Функция рассылки почты при создании задания"""
     number_id = TaskModel.objects.get(task_number=new_post.task_number).id
     #  Отправка сообщения автору
@@ -55,7 +55,7 @@ async def email_create_task(new_post, approved_user_list):
             print('Error send email')
 
 
-async def check_and_send_to_cpe(pk):
+def check_and_send_to_cpe(pk):
     """Отправка сообщения ГИП-у"""
     task = TaskModel.objects.get(id=pk)
     if (task.first_sign_status is True) and (task.second_sign_status is True) and (task.task_approved is True):
@@ -74,7 +74,7 @@ async def check_and_send_to_cpe(pk):
                     print('Error send email')
 
 
-async def email_after_cpe_sign(pk):
+def email_after_cpe_sign(pk):
     """Отправка сообщения принимающим, после подписания ГИП-ом"""
     task = TaskModel.objects.get(id=pk)
     if task.cpe_sign_status is True:
@@ -110,7 +110,7 @@ async def email_after_cpe_sign(pk):
             print('Error send email')
 
 
-async def add_worker_email(pk, worker_id):
+def add_worker_email(pk, worker_id):
     task = TaskModel.objects.get(id=pk)
     worker = Employee.objects.get(id=worker_id)
     if worker.mailing_list_check is True:
@@ -124,7 +124,7 @@ async def add_worker_email(pk, worker_id):
             print('Error send email')
 
 
-async def delete_worker_email(pk):
+def delete_worker_email(pk):
     worker = WorkerModel.objects.get(id=pk)
     task = worker.task
     if Employee.objects.get(id=worker.worker_user_id).mailing_list_check is True:
@@ -138,7 +138,7 @@ async def delete_worker_email(pk):
             print('Error send email')
 
 
-async def incoming_sign_email(task, incoming_signer):
+def incoming_sign_email(task, incoming_signer):
     if Employee.objects.get(id=task.author_id).mailing_list_check is True:
         email_to_author = EmailMessage(f'Задание {task.task_number} подписано принимающим отделом.',
                                        f'{incoming_signer} принял(а) Ваше задание {task.task_number} в отдел {task.incoming_dep}.'
@@ -150,7 +150,7 @@ async def incoming_sign_email(task, incoming_signer):
             print('Error send email')
 
 
-async def incoming_not_sign_email(pk, incoming_signer, comment, need_edit=False):
+def incoming_not_sign_email(pk, incoming_signer, comment, need_edit=False):
     task = TaskModel.objects.get(id=pk)
     str_need_edit = 'не требуется'
     if need_edit is True:
@@ -167,7 +167,7 @@ async def incoming_not_sign_email(pk, incoming_signer, comment, need_edit=False)
         print('Error send email')
 
 
-async def email_not_sign(pk, comment, user, need_edit=False,):
+def email_not_sign(pk, comment, user, need_edit=False,):
     task = TaskModel.objects.get(id=pk)
     sign_user = Employee.objects.get(user=user)
     str_need_edit = 'не требуется'
@@ -185,7 +185,7 @@ async def email_not_sign(pk, comment, user, need_edit=False,):
         print('Error send email')
 
 
-async def email_change_task(obj, approved_user_list):
+def email_change_task(obj, approved_user_list):
     """Функция рассылки почты при выдаче изменений"""
     number_id = TaskModel.objects.get(task_number=obj.task_number).id
     #  Отправка сообщения автору
@@ -231,7 +231,7 @@ async def email_change_task(obj, approved_user_list):
             print('Error send email')
 
 
-async def email_add_approver(pk, approve_user_id):
+def email_add_approver(pk, approve_user_id):
     task = TaskModel.objects.get(id=pk)
     emp_approve = Employee.objects.get(id=approve_user_id)
     if emp_approve.mailing_list_check is True:
@@ -246,7 +246,7 @@ async def email_add_approver(pk, approve_user_id):
             print('Error send email')
 
 
-async def approve_give_comment_email(pk, user, text_comment):
+def approve_give_comment_email(pk, user, text_comment):
     obj = TaskModel.objects.get(id=pk)
     email_to_author = EmailMessage(f'Согласователь прислал комментарий к заданию {obj.task_number}.',
                                      f'{obj.author}. '
