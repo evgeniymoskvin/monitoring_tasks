@@ -6,15 +6,15 @@
     text-align: center;
     border: 2px solid black;
     background-color: white;
-    transition: all .05s ease-in-out;
+    transition: all .25s ease-in-out;
     color: black;
     padding-left: 50px;
     padding-right: 50px;
-    padding-top: 10px;
+    padding-top: 5px;
+    padding-bottom: 5px;
 }
 
 .button-index:hover {
-    scale: 110%;
     border-radius: 15px;
     text-align: center;
     background-color: black;
@@ -425,6 +425,32 @@
 }
 
 .button-cancel-rusatom:hover {
+    border-radius: 6px;
+    text-align: center;
+    background-color: rgba(68, 128, 243, 0.08);
+    color: #4480F3;
+    /*box-shadow: 0px 10px 38px 0px rgba(0, 0, 0, 0.2);*/
+}
+
+.button-cancel-rusatom-a {
+    font-family: "p22_underground_cy_probook", serif;
+    /*text-transform: uppercase;*/
+    font-size: 16px;
+    border-radius: 6px;
+    text-align: center;
+    border: 0px solid rgba(68, 128, 243, 0.12);
+    background-color: rgba(68, 128, 243, 0.12);
+    transition: all .1s ease-in-out;
+    color: #4480F3;
+    text-decoration: none;
+    cursor: pointer;
+    padding-left: 15px;
+    padding-right: 15px;
+    padding-top: 14px;
+    padding-bottom: 14px;
+}
+
+.button-cancel-rusatom-a:hover {
     border-radius: 6px;
     text-align: center;
     background-color: rgba(68, 128, 243, 0.08);

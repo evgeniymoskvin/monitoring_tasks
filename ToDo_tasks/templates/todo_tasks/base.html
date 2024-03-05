@@ -7,7 +7,8 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>{% block title %}{% endblock %}</title>
-
+    <link rel="icon" type="image/x-icon" href="{% static 'todo_tasks/favicon/favicon-32x32.png' %}" sizes="any">
+    <link rel="manifest" href="{% static 'todo_tasks/favicon/manifest.json' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'todo_tasks/Bootstrap-5-5.1.3/css/bootstrap.css' %}"/>
     <link rel="stylesheet" type="text/css" href="{% static 'todo_tasks/css/tasks.css' %}"/>
     <link rel="stylesheet" type="text/css" href="{% static 'todo_tasks/css/style_sidebar.css' %}"/>
@@ -31,19 +32,18 @@
 
 <script>
     window.addEventListener("beforeunload", function () {
-
-        body_container = document.getElementById('body_container')
-        body_container.style.display = 'none'
-
-        spinloader = document.getElementById('loader-big')
-        body_full = document.getElementById('body-full')
-        spinloader.style.display = 'block'
-
-
+        setTimeout(() => {
+            LoadSpin()
+        }, 350);
     });
+
+    window.addEventListener("unload", function () {
+        HideSpin()
+    })
+
 </script>
 
-<body class="content-fade back-search scroll" id="body-full">
+<body class="content-fade back-search" id="body-full">
 
 {% include "todo_tasks/sidebar.html" %}
 
@@ -53,11 +53,19 @@
     {% endblock %}
 </div>
 
-
+{% comment %}
 <div id="loader-big" style="display: none; background: #CACACA; width: 99vw; height: 100vw">
     <div class="centered_div">
         <p class="text-1-task" style="color: #202022">Работаем</p>
         <span class="loader-big"></span>
+    </div>
+</div>
+{% endcomment %}
+
+<div id="loader-big" class="div-loader" style="width: 99vw; min-height: 100vh">
+    <div class="centered_div">
+        <p class="text-1-task" style="display: flex; color: #202022">Работаем</p>
+        <span class="loader-big" style="display:flex;"></span>
     </div>
 </div>
 
@@ -74,6 +82,33 @@
         // инициализации подсказок для всех элементов на странице, имеющих атрибут data-toggle="tooltip"
         $('[data-toggle="tooltip"]').tooltip();
     });
+
+    function LoadSpin() {
+        var spinloader = document.getElementById('loader-big')
+        spinloader.style.display = 'flex'
+
+        /*spinloader.style.opacity = '1'*/
+
+        function f() {
+            var op = 0;
+            while (op <= 1) {
+                (function (_op) {
+                    setTimeout(function () {
+                        spinloader.style.opacity = _op;
+                    }, 10 + op * 200);
+                })(op);
+                op += 0.05;
+            }
+        }
+
+        f();
+    }
+
+    function HideSpin() {
+        var spinloader = document.getElementById('loader-big')
+        spinloader.style.display = 'none'
+        spinloader.style.opacity = '0';
+    }
 </script>
 
 

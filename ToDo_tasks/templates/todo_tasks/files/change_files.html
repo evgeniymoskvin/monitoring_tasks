@@ -48,9 +48,9 @@
             {{ file_form.file }}
             <br>
             <figure class="text-center">
-                <button class="button-cancel-fill-border" type="button" onclick="location.href='{% url 'details' pk=obj.id %}';"
+                <button class="button-cancel-rusatom" type="button" onclick="location.href='{% url 'details' pk=obj.id %}';"
                    style="cursor: context-menu;">К заданию</button>
-                <button class="button-success" type="submit" onclick="showloader()" style="cursor: context-menu;"
+                <button class="button-primary-rusatom" type="submit" onclick="showloader()" style="cursor: context-menu;"
                         hx-target="task_files" id="button_add">
                     Добавить
                 </button>

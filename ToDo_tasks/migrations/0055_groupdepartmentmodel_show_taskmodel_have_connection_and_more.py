@@ -19,14 +19,24 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='taskmodel',
             name='have_connection',
-            field=models.IntegerField(blank=True, default=0, null=True, verbose_name='Номер взаимосвязи с другими заданиями'),
+            field=models.IntegerField(blank=True, default=0, null=True,
+                                      verbose_name='Номер взаимосвязи с другими заданиями'),
+        ),
+        migrations.AlterField(
+            model_name='taskmodel',
+            name='task_type_work',
+            field=models.IntegerField(choices=[(0, 'Не указан'), (1, 'РД'), (2, 'ПД'), (3, 'ОБИН'), (4, 'НИОКР')],
+                                      default=0, verbose_name='Вид документации:'),
         ),
         migrations.CreateModel(
             name='ConnectionTaskModel',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('number_connection', models.IntegerField(blank=True, default=0, null=True, verbose_name='Номер взаимосвязи:')),
-                ('dependent_task', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='second_dependent_task', to='ToDo_tasks.taskmodel', verbose_name='Зависимое задание')),
+                ('number_connection',
+                 models.IntegerField(blank=True, default=0, null=True, verbose_name='Номер взаимосвязи:')),
+                ('dependent_task',
+                 models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='second_dependent_task',
+                                   to='ToDo_tasks.taskmodel', verbose_name='Зависимое задание')),
             ],
             options={
                 'verbose_name': 'взаимосвязь задания',

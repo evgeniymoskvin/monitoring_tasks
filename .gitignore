@@ -92,3 +92,8 @@ db.sqlite3
 .env
 monitoring_tasks/settings.py
 media/
+
+ToDo_tasks/pdf_making/times.cw127.pkl
+ToDo_tasks/pdf_making/times.pkl
+ToDo_tasks/pdf_making/timesbd.cw127.pkl
+ToDo_tasks/pdf_making/timesbd.pkl

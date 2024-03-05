@@ -49,19 +49,22 @@
             </tbody>
         </table>
     {% else %}
-        <h4 class="text-1-task" style="margin-top: 25px;">{{ user }}</h4>
-        <div class="row justify-content-center" style="margin-top: 0px">
-            <div class="col" style="display: inline-block; text-align: center">
+        <div class="centered_div">
+            <h4 class="text-1-task" style="margin-top: 25px;">{{ user }}</h4>
+            <div class="row justify-content-center" style="margin-top: 0px">
+                <div class="col" style="display: inline-block; text-align: center">
                 <span class="text-index-book"
                       style="display: inline-block; text-transform: uppercase; margin-top: 25px">Входящих задания, ожидающих назначения исполнителей, не найдено</span>
-                <br>
-                <img src="{% static 'todo_tasks/icons/face-grin-beam-regular.svg' %}" width="50px"
-                     style="margin-top: 30px">
+                    <br>
+                    <img src="{% static 'todo_tasks/icons/face-grin-beam-regular.svg' %}" width="50px"
+                         style="margin-top: 30px">
 
-            </div>
-            <div>
-                <p class="text-5-bold" style="text-transform: uppercase" onclick="location.href='{% url 'index' %}';">На
-                    главную</p>
+                </div>
+                <div>
+                    <p class="text-5-bold" style="text-transform: uppercase"
+                       onclick="location.href='{% url 'index' %}';">На
+                        главную</p>
+                </div>
             </div>
         </div>
     {% endif %}

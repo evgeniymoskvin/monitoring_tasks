@@ -1,7 +1,7 @@
 import datetime
 import mimetypes
 import os.path
-import copy
+import copy, time
 
 from django.shortcuts import render, redirect
 from django.utils import timezone
@@ -16,20 +16,21 @@ from django.http import HttpResponse, Http404
 from django.contrib.auth import authenticate, login
 
 # Celery tasks
-from .tasks import write_spam, celery_email_create_task
+from .tasks import celery_email_create_task
 
-#Models db
+# Models db
 from .models import Employee, TaskModel, ContractModel, ObjectModel, StageModel, TaskNumbersModel, CommandNumberModel, \
     CpeModel, CanAcceptModel, WorkerModel, ApproveModel, AttachmentFilesModel, FavoritesListModel, \
-    TasksInFavoritesModel, FavoritesShareModel, CanChangeWorkersModel, DraftTaskModel, ConnectionTaskModel
+    TasksInFavoritesModel, FavoritesShareModel, CanChangeWorkersModel, DraftTaskModel, ConnectionTaskModel, \
+    MoreDetailsEmployeeModel, GroupDepartmentModel
 from .forms import TaskForm, TaskEditForm, SearchForm, WorkerForm, WorkersEditForm, \
     TaskFormForSave, ApproveForm, FilesUploadForm, UserProfileForm, ApproveEditForm, LoginForm, CreateFavoriteListForm, \
-    ShareFavoriteListForm, AddMyFavoriteForm, AddShareFavoriteForm, SaveDraftForm
+    ShareFavoriteListForm, AddMyFavoriteForm, AddShareFavoriteForm, SaveDraftForm, ContractChangeForm
 from .functions import get_data_for_detail, get_list_to_sign, get_task_edit_form, \
     get_list_to_sign_cpe, get_list_incoming_tasks_to_sign, get_list_incoming_tasks_to_workers, save_to_worker_list, \
     get_list_to_change_workers, is_valid_queryparam, get_can_change_favorites_access
 from .pdf_making import pdf_gen
-from .email_functions import email_create_task, check_and_send_to_cpe, email_after_cpe_sign, delete_worker_email, \
+from .email_functions import check_and_send_to_cpe, email_after_cpe_sign, delete_worker_email, \
     incoming_not_sign_email, email_not_sign, email_change_task, approve_give_comment_email, email_add_approver, \
     incoming_sign_email
 
@@ -98,7 +99,7 @@ class IssuedTasksView(View):
     def get(self, request):
         user = Employee.objects.get(user=request.user)
         data_all = TaskModel.objects.get_queryset().filter(department_number=user.department).filter(
-            ~Q(task_status=1)).filter(incoming_status=True)
+            ~Q(task_status=1)).filter(incoming_status=True).order_by('-id')
         content = {'data_all': data_all,
                    'user': user}
         return render(request, 'todo_tasks/department_tasks/issued_tasks.html', content)
@@ -136,7 +137,7 @@ class UserTaskView(View):
 
     @method_decorator(login_required(login_url='login'))
     def get(self, request):
-        data_user = TaskModel.objects.get_queryset().filter(author__user=request.user).filter(task_status=2).order_by(
+        data_user = TaskModel.objects.get_queryset().filter(author__user=request.user).exclude(task_status=1).order_by(
             '-id')
         user = Employee.objects.get(user=request.user)
         text_status = f"выданные"
@@ -152,7 +153,7 @@ class UserTaskOnSignView(View):
     @method_decorator(login_required(login_url='login'))
     def get(self, request):
         data_user = TaskModel.objects.get_queryset().filter(author__user=request.user).filter(task_status=1).order_by(
-            '-id')
+            '-back_to_change', '-id')
         user = Employee.objects.get(user=request.user)
         text_status = f"исходящие"
         content = {'data_user': data_user,
@@ -170,10 +171,11 @@ class DetailView(View):
         content = get_data_for_detail(request, pk)
         if TaskModel.objects.get(id=pk) in get_list_to_change_workers(content['user']):
             content['change_work_flag'] = True
-        if CanChangeWorkersModel.objects.get_queryset().filter(user_accept=content['user']):
-            content['change_work_flag'] = True
+        # if CanChangeWorkersModel.objects.get_queryset().filter(user_accept=content['user']):
+        #     content['change_work_flag'] = True
         content[
             'flag'] = True  # Для того, что бы шестеренка была доступна только на странице деталей, и ни на каких других дочерних
+        # print(content['change_work_flag'])
         to_my_favorite_form = AddMyFavoriteForm()
         to_share_favorite_form = AddShareFavoriteForm()
         # Получаем список чужих избранных в которые можем вносить изменения
@@ -209,10 +211,12 @@ class AddTaskView(View):
 
     @method_decorator(login_required(login_url='login'))
     def get(self, request):
-        form = TaskForm()  # Форма задания
-        approve_form = ApproveForm()  # Форма согласователей
-        approve_form.fields['approve_user'].queryset = Employee.objects.filter(cpe_flag=False).filter(
-            work_status=True).order_by("last_name")
+        # time.sleep(1)
+        user = Employee.objects.get(user=request.user)
+        form = TaskForm(user)  # Форма задания
+        approve_form = ApproveForm(user)  # Форма согласователей
+        # approve_form.fields['approve_user'].queryset = Employee.objects.filter(cpe_flag=False).filter(
+        #     work_status=True).order_by("last_name")
         # Фильтруем поля руководителей в соответствии с отделом пользователя
         department_user = Employee.objects.get(user=request.user).department  # получаем номер отдела
         form.fields['first_sign_user'].queryset = Employee.objects.filter(department=department_user).filter(
@@ -261,20 +265,17 @@ class AddTaskView(View):
                 value_contract = temp_req['task_contract']
                 if temp_req['task_contract'] == '0':
                     temp_req['task_contract'] = ''
-            except:
+            except Exception as e:
                 temp_req['task_contract'] = ''
 
             try:
                 value_stage = temp_req['task_stage']
                 if value_stage == '0':
                     temp_req['task_stage'] = ''
-            except:
+            except Exception as e:
                 temp_req['task_stage'] = ''
             # Грузим в форму для сохранения
             form = TaskFormForSave(temp_req)
-            # print(form.data)
-            # if form.task_stage:
-            #     print('asd')
 
             if form.is_valid():
                 new_post = form.save(commit=False)  # отменяем отправку form в базу
@@ -304,8 +305,6 @@ class AddTaskView(View):
 
                 new_post.task_number = f'ЗД-{new_post.department_number.command_number}-{last_number.count_of_task}-{str(today_year)[2:4]}'
                 new_post.task_change_number = 0  # номер изменения присваиваем 0
-                # print(new_post.task_order)
-                # print(new_post.task_number)
                 if len(incoming_deps_list) > 1:
                     new_post.have_connection = number_connection
                 form.save()  # сохраняем форму в бд
@@ -316,8 +315,8 @@ class AddTaskView(View):
                     connection_post = ConnectionTaskModel(number_connection=number_connection,
                                                           dependent_task_id=number_id)
                     connection_post.save()
-                # celery_email_create_task.delay(new_post.id, approved_user_list)
-                email_create_task(new_post, approved_user_list)
+                celery_email_create_task.delay(new_post.id, approved_user_list)  # с использованием celery
+                # email_create_task(new_post, approved_user_list)  #  без использования celery
                 # Добавляем файлы, если есть
                 if request.FILES:
                     list_copy_files = copy.deepcopy(request.FILES.getlist('file'))
@@ -347,11 +346,12 @@ class EditTaskView(View):
     def get(self, request, pk):
         """Получаем номер редактируемого задания из query params (pk) и заполняем форму с данными из бд"""
         obj = TaskModel.objects.get(pk=pk)
-        form = get_task_edit_form(request, obj)
+        user = Employee.objects.get(user=request.user)
+        form = get_task_edit_form(request=request, obj=obj, user=user)
 
         context = {
             'form': form,
-            'user': Employee.objects.get(user=request.user),
+            'user': user,
             'obj': obj
         }
         return render(request, 'todo_tasks/add_task/update_task.html', context)
@@ -364,10 +364,12 @@ class EditTaskView(View):
             print(pk, ' delete')
             return redirect(f'my_tasks_on_sign')
         else:
-            form = TaskEditForm(request.POST)
+            user = Employee.objects.get(user=request.user)
+            form = TaskEditForm(user, request.POST)
             # if form.is_valid():
             obj = TaskModel.objects.get(pk=pk)  # Получаем объект из бд
-            # Присваиваем вручную новые данные из формы, почему только так работает, сказать не могу
+            print(obj)
+            # Присваиваем вручную новые данные из формы
             # Номер задания и автор остаются исходными
             obj.text_task = form.data['text_task']
             obj.first_sign_user_id = form.data['first_sign_user']
@@ -381,8 +383,11 @@ class EditTaskView(View):
             obj.back_to_change = 0
             # Удаляем зависимость при изменении задания
             obj.have_connection = 0
-            connection = ConnectionTaskModel.objects.get(dependent_task_id=obj.id)
-            connection.delete()
+            try:
+                connection = ConnectionTaskModel.objects.get(dependent_task_id=obj.id)
+                connection.delete()
+            except Exception as e:
+                print(e)
             obj.task_last_edit = timezone.now()  # обновляем дату последнего изменения
             # Сохраняем новые данные в базу данных
             obj.save()
@@ -477,7 +482,8 @@ class AddChangeTaskView(View):
         if obj.task_status == 1:
             return redirect('index')
         # заполняем форму данными из существующего задания
-        form = get_task_edit_form(request, obj)
+        user = Employee.objects.get(user=request.user)
+        form = get_task_edit_form(request=request, obj=obj, user=user)
 
         context = {
             'form': form,
@@ -488,10 +494,11 @@ class AddChangeTaskView(View):
 
     def post(self, request, pk):
         """Выдача изменения"""
-        form = TaskEditForm(request.POST)
+        user = Employee.objects.get(user=request.user)
+        form = TaskEditForm(user, request.POST)
         changing_task = TaskModel.objects.get(pk=pk)  # Получаем данные существующего задания
         changing_task.task_status = 0  # аннулируем задание на которое выдается изменение
-        changing_task.have_connection = 0
+        # changing_task.have_connection = 0  #раскомментировать если не нужно показывать взаимосвязи у аннулированного
         changing_task.save()
         new_task_with_change = TaskModel(
             author=Employee.objects.get(user=request.user))  # Новое задание, автор пользователь из запроса
@@ -535,13 +542,14 @@ class MyInboxListView(View):
             '-id')
         # Переводим в список
         task_list_unread = []
+
         for task in tasks_id_unread:
             task_list_unread.append(task.task_id)
-        data_all_unread = TaskModel.objects.get_queryset().filter(id__in=task_list_unread)
+        data_all_unread = TaskModel.objects.get_queryset().filter(id__in=task_list_unread).order_by('-id')
         task_list_read = []
         for task in tasks_id_read:
             task_list_read.append(task.task_id)
-        data_all_read = TaskModel.objects.get_queryset().filter(id__in=task_list_read)
+        data_all_read = TaskModel.objects.get_queryset().filter(id__in=task_list_read).order_by('-id')
         content = {
             'user': user,
             'data_all_unread': data_all_unread,
@@ -573,8 +581,7 @@ class ToSignListView(View):
             sign_list_1 = get_list_to_sign_cpe(sign_user)
             sign_list_2 = get_list_to_sign(sign_user)
             sign_list__1 = [i for i in sign_list_1]
-            sign_list = sign_list__1 + sign_list_2
-
+            sign_list = set(sign_list__1 + sign_list_2)
         else:
             sign_list = get_list_to_sign(sign_user)
         content = {
@@ -830,7 +837,7 @@ class EditWorkersDetailView(View):
         obj = TaskModel.objects.get(id=pk)
         data_all = WorkerModel.objects.get_queryset().filter(task_id=pk)
         formset = WorkerForm()
-        sign_user_departments = CanAcceptModel.objects.get_queryset().filter(user_accept=user)
+        sign_user_departments = CanChangeWorkersModel.objects.get_queryset().filter(user_accept=user)
         sign_user_departments_list = [obj.dep_accept for obj in sign_user_departments]
         if len(sign_user_departments_list) > 0:
             formset.fields['worker_user'].queryset = Employee.objects.filter(
@@ -982,6 +989,9 @@ class AdvancedSearchView(View):
                 "task_text": search_task_text,
                 "task_status": search_task_status
                 }
+        user_city = MoreDetailsEmployeeModel.objects.get(emp=user).city_dep_id
+        dep = GroupDepartmentModel.objects.filter(city_dep_id=user_city)
+
         if is_valid_queryparam(search_object):
             queryset = queryset.filter(task_object=search_object)
         if is_valid_queryparam(search_contract):
@@ -993,7 +1003,8 @@ class AdvancedSearchView(View):
         if is_valid_queryparam(search_dep):
             queryset = queryset.filter(department_number=search_dep)
         if is_valid_queryparam(search_task_status):
-            queryset = queryset.filter(task_status=search_task_status)
+            queryset = queryset.filter(task_status=search_task_status).filter(
+                department_number__department__in=dep).filter(incoming_dep__department__in=dep)
         if is_valid_queryparam(search_incoming_dep):
             queryset = queryset.filter(incoming_dep=search_incoming_dep)
         if is_valid_queryparam(search_type_work) and search_type_work != '0':
@@ -1010,7 +1021,7 @@ class AdvancedSearchView(View):
             queryset = TaskModel.objects.none()
             search_status = True
 
-        form = SearchForm(initial=data)
+        form = SearchForm(user=user, initial=data)
         content = {"user": user,
                    "form": form,
                    "search_result": queryset,
@@ -1024,7 +1035,7 @@ class EditApproveUserView(View):
     def get(self, request, pk):
         user = Employee.objects.get(user=request.user)
         obj = TaskModel.objects.get(id=pk)
-        form = ApproveEditForm()
+        form = ApproveEditForm(user)
         old_approve = ApproveModel.objects.get_queryset().filter(approve_task_id=pk)
         content = {'user': user,
                    'old_approve': old_approve,
@@ -1136,14 +1147,16 @@ class DownloadBlankView(View):
     def get(self, request, pk):
         pdf_gen(pk)
         task_inf = TaskModel.objects.get(id=pk)
-        if os.path.exists(os.path.join(settings.BASE_DIR, 'media', 'files', str(task_inf.task_number))):
-            with open(os.path.join(settings.BASE_DIR, 'media', 'files', str(task_inf.task_number),
-                                   f'{task_inf.task_number}.pdf'), 'rb') as fh:
+        task_num = str(task_inf.task_number)
+        task_num = task_num.replace('/', '_')
+        if os.path.exists(os.path.join(settings.BASE_DIR, 'media', 'files', task_num)):
+            with open(os.path.join(settings.BASE_DIR, 'media', 'files', task_num,
+                                   f'{task_num}.pdf'), 'rb') as fh:
                 mime_type, _ = mimetypes.guess_type(
-                    os.path.join(settings.BASE_DIR, 'media', 'files', str(task_inf.task_number),
-                                 f'{task_inf.task_number}.pdf'))
+                    os.path.join(settings.BASE_DIR, 'media', 'files', str(task_num),
+                                 f'{task_num}.pdf'))
                 response = HttpResponse(fh.read(), content_type=mime_type)
-                response['Content-Disposition'] = "inline; filename=" + escape_uri_path(f'{task_inf.task_number}.pdf')
+                response['Content-Disposition'] = "inline; filename=" + escape_uri_path(f'{task_num}.pdf')
                 return response
         raise Http404
 
@@ -1283,7 +1296,7 @@ class ShareFavoritesListView(View):
     def get(self, request, pk):
         user = Employee.objects.get(user=request.user)
         list_name = FavoritesListModel.objects.get(id=pk)
-        share_form = ShareFavoriteListForm()
+        share_form = ShareFavoriteListForm(user)
         share_users_list = FavoritesShareModel.objects.get_queryset().filter(favorite_list_id=pk)
         access_flag = get_can_change_favorites_access(pk, user, list_name)
 
@@ -1298,7 +1311,8 @@ class ShareFavoritesListView(View):
         return render(request, 'todo_tasks/favorites/share_favorite_list.html', content)
 
     def post(self, request, pk):
-        share_form = ShareFavoriteListForm(request.POST)
+        user = Employee.objects.get(user=request.user)
+        share_form = ShareFavoriteListForm(user, request.POST)
         if share_form.is_valid():
             new_share_user_favorites = share_form.save(commit=False)
             new_share_user_favorites.favorite_list = FavoritesListModel.objects.get(id=pk)
@@ -1369,7 +1383,8 @@ class DeleteTaskFromFavoriteView(View):
 
 def load_empolyee(request):
     """Фнкуия загрузки списка сотрудников"""
-    approve_form = ApproveEditForm()
+    user = Employee.objects.get(user=request.user)
+    approve_form = ApproveEditForm(user)
     content = {'approve_form': approve_form}
     return render(request, 'todo_tasks/ajax/load_list_employee.html', content)
 
@@ -1474,8 +1489,9 @@ def load_current_draft(request):
     """Загрузка конктректного черновика"""
     draft_id = int(request.GET.get("draft_id"))
     draft = DraftTaskModel.objects.get(id=draft_id)
-    form = TaskForm()  # Форма задания
-    approve_form = ApproveForm()  # Форма согласователей
+    user = Employee.objects.get(user=request.user)
+    form = TaskForm(user)  # Форма задания
+    approve_form = ApproveForm(user)  # Форма согласователей
     approve_form.fields['approve_user'].queryset = Employee.objects.filter(cpe_flag=False).filter(
         work_status=True).order_by("last_name")
     # Фильтруем поля руководителей в соответствии с отделом пользователя
@@ -1496,15 +1512,15 @@ def load_current_draft(request):
         draft_stage_flag = draft.draft_stage_id
     if draft.draft_object:
         draft_object_flag = draft.draft_object_id
-    form = TaskForm(initial={'text_task': draft.draft_text,
-                             'task_object': draft.draft_object_id,
-                             'task_building': draft.draft_building,
-                             'first_sign_user': draft.first_sign_user_id,
-                             'second_sign_user': draft.second_sign_user_id,
-                             'task_mark_doc': draft.draft_mark_doc_id,
-                             'task_type_work': draft.draft_type_work,
-                             'task_contract': draft.draft_contract_id,
-                             "task_stage": draft.draft_stage_id})
+    form = TaskForm(user=user, initial={'text_task': draft.draft_text,
+                                        'task_object': draft.draft_object_id,
+                                        'task_building': draft.draft_building,
+                                        'first_sign_user': draft.first_sign_user_id,
+                                        'second_sign_user': draft.second_sign_user_id,
+                                        'task_mark_doc': draft.draft_mark_doc_id,
+                                        'task_type_work': draft.draft_type_work,
+                                        'task_contract': draft.draft_contract_id,
+                                        "task_stage": draft.draft_stage_id})
     content = {'form': form,
                "file_form": file_form,
                'objects': objects,
@@ -1533,3 +1549,25 @@ def delete_all_drafts(request):
         draft.delete()
     print(f"Черновики пользователя id={user} удален")
     return HttpResponse('')
+
+
+def load_change_contract(request):
+    obj_id = request.GET.get('obj_id')
+    form = ContractChangeForm()
+    content = {'form': form,
+               'obj_id': obj_id}
+    return render(request, 'todo_tasks/ajax/ajax_change_contract.html', content)
+
+
+def save_change_contract(request):
+    """Корректировка договоров"""
+    obj_id = request.POST.get('obj_id')
+    change_task_object = request.POST.get('change_task_object')
+    change_task_contract = request.POST.get('change_task_contract')
+    change_task_stage = request.POST.get('change_task_stage')
+    task = TaskModel.objects.get(id=obj_id)
+    task.task_object_id = change_task_object
+    task.task_contract_id = change_task_contract
+    task.task_stage_id = change_task_stage
+    task.save()
+    return redirect('details_to_sign', pk=obj_id)

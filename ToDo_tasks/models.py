@@ -9,6 +9,21 @@ from django.conf import settings
 
 # COMAND_CHOICES = [(000, "000 - Не указан"), (201, "201 - Строительный первый"), (202, "202 - Строительный второй")]
 
+class CityDepModel(models.Model):
+    "Таблица городов"
+    city = models.CharField(verbose_name="Город", max_length=100)
+    name_dep = models.CharField(verbose_name="Наименование организации", max_length=350)
+
+    class Meta:
+        managed = False
+        verbose_name = _("город/организация")
+        verbose_name_plural = _("города/организации")
+        db_table = 'admin_panel_app_citydepmodel'
+
+    def __str__(self):
+        return f'{self.city} - {self.name_dep}'
+
+
 
 class JobTitleModel(models.Model):
     """ Таблица должностей """
@@ -27,6 +42,7 @@ class GroupDepartmentModel(models.Model):
     """Список управлений"""
     group_dep_abr = models.CharField("Сокращенное название управления", max_length=10)
     group_dep_name = models.CharField("Полное название управления", max_length=250)
+    city_dep = models.ForeignKey(CityDepModel, verbose_name="Город", on_delete=models.SET_NULL, null=True, blank=True)
     show = models.BooleanField("Отображать отдел", default=True)
 
     def __str__(self):
@@ -87,6 +103,28 @@ class Employee(models.Model):
     class Meta:
         verbose_name = _("сотрудник")
         verbose_name_plural = _("сотрудники")
+
+
+class MoreDetailsEmployeeModel(models.Model):
+    emp = models.OneToOneField(Employee, models.CASCADE, verbose_name="Пользователь")
+    photo = models.ImageField(verbose_name="Файл", null=True, blank=True,
+                              )
+    outside_email = models.EmailField(verbose_name="Внешняя почта", null=True, blank=True)
+    mobile_phone = models.CharField(verbose_name="Мобильный телефон", null=True, blank=True, max_length=30)
+    date_birthday = models.DateField(verbose_name="День рождения", null=True, blank=True)
+    room = models.CharField(verbose_name="Номер комнаты", null=True, blank=True, max_length=30)
+    date_birthday_show = models.BooleanField(verbose_name="Отображать день рождения", default=False, null=True)
+    city_dep = models.ForeignKey(CityDepModel, on_delete=models.PROTECT, null=True, verbose_name="Город/Подразделение",
+                                 blank=True)
+
+    class Meta:
+        managed = False
+        verbose_name = _("дополнительная информация по сотруднику")
+        verbose_name_plural = _("дополнительная информация по сотрудникам")
+        db_table = 'admin_panel_app_moredetailsemployeemodel'
+
+    def __str__(self):
+        return f'{self.emp}'
 
 
 class CanAcceptModel(models.Model):
@@ -210,6 +248,8 @@ class TaskModel(models.Model):
         WD = 0, _('Не указан')
         RD = 1, _('РД')
         PD = 2, _('ПД')
+        OBIN = 3, _('ОБИН')
+        NIOKR = 4, _('НИОКР')
 
     author = models.ForeignKey(Employee, on_delete=models.PROTECT, verbose_name="Автор задания")
     text_task = models.TextField("Текст задания", max_length=5000)
@@ -323,6 +363,8 @@ class WorkerModel(models.Model):
         verbose_name = _("ответственный исполнитель")
         verbose_name_plural = _("ответственные исполнители")
 
+    def __str__(self):
+        return f'{self.task.task_number}: {self.worker_user}'
 
 class ApproveModel(models.Model):
     """Таблица согласователей"""
@@ -336,6 +378,9 @@ class ApproveModel(models.Model):
     class Meta:
         verbose_name = _("согласователь задания")
         verbose_name_plural = _("согласователи заданий")
+
+    def __str__(self):
+        return f'{self.approve_user} | {self.approve_task.task_number} | Статус: {self.approve_status}'
 
 
 class BackCommentModel(models.Model):
@@ -379,7 +424,7 @@ class FavoritesListModel(models.Model):
         verbose_name_plural = _("списки избранного")
 
     def __str__(self):
-        return f'{self.favorite_list_name}'
+        return f'{self.favorite_list_name} ({self.favorite_list_holder})'
 
 
 class TasksInFavoritesModel(models.Model):
@@ -423,3 +468,5 @@ class ConnectionTaskModel(models.Model):
 
     def __str__(self):
         return f'{self.number_connection}: {self.dependent_task}'
+
+

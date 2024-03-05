@@ -6,7 +6,7 @@ urlpatterns = [
     path('', views.AboutView.as_view(), name='about'),
     path('index/', views.IndexView.as_view(), name='index'),
     path('my_outgoing_tasks/', views.UserTaskView.as_view(), name='my_tasks'),
-    path('inbox', views.MyInboxListView.as_view(), name='inbox'),
+    path('inbox/', views.MyInboxListView.as_view(), name='inbox'),
     path('my_tasks_on_sign/', views.UserTaskOnSignView.as_view(), name='my_tasks_on_sign'),
     path('add_task/', views.AddTaskView.as_view(), name='add_task'),
     # path('add_task/<int:pk>', views.AddTaskView.as_view(), name='add_task'),  # просмотр добавленного задания
@@ -64,4 +64,6 @@ urlpatterns = [
     path('ajax/delete_current_draft', views.delete_current_draft, name="ajax_delete_current_draft"),
     path('ajax/delete_all_drafts', views.delete_all_drafts, name="ajax_delete_all_drafts"),
     path('ajax/load_connection', views.load_connection_tasks, name="ajax_load_connection"),
+    path('ajax/load_change_contract_form', views.load_change_contract, name="ajax_load_change_contract_form"),
+    path('ajax/save_change_contract_form', views.save_change_contract, name="ajax_save_change_contract_form"),
 ]

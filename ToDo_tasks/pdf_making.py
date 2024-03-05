@@ -348,6 +348,8 @@ def pdf_gen(pk):
     pdf.y = down14
     pdf.multi_cell(60, 7, txt=f'{getter}', align='L')
     down15 = max(down15, pdf.y) + 5
+    task = task.replace('/', '_')
+    print(task)
     if not os.path.exists(os.path.join(settings.BASE_DIR, 'media', 'files', str(task))):
         os.makedirs(os.path.join(settings.BASE_DIR, 'media', 'files', str(task)))
     pdf.output(os.path.join(settings.BASE_DIR, 'media', 'files', str(task), f'{task}.pdf'))

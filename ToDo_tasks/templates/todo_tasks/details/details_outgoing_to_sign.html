@@ -1,5 +1,7 @@
 {#{% extends "todo_tasks/base.html" %}#}
 {% extends 'todo_tasks/details/details.html' %}
+{% load static %}
+
 {#{% block title %}#}
 {#    Подробности#}
 {#{% endblock %}#}
@@ -13,6 +15,8 @@
                 <div class="col">
 
                     <figure class="text-center">
+{#                        <a class="button-cancel-rusatom-a" onclick="">Поменять#}
+{#                            договор</a>#}
                         {% if obj.first_sign_user == user %}
 
                             {% if obj.first_sign_status == False %}
@@ -56,9 +60,12 @@
                                        data-toggle="tooltip" title="Подписать без комментария">
 
                             {% else %}
-                                <input type="submit" class="btn btn-secondary" name="cancel3" value="Отменить подпись">
+                                <input type="submit" class="button-cancel" name="cancel3" value="Отменить подпись">
                             {% endif %}
                         {% endif %}
+                        <div style="margin-top: 25px"><span
+                                class="text-5-book-warning"
+                                onclick="onClickChangeContract({{ obj.id }})">Поменять договор</span></div>
                         {#                        <!-- Исчезновение кнопки вернуть, после подписи ГИП-а-->#}
                         {#                        {% if obj.cpe_sign_status == False %}#}
                         {#                            <button type="button" class="btn btn-warning" data-bs-toggle="modal"#}
@@ -95,16 +102,17 @@
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="button-cancel-rusatom" data-bs-dismiss="modal">Отмена</button>
-                            <input id="button_back" type="submit" class="button-primary-rusatom" name="back_modal_button" value="Отправить сообщение">
+                            <input id="button_back" type="submit" class="button-primary-rusatom"
+                                   name="back_modal_button" value="Отправить сообщение">
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- Модальное окно комментария -->
-            <div class="modal fade" id="comment_modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+            <div class="modal fade" id="comment_modal" tabindex="-1"
                  aria-labelledby="staticBackdropLabel" aria-hidden="true">
-                <div class="modal-dialog">
+                <div class="modal-dialog modal-lg">
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title" id="staticBackdropLabel">Добавить комментарий к заданию</h5>
@@ -116,8 +124,9 @@
 
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
-                            <input type="submit" class="btn btn-success" name="comment_modal_button" value="Подписать">
+                            <button type="button" class="button-cancel-rusatom" data-bs-dismiss="modal">Отмена</button>
+                            <input type="submit" class="button-primary-rusatom" name="comment_modal_button"
+                                   value="Подписать">
                         </div>
                     </div>
                 </div>
@@ -125,7 +134,38 @@
         {% endif %}
     </form>
 
+    <div class="modal fade" id="change_contract_modal" tabindex="-1"
+         aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="staticBackdropLabel">Откорректировать договор</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                            aria-label="Закрыть"></button>
+                </div>
+                <div id="inner_form" data-load-form-url="{% url 'ajax_load_change_contract_form' %}">
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
     <script>
+
+        function onClickChangeContract(obj_id) {
+            var url = $("#inner_form").attr("data-load-form-url");
+            $.ajax({
+                url: url,
+                data: {'obj_id': obj_id},
+                success: function (data) {
+                    $("#inner_form").html(data);
+                    $('#change_contract_modal').modal('show')
+                }
+            });
+
+        }
+
         // после загрузки страницы
         $(function () {
             // инициализации подсказок для всех элементов на странице, имеющих атрибут data-toggle="tooltip"
@@ -137,13 +177,15 @@
             checkbox.addEventListener('change', function () {
                 if (this.checked) {
                     back_button.value = ("Вернуть")
-                    back_button.className = 'btn btn-danger'
+                    back_button.className = 'button-danger-rusatom'
                 } else {
                     back_button.value = ("Отправить сообщение")
-                    back_button.className = 'btn btn-warning'
+                    back_button.className = 'button-primary-rusatom'
                 }
             });
         });
+
+
     </script>
 {% endblock %}
 

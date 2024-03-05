@@ -1,6 +1,12 @@
+
+import ssl
+
+from django.core.mail.backends.smtp import EmailBackend as SMTPBackend
+from django.utils.functional import cached_property
+
+
 import os
-import asyncio
-from asgiref.sync import sync_to_async
+import time
 
 from django.core.mail import EmailMessage
 
@@ -9,15 +15,76 @@ from .models import Employee, TaskModel, ContractModel, ObjectModel, StageModel,
 from dotenv import load_dotenv
 
 load_dotenv()
+
 LINK_FOR_EMAIL = os.getenv('LINK_FOR_EMAIL')
 
+def check_variable_number(num):
+    """
+    Выбор правильного написания числа
+    """
+    str_nums = ''
+    if num % 10 > 4 or num % 10 == 0:
+        str_nums = 'заданий ожидают'
+    elif 1 <= num % 10 <= 4:
+        str_nums = 'задания ожидают'
+        if 10 <= num % 100 <= 14:
+            str_nums = 'заданий ожидают'
+        elif num % 10 == 1:
+            str_nums = 'задание ожидает'
+    return str_nums
 
-def email_create_task(new_post, approved_user_list):   # без Celery
-# def email_create_task(new_post_id, approved_user_list):  # с использованием Celery
+def check_variable_outgoing_number(num):
+    """
+    Выбор правильного написания числа
+    """
+    str_nums = ''
+    if num % 10 > 4 or num % 10 == 0:
+        str_nums = 'исходящих заданий ожидают'
+    elif 1 <= num % 10 <= 4:
+        str_nums = 'исходящих задания ожидают'
+        if 10 <= num % 100 <= 14:
+            str_nums = 'исходящих заданий ожидают'
+        elif num % 10 == 1:
+            str_nums = 'исходящее задание ожидает'
+    return str_nums
+
+def check_variable_inbox_number(num):
+    """
+    Выбор правильного написания числа
+    """
+    str_nums = ''
+    if num % 10 > 4 or num % 10 == 0:
+        str_nums = 'входящих заданий ожидают'
+    elif 1 <= num % 10 <= 4:
+        str_nums = 'входящих задания ожидают'
+        if 10 <= num % 100 <= 14:
+            str_nums = 'входящих заданий ожидают'
+        elif num % 10 == 1:
+            str_nums = 'входящее задание ожидает'
+    return str_nums
+
+def check_variable_my_inbox_number(num):
+    """
+    Выбор правильного написания числа
+    """
+    str_nums = ''
+    if num % 10 > 4 or num % 10 == 0:
+        str_nums = 'заданий, где Вы назначены исполнителем, ожидают'
+    elif 1 <= num % 10 <= 4:
+        str_nums = 'задания, где Вы назначены исполнителем, ожидают'
+        if 10 <= num % 100 <= 14:
+            str_nums = 'задний, где Вы назначены исполнителем, ожидают'
+        elif num % 10 == 1:
+            str_nums = 'задание, где Вы назначены исполнителем, ожидает'
+    return str_nums
+
+# def email_create_task(new_post, approved_user_list):   # без Celery
+def email_create_task(new_post_id, approved_user_list):  # с использованием Celery
+    print("сюда")
     """Функция рассылки почты при создании задания"""
-    # new_post = TaskModel.objects.get(id=new_post_id)  # с использованием Celery
-    # number_id = new_post.id  # с использованием Celery
-    number_id = TaskModel.objects.get(task_number=new_post.task_number).id # без Celery
+    new_post = TaskModel.objects.get(id=new_post_id)  # с использованием Celery
+    number_id = new_post.id  # с использованием Celery
+    # number_id = TaskModel.objects.get(task_number=new_post.task_number).id # без Celery
     #  Отправка сообщения автору
     if Employee.objects.get(id=new_post.author_id).mailing_list_check is True:
         email_author = EmailMessage(f'Задание {new_post.task_number} создано',
@@ -25,8 +92,8 @@ def email_create_task(new_post, approved_user_list):   # без Celery
                                     to=[new_post.author.user.email])
         try:
             email_author.send()
-        except:
-            print('Error send email')
+        except Exception as e:
+            print(f'Error send email: {e}')
 
     #  Отправка сообщения согласователям
     for approve_user_id in approved_user_list:
@@ -35,9 +102,10 @@ def email_create_task(new_post, approved_user_list):   # без Celery
                                          f'{Employee.objects.get(id=approve_user_id)}, задание {new_post.task_number} зарегистрировано в системе. Прошу рассмотреть и согласовать его. \n Посмотрите {LINK_FOR_EMAIL}/approve_details/{number_id}',
                                          to=[Employee.objects.get(id=approve_user_id).user.email])
             try:
+                time.sleep(1)
                 email_approve.send()
-            except:
-                print('Error send email')
+            except Exception as e:
+                print(f'Error send email: {e}')
 
     if Employee.objects.get(id=new_post.first_sign_user_id).mailing_list_check is True:
         #  Отправка письма первому руководителю
@@ -45,9 +113,10 @@ def email_create_task(new_post, approved_user_list):   # без Celery
                                         f'{new_post.first_sign_user}, задание {new_post.task_number} зарегистрировано в системе. Прошу рассмотреть и подписать его. \n Посмотрите {LINK_FOR_EMAIL}/details_to_sign/{number_id}',
                                         to=[new_post.first_sign_user.user.email])
         try:
+            time.sleep(1)
             email_first_sign.send()
-        except:
-            print('Error send email')
+        except Exception as e:
+            print(f'Error send email: {e}')
 
     #  Отправка сообщения второму руководителю
     if Employee.objects.get(id=new_post.second_sign_user_id).mailing_list_check is True:
@@ -55,9 +124,10 @@ def email_create_task(new_post, approved_user_list):   # без Celery
                                          f'{new_post.second_sign_user}. задание {new_post.task_number} зарегистрировано в системе. Прошу рассмотреть и подписать его. \n Посмотрите {LINK_FOR_EMAIL}/details_to_sign/{number_id}',
                                          to=[new_post.second_sign_user.user.email])
         try:
+            time.sleep(1)
             email_second_sign.send()
-        except:
-            print('Error send email')
+        except Exception as e:
+            print(f'Error send email: {e}')
 
 
 def check_and_send_to_cpe(pk):
@@ -75,8 +145,8 @@ def check_and_send_to_cpe(pk):
                                          to=[cpe_for_email.user.email])
                 try:
                     email_cpe.send()
-                except:
-                    print('Error send email')
+                except Exception as e:
+                    print(f'Error send email: {e}')
 
 
 def email_after_cpe_sign(pk):
@@ -101,8 +171,8 @@ def email_after_cpe_sign(pk):
                                                   to=[incoming_user.user.email])
                 try:
                     email_incoming.send()
-                except:
-                    print('Error send email')
+                except Exception as e:
+                    print(f'Error send email: {e}')
 
     # Отправка сообщения автору, о том что все подписано
     if Employee.objects.get(id=task.author_id).mailing_list_check is True:
@@ -111,8 +181,8 @@ def email_after_cpe_sign(pk):
                                     to=[task.author.user.email])
         try:
             email_author.send()
-        except:
-            print('Error send email')
+        except Exception as e:
+            print(f'Error send email: {e}')
 
 
 def add_worker_email(pk, worker_id):
@@ -125,8 +195,8 @@ def add_worker_email(pk, worker_id):
                                        to=[worker.user.email])
         try:
             email_to_worker.send()
-        except:
-            print('Error send email')
+        except Exception as e:
+            print(f'Error send email: {e}')
 
 
 def delete_worker_email(pk):
@@ -139,8 +209,8 @@ def delete_worker_email(pk):
                                        to=[worker.worker_user.user.email])
         try:
             email_to_worker.send()
-        except:
-            print('Error send email')
+        except Exception as e:
+            print(f'Error send email: {e}')
 
 
 def incoming_sign_email(task, incoming_signer):
@@ -151,8 +221,8 @@ def incoming_sign_email(task, incoming_signer):
                                        to=[task.author.user.email])
         try:
             email_to_author.send()
-        except:
-            print('Error send email')
+        except Exception as e:
+            print(f'Error send email: {e}')
 
 
 def incoming_not_sign_email(pk, incoming_signer, comment, need_edit=False):
@@ -168,8 +238,8 @@ def incoming_not_sign_email(pk, incoming_signer, comment, need_edit=False):
                                    to=[task.author.user.email])
     try:
         email_to_author.send()
-    except:
-        print('Error send email')
+    except Exception as e:
+        print(f'Error send email: {e}')
 
 
 def email_not_sign(pk, comment, user, need_edit=False, ):
@@ -186,8 +256,8 @@ def email_not_sign(pk, comment, user, need_edit=False, ):
                                    to=[task.author.user.email])
     try:
         email_to_author.send()
-    except:
-        print('Error send email')
+    except Exception as e:
+        print(f'Error send email: {e}')
 
 
 def email_change_task(obj, approved_user_list):
@@ -200,8 +270,8 @@ def email_change_task(obj, approved_user_list):
                                     to=[obj.author.user.email])
         try:
             email_author.send()
-        except:
-            print('Error send email')
+        except Exception as e:
+            print(f'Error send email: {e}')
 
     #  Отправка сообщения согласователям
     for approve_user_id in approved_user_list:
@@ -212,8 +282,8 @@ def email_change_task(obj, approved_user_list):
                                          to=[approve_user_id.approve_user.user.email])
             try:
                 email_approve.send()
-            except:
-                print('Error send email')
+            except Exception as e:
+                print(f'Error send email: {e}')
 
     #  Отправка письма первому руководителю
     if Employee.objects.get(id=obj.first_sign_user_id) is True:
@@ -222,8 +292,8 @@ def email_change_task(obj, approved_user_list):
                                         to=[obj.first_sign_user.user.email])
         try:
             email_first_sign.send()
-        except:
-            print('Error send email')
+        except Exception as e:
+            print(f'Error send email: {e}')
 
     #  Отправка сообщения второму руководителю
     if Employee.objects.get(id=obj.second_sign_user_id) is True:
@@ -232,8 +302,8 @@ def email_change_task(obj, approved_user_list):
                                          to=[obj.second_sign_user.user.email])
         try:
             email_second_sign.send()
-        except:
-            print('Error send email')
+        except Exception as e:
+            print(f'Error send email: {e}')
 
 
 def email_add_approver(pk, approve_user_id):
@@ -247,27 +317,34 @@ def email_add_approver(pk, approve_user_id):
                                          )
         try:
             email_to_approver.send()
-        except:
-            print('Error send email')
+        except Exception as e:
+            print(f'Error send email: {e}')
 
 
 def approve_give_comment_email(pk, user, text_comment):
     obj = TaskModel.objects.get(id=pk)
-    email_to_author = EmailMessage(f'Согласователь прислал комментарий к заданию {obj.task_number}.',
-                                   f'{obj.author}. '
-                                   f'\n{Employee.objects.get(user=user)} прислал комментарий к заданию  {obj.task_number} '
-                                   f'\nКомментарий: {text_comment}'
-                                   f'\nПосмотрите {LINK_FOR_EMAIL}/details/{obj.id}',
-                                   to=[obj.author.user.email])
+    if len(text_comment) > 0:
+        email_to_author = EmailMessage(f'Согласователь прислал комментарий к заданию {obj.task_number}.',
+                                       f'{obj.author}. '
+                                       f'\n{Employee.objects.get(user=user)} прислал комментарий к заданию  {obj.task_number} '
+                                       f'\nКомментарий: {text_comment}'
+                                       f'\nПосмотрите {LINK_FOR_EMAIL}/details/{obj.id}',
+                                       to=[obj.author.user.email])
+    else:
+        email_to_author = EmailMessage(f'{Employee.objects.get(user=user)} согласовал задание {obj.task_number}.',
+                                       f'{obj.author}. '
+                                       f'\n{Employee.objects.get(user=user)} согласовал задание {obj.task_number} '
+                                       f'\nПосмотрите {LINK_FOR_EMAIL}/details/{obj.id}',
+                                       to=[obj.author.user.email])
     try:
         email_to_author.send()
-    except:
-        print('Error send email')
+    except Exception as e:
+        print(f'Error send email: {e}')
 
 
 def text_spam(text):
     email_send = EmailMessage(f'тест Celery', f'Этот текст шлем через Celery: {text}', to=['tttestttsait@yandex.ru'])
     try:
         email_send.send()
-    except:
-        print('Error send email')
+    except Exception as e:
+        print(f'Error send email: {e}')

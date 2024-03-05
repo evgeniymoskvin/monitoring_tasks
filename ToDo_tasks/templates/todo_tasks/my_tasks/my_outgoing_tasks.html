@@ -26,7 +26,7 @@
                     <th class="th_tables" scope="row">{{ forloop.counter }}</th>
                     <td class="td_tables" style="width: 50px">
                         {{ obj.task_number }}</td>
-                <td class="td_tables">
+                    <td class="td_tables">
                         {{ obj.incoming_dep.command_number }}</td>
 
                     <td class="td_tables">
@@ -35,15 +35,23 @@
                     </span>
                     </td>
                     <td class="td_tables">
-                        {% if obj.first_sign_status == 1 and obj.second_sign_status == 1 and obj.cpe_sign_status == 1 %}
-                            <img src="{% static 'todo_tasks/icons/check2-all.svg' %}" title="Подписали все">
-                        {% elif obj.back_to_change == 1 %}
-                            <img src="{% static 'todo_tasks/icons/x-lg.svg' %}" alt="Возвращено на редактирование">
-                        {% elif obj.first_sign_status == 1 and obj.second_sign_status %}
-                            <img src="{% static 'todo_tasks/icons/check2.svg' %}" alt="Подписал первый">
-                            <img src="{% static 'todo_tasks/icons/check2.svg' %}" alt="Подписал второй">
-                        {% elif obj.first_sign_status == 1 %}
-                            <img src="{% static 'todo_tasks/icons/check2.svg' %}">
+                        {% if obj.task_status == 1 %}
+                            {% if obj.first_sign_status == 1 and obj.second_sign_status == 1 and obj.cpe_sign_status == 1 %}
+                                <img src="{% static 'todo_tasks/icons/check2-all.svg' %}" title="Подписали все">
+                            {% elif obj.back_to_change == 1 %}
+                                <img src="{% static 'todo_tasks/icons/x-lg.svg' %}" alt="Возвращено на редактирование">
+                            {% elif obj.first_sign_status == 1 and obj.second_sign_status %}
+                                <img src="{% static 'todo_tasks/icons/check2.svg' %}" alt="Подписал первый">
+                                <img src="{% static 'todo_tasks/icons/check2.svg' %}" alt="Подписал второй">
+                            {% elif obj.first_sign_status == 1 %}
+                                <img src="{% static 'todo_tasks/icons/check2.svg' %}">
+                            {% endif %}
+                        {% elif obj.task_status == 2 %}
+                            Актуально
+                        {% elif obj.task_status == 3 %}
+                            На корректировке
+                        {% elif obj.task_status == 0 %}
+                            Аннулировано
                         {% endif %}
                     </td>
                 </tr>
@@ -101,7 +109,7 @@
                     dom:
                         "<'row'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-6'f>>" +
                         "<'row'<'col-sm-12'tr>>" +
-                        "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>"+
+                        "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>" +
                         "<'col-sm-2 col-md-2 col-xxl-2'B>",
                     "language": {
                         "lengthMenu": "Показать _MENU_",

@@ -1,6 +1,7 @@
 from .models import TaskModel, ObjectModel, ContractModel, StageModel, OrdersModel, Employee, CanAcceptModel, \
     WorkerModel, ApproveModel, AttachmentFilesModel, CommandNumberModel, MarkDocModel, FavoritesListModel, \
-    FavoritesShareModel, TasksInFavoritesModel, DraftTaskModel
+    FavoritesShareModel, TasksInFavoritesModel, DraftTaskModel, CityDepModel, GroupDepartmentModel, \
+    MoreDetailsEmployeeModel
 from django.forms import ModelForm, TextInput, Textarea, CheckboxInput, Select, ChoiceField, Form, PasswordInput, \
     CharField, ModelChoiceField, modelformset_factory, ModelMultipleChoiceField, MultipleChoiceField, SelectMultiple, \
     FileField, ClearableFileInput, FileInput, DateTimeField, DateTimeInput
@@ -69,16 +70,26 @@ class TaskForm(ModelForm):
                    "task_need_approve": CheckboxInput()
                    }
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, user, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.fields['task_object'].queryset = ObjectModel.objects.order_by('object_name')
+        self.fields['task_contract'].queryset = ContractModel.objects.order_by('contract_name')
+        self.fields['task_stage'].queryset = StageModel.objects.order_by('stage_name')
         self.fields['task_order'].queryset = OrdersModel.objects.order_by('order')
-        self.fields['incoming_dep'].queryset = CommandNumberModel.objects.filter(show=True).order_by('command_number')
+        try:
+            user_city = MoreDetailsEmployeeModel.objects.get(emp=user).city_dep_id
+            spb_dep = GroupDepartmentModel.objects.filter(city_dep_id=user_city)
+        except:
+            spb_dep = GroupDepartmentModel.objects.none()
+        self.fields['incoming_dep'].queryset = CommandNumberModel.objects.filter(show=True).filter(
+            department__in=spb_dep).order_by('command_number')
         self.fields['task_object'].queryset = ObjectModel.objects.filter(show=True).order_by('object_name')
         self.fields['task_mark_doc'].queryset = MarkDocModel.objects.order_by("mark_doc")
-        self.fields['task_contract'].queryset = ContractModel.objects.filter(show=True).order_by("contract_name")  # подгрузка значений
+        self.fields['task_contract'].queryset = ContractModel.objects.filter(show=True).order_by(
+            "contract_name")  # подгрузка значений
         self.fields['task_stage'].queryset = StageModel.objects.order_by("stage_name")  # подгрузка значений
-        self.fields['task_contract'].choices = [(0, 'Сначала выберете объект')]  # исходное отображение
-        self.fields['task_stage'].choices = [(0, 'Сначала выберете № договора')]  # исходное отображение
+        self.fields['task_contract'].choices = [(0, 'Сначала выберите объект')]  # исходное отображение
+        self.fields['task_stage'].choices = [(0, 'Сначала выберите № договора')]  # исходное отображение
 
 
 class TaskFormForSave(ModelForm):
@@ -217,10 +228,21 @@ class TaskEditForm(ModelForm):
                    "incoming_dep": Select(attrs={"class": "form-select",
                                                  "aria-label": "Кому", "onchange": "checkParams()"}),
                    }
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['incoming_dep'].queryset = CommandNumberModel.objects.filter(show=True).order_by('command_number')
 
+    def __init__(self, user, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        try:
+            user_city = MoreDetailsEmployeeModel.objects.get(emp=user).city_dep_id
+            spb_dep = GroupDepartmentModel.objects.filter(city_dep_id=user_city)
+        except:
+            spb_dep = GroupDepartmentModel.objects.none()
+        user_dep = Employee.objects.get(id=user.id).department_id
+        self.fields['first_sign_user'].queryset = Employee.objects.filter(department=user_dep).filter(
+            right_to_sign=True).order_by('last_name')
+        self.fields['second_sign_user'].queryset = Employee.objects.filter(department=user_dep).filter(
+            right_to_sign=True).order_by('last_name')
+        self.fields['incoming_dep'].queryset = CommandNumberModel.objects.filter(show=True).filter(
+            department__in=spb_dep).order_by('command_number')
 
 
 class DateInput(DateTimeInput):
@@ -258,7 +280,7 @@ class SearchForm(Form):
                                          queryset=CommandNumberModel.objects,
                                          empty_label="Не выбрано",
                                          required=False)
-    choice_type_work = [(0, 'Не выбрано'), (1, 'РД'), (2, 'ПД')]
+    choice_type_work = [(0, 'Не выбрано'), (1, 'РД'), (2, 'ПД'), (3, 'ОБИН'), (4, 'НИОКР')]
     type_work = ChoiceField(widget=Select(attrs={"class": "form-select"}),
                             choices=choice_type_work,
                             # empty_label="Не выбрано",
@@ -273,12 +295,19 @@ class SearchForm(Form):
     task_text = CharField(widget=TextInput(attrs={"class": "form-control",
                                                   "placeholder": "Для кириллицы учитывайте регистр"}), required=False)
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, user, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        user_city = MoreDetailsEmployeeModel.objects.get(emp=user).city_dep_id
+        spb_dep = GroupDepartmentModel.objects.filter(city_dep_id=user_city)
+        self.fields['task_dep'].queryset = CommandNumberModel.objects.filter(show=True).filter(
+            department__in=spb_dep).order_by('command_number')
+        self.fields['task_incoming_dep'].queryset = CommandNumberModel.objects.filter(show=True).filter(
+            department__in=spb_dep).order_by('command_number')
         self.fields['task_contract'].queryset = ContractModel.objects  # подгрузка значений
         self.fields['task_stage'].queryset = StageModel.objects  # подгрузка значений
         self.fields['task_contract'].choices = [(0, 'Сначала выберете объект')]  # исходное отображение
         self.fields['task_stage'].choices = [(0, 'Сначала выберете № договора')]  # исходное отображение
+        # self.fields['task_dep'].queryset = CommandNumberModel.objects.filter(show=True).order_by('command_number')
 
 
 class TaskEditWorkersForm(ModelForm):
@@ -337,9 +366,15 @@ class ApproveForm(ModelForm):
                                                   "style": "width: 500px"}),
         }
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, user, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['approve_user'].queryset = Employee.objects.filter(work_status=True).order_by('last_name')
+        try:
+            user_city = MoreDetailsEmployeeModel.objects.get(emp=user).city_dep_id
+            spb_dep = GroupDepartmentModel.objects.filter(city_dep_id=user_city)
+        except:
+            spb_dep = GroupDepartmentModel.objects.none()
+        self.fields['approve_user'].queryset = Employee.objects.filter(work_status=True).filter(cpe_flag=False).filter(
+            department_group__in=spb_dep).order_by('last_name')
 
 
 class FilesUploadForm(ModelForm):
@@ -365,9 +400,15 @@ class ApproveEditForm(ModelForm):
                                           "aria-label": "Первый руководитель"}),
         }
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, user, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['approve_user'].queryset = Employee.objects.filter(work_status=True).order_by('last_name')
+        try:
+            user_city = MoreDetailsEmployeeModel.objects.get(emp=user).city_dep_id
+            spb_dep = GroupDepartmentModel.objects.filter(city_dep_id=user_city)
+        except:
+            spb_dep = GroupDepartmentModel.objects.none()
+        self.fields['approve_user'].queryset = Employee.objects.filter(work_status=True).filter(cpe_flag=False).filter(
+            department_group__in=spb_dep).order_by('last_name')
 
 
 class ApproveFormForSave(ModelForm):
@@ -471,9 +512,17 @@ class ShareFavoriteListForm(ModelForm):
                                                         }),
                    "can_change_list": CheckboxInput()}
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, user, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['favorite_share_user'].queryset = Employee.objects.order_by("last_name").filter(work_status=True)
+        # self.fields['favorite_share_user'].queryset = Employee.objects.order_by("last_name").filter(work_status=True)
+        try:
+            user_city = MoreDetailsEmployeeModel.objects.get(emp=user).city_dep_id
+            spb_dep = GroupDepartmentModel.objects.filter(city_dep_id=user_city)
+        except:
+            spb_dep = GroupDepartmentModel.objects.none()
+        self.fields['favorite_share_user'].queryset = Employee.objects.filter(work_status=True).filter(
+            cpe_flag=False).filter(
+            department_group__in=spb_dep).order_by('last_name')
 
 
 class AddMyFavoriteForm(ModelForm):
@@ -511,5 +560,32 @@ class SaveDraftForm(ModelForm):
                   ]
 
         widgets = {"draft_name": TextInput(attrs={"class": "form-control",
-                                                 "aria-label": "Название черновика"
-                                                 })}
+                                                  "aria-label": "Название черновика"
+                                                  })}
+
+
+class ContractChangeForm(Form):
+    # class Meta:
+    #     model = TaskModel
+    #     fields = ['task_object', 'task_contract', 'task_stage']
+    #     widgets = {"task_object": Select(attrs={"class": "form-select",
+    #                                             "aria-label": "Наименование объекта"}),
+    #                "task_contract": TextInput(attrs={"class": "form-select",
+    #                                                  "disabled": True
+    #                                                  }),
+    #                "task_stage": TextInput(attrs={"class": "form-select",
+    #                                               "disabled": True})}
+    change_task_object = ModelChoiceField(widget=Select(attrs={"class": "form-select"}),
+                                   queryset=ObjectModel.objects,
+                                   empty_label="Не выбрано",
+                                   required=False)
+    change_task_contract = ModelChoiceField(widget=Select(attrs={"class": "form-select",
+                                                          'disabled': 'disabled'}),
+                                     queryset=ContractModel.objects,
+                                     empty_label="Не выбрано",
+                                     required=False)
+    change_task_stage = ModelChoiceField(widget=Select(attrs={"class": "form-select",
+                                                       'disabled': 'disabled'}),
+                                  queryset=StageModel.objects,
+                                  empty_label="Не выбрано",
+                                  required=False)

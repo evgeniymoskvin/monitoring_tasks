@@ -7,7 +7,8 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>еДиный Реестр Обмена ЗаДаниями («ДРОЗД»)</title>
-
+    <link rel="icon" type="image/x-icon" href="{% static 'todo_tasks/favicon/favicon-32x32.png' %}" sizes="any">
+    <link rel="manifest" href="{% static 'todo_tasks/favicon/manifest.json' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'todo_tasks/Bootstrap-5-5.1.3/css/bootstrap.css' %}"/>
     <link rel="stylesheet" type="text/css" href="{% static 'todo_tasks/css/tasks.css' %}"/>
     <link rel="stylesheet" type="text/css" href="{% static 'todo_tasks/css/buttons.css' %}"/>
@@ -54,21 +55,23 @@
 <body>
 <div class="container center-screen">
     <div class="row">
-        <div class="col-8">
+        <div class="col-lg-8 col-md-12">
             <h1 class="text-index" id="ed_reestr">еДиный Реестр</h1>
             <h1 class="text-index" style="margin-top: 15px" id="obmen_zadan">Обмена ЗаДаниями</h1>
             <p class="text-index-book">еДиный Реестр Обмена ЗаДаниями («ДРОЗД»)</p>
             <div style="margin-top: 150px">
                 <p class="text-index-book-p">Для начала работы выполните вход:</p>
                 <p style="font-size: 12px; margin-top: 0">*Логин и пароль Вы можете получить у администратора</p>
-
-                <button class="button-index" onclick="openLoginModal()">Войти.</button>
+{#                <button style="width: 37%" class="button-primary" onclick="openLoginModal()">Войти</button>#}
+                <button class="button-index" style="width: 37%" onclick="openLoginModal()">Войти</button>
 
             </div>
         </div>
-        <div class="col d-flex justify-content-center align-items-center">
+        <div class="col-md-12 col-lg-4 d-flex justify-content-start align-items-center">
             <p class="text-index-book">
-                <img src="{% static "todo_tasks/img/task-runners-svgrepo-com.svg" %}" width="400"
+{#                <img src="{% static "todo_tasks/img/task-runners-svgrepo-com.svg" %}" width="400"#}
+{#                     alt="index_image">#}
+                <img src="{% static "todo_tasks/favicon/drozd.png" %}" width="400"
                      alt="index_image">
             </p>
         </div>
@@ -94,8 +97,8 @@
                     <br>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Отмена</button>
-                    <input type="submit" class="btn btn-outline-primary" value="Войти">
+                    <button type="button" class="button-cancel-rusatom" data-bs-dismiss="modal">Отмена</button>
+                    <input type="submit" class="button-primary-rusatom" value="Войти">
                 </div>
             </form>
         </div>

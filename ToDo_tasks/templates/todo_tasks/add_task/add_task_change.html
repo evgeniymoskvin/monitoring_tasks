@@ -58,13 +58,26 @@
                 <br>
 
                 <div class="row justify-content-center">
-                    <div class="col">
+                    <div class="col" style="max-width: 520px">
                         <figure class="text-center">
-                            <p class="text-index-book-p" style="font-size: 15px; margin-top: 0; margin-bottom: 25px"> Задание {{ obj.task_number }} аннулируется автоматически </p>
+                            <p class="text-index-book-p" style="font-size: 15px; margin-top: 0; margin-bottom: 25px">
+                                Задание {{ obj.task_number }} аннулируется автоматически </p>
+                            {% comment %}
                             <a href="{% url "details" pk=obj.id %}" class="button-cancel-a ">Отмена</a>
-                            <button type="submit" class="button-success" href="{% url 'change' pk=obj.id %}">Выдать
-                                задание
-                            </button>
+                            {% endcomment %}
+                            <div class="row">
+                                <button type="submit" class="button-primary-rusatom"
+                                        href="{% url 'change' pk=obj.id %}" style="width: 520px">Выдать
+                                    задание
+                                </button>
+                            </div>
+                            <div class="row">
+                                <div style="margin-top: 10px; width: 520px; cursor: pointer"
+                                     class="button-cancel-rusatom"
+                                     onclick="location.href='{% url 'details' pk=obj.id %}';">
+                                    Отмена
+                                </div>
+                            </div>
                         </figure>
                     </div>
                 </div>

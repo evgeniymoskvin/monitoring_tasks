@@ -59,19 +59,24 @@
                 <br>
 
                 <div class="row justify-content-center">
-                    <div class="col">
+                    <div class="col" style="max-width: 520px">
                         <figure class="text-center">
-                            <div>
-                                <button id="submit_button" type="button" class="button-primary-rusatom" data-bs-toggle="modal"
-                                        data-bs-target="#ConfirmModal" style="width: 520px" disabled>Сохранить
+                            <div class="row">
+                                <button id="submit_button" type="button" class="button-primary-rusatom"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#ConfirmModal" disabled>Сохранить
                                 </button>
                             </div>
-                            <div style="margin-top: 5px">
-                                <button onclick="window.history.back()" class="button-cancel-rusatom"
-                                        style="width: 520px">
+                            <div class="row">
+
+                                <div style="margin-top: 10px; width: 520px; cursor: pointer"
+                                     class="button-cancel-rusatom"
+                                     onclick="location.href='{% url 'details' pk=obj.id %}';">
                                     Отмена
-                                </button>
+                                </div>
+
                             </div>
+
                             <div style="margin-top: 25px"><span
                                     class="text-5-book-warning"
                                     onclick="$('#staticBackdrop').modal('show');">Удалить задание</span></div>
@@ -175,9 +180,13 @@
     <!JS для фильтрации списка контрактов>
     <script>
 
-    window.onload = function () {
-        checkParams()
-    }
+        function showConfirm() {
+            $('#ConfirmModal').modal('show');
+        }
+
+        window.onload = function () {
+            checkParams()
+        }
 
         function checkParams() {
             /*Функция активации кнопки*/
@@ -190,7 +199,8 @@
                 document.getElementById("submit_button").disabled = false
             } else {
                 document.getElementById("submit_button").disabled = true
-            };
+            }
+            ;
         };
 
 

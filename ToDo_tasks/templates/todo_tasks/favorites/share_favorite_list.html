@@ -37,14 +37,16 @@
 
             <div style="margin-top: 15px">
                 <div class="row justify-content-center; ">
-                    <div class="col">
-                        <figure class="text-center">
-                            <input class="button-cancel-fill-border" name="action"
-                                   onclick="location.href='{% url 'favorite_list' pk=list_name.id %}';" type="submit"
-                                   value="К списку"/>
-                            <button class="button-success" type="submit">Поделиться
+                    <div style="min-width: 100%; display: flex; flex-direction: row; justify-content: space-between">
+                        <div style="display: flex; width: 49%; cursor: pointer; justify-content: center"
+                             class="button-cancel-rusatom"
+                             onclick="location.href='{% url 'favorite_list' pk=list_name.id %}';">
+                            Отмена
+                        </div>
+                        <div style="display: flex; width: 49%; justify-content: center">
+                            <button class="button-primary-rusatom" style="display: flex; width: 100%; justify-content: center" type="submit">Поделиться
                             </button>
-                        </figure>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -87,7 +89,8 @@
             </div>
 
             <div>
-                <p class="text-5-bold" style="text-transform: uppercase" onclick="location.href='{% url 'favorites'  %}';">Перейти в избранное</p>
+                <p class="text-5-bold" style="text-transform: uppercase"
+                   onclick="location.href='{% url 'favorites' %}';">Перейти в избранное</p>
             </div>
         </div>
     {% endif %}

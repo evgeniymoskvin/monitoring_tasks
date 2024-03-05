@@ -10,13 +10,14 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
+
+
 from pathlib import Path
 import os
 from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
@@ -43,7 +44,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'ToDo_tasks',
     'login',
-    'cachalot',
+    # 'cachalot',
 
 ]
 
@@ -78,21 +79,27 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'monitoring_tasks.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': os.environ.get("SQL_ENGINE", 'django.db.backends.sqlite3'),
+#         'NAME': os.environ.get('SQL_DATABASE', os.path.join(BASE_DIR, 'db.sqlite3')),
+#         'USER': os.environ.get('SQL_USER', 'user'),
+#         'PASSWORD': os.environ.get('SQL_PASSWORD', 'P@ssw0rd'),
+#         'HOST': os.environ.get('SQL_HOST', 'localhost'),
+#         'PORT': os.environ.get('SQL_PRT', '5432')
+#     }
+# }
+
 DATABASES = {
     'default': {
-        'ENGINE': os.environ.get("SQL_ENGINE", 'django.db.backends.sqlite3'),
-        'NAME': os.environ.get('SQL_DATABASE', os.path.join(BASE_DIR, 'db.sqlite3')),
-        'USER': os.environ.get('SQL_USER', 'user'),
-        'PASSWORD': os.environ.get('SQL_PASSWORD', 'P@ssw0rd'),
-        'HOST': os.environ.get('SQL_HOST', 'localhost'),
-        'PORT': os.environ.get('SQL_PRT', '5432')
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': 'db.sqlite3',
+
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
@@ -112,7 +119,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
 
@@ -123,7 +129,6 @@ TIME_ZONE = 'Europe/Moscow'
 USE_I18N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
@@ -138,32 +143,44 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 # SESSION_COOKIE_NAME = 'examplesessionid'
 
 
-
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'index'
 LOGOUT_REDIRECT_URL = 'about'
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 
-EMAIL_HOST = str(os.getenv('EMAIL_HOST'))
-EMAIL_PORT = int(os.getenv('EMAIL_PORT'))
-EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
-EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS')
-SERVER_EMAIL = os.getenv('SERVER_EMAIL')
-DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL')
+# EMAIL_HOST = str(os.getenv('EMAIL_HOST'))
+# EMAIL_PORT = int(os.getenv('EMAIL_PORT'))
+# EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+# EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+# EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS')
+# SERVER_EMAIL = os.getenv('SERVER_EMAIL')
+# DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL')
+# EMAIL_HOST='161.11.16.20'
+# EMAIL_PORT='587'
+# EMAIL_HOST_USER='drozd@el-spb.local'
+# EMAIL_HOST_PASSWORD='Ajakcgwcgpyimh1'
+# EMAIL_USE_TLS=True
+# SERVER_EMAIL='drozd@el-spb.local'
+# DEFAULT_FROM_EMAIL='drozd@el-spb.local'
+# LINK_FOR_EMAIL = 'http://drozd.el-spb.local'
+
 # CSRF_TRUSTED_ORIGINS = [host.strip() for host in os.getenv('CSRF_TRUSTED_ORIGINS').split(',')]
 
-CELERY_BROKER_URL = 'redis://localhost:6379//0'
-CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
-FORKED_BY_MULTIPROCESSING = 1
-# CELERY_BROKER_URL = 'redis://0.0.0.0:6379//0'
+
+CACHALOT_UNCACHABLE_TABLES = frozenset(('django_migrations', 'auth_user', 'django_session'))
+# CACHALOT_TIMEOUT =
+# CELERY_BROKER_URL = 'redis://161.11.20.121:6379//10'
+# CELERY_RESULT_BACKEND = 'redis://161.11.20.121:6379/10'
+# FORKED_BY_MULTIPROCESSING = 1
+# CELERY_BROKER_URL = 'redis://redis:6379//0'
 # CELERY_RESULT_BACKEND = 'redis://0.0.0.0:6379/0'
 # CACHES = {
 #     "default": {
 #         "BACKEND": "django_redis.cache.RedisCache",
-#         "LOCATION": "redis://127.0.0.1:6379/1",
+#         "LOCATION": "redis://161.11.20.121:6379/1",
 #         "OPTIONS": {
 #             "CLIENT_CLASS": "django_redis.client.DefaultClient",
 #         }

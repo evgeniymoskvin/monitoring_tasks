@@ -291,7 +291,7 @@
 
 .content-fade {
     scroll-behavior: smooth;
-    animation: fade-in 1s ease;
+    animation: fade-in 0.7s ease-in-out;
     transition: opacity 0.5s ease;
 }
 

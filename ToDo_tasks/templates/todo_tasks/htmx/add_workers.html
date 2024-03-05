@@ -1,5 +1,5 @@
 {% load static %}
-<script type="text/javascript" src="{% static 'todo_tasks/htmx/htmx.min.js' %}></script>
+<script type="text/javascript" src="{% static 'todo_tasks/htmx/htmx.min.js' %}"></script>
     <form id="form-container" method="POST" hx-post={% url 'add_workers' %} hx-target="#worker_list">
         {% csrf_token %}
         {{ formset.management_form }}

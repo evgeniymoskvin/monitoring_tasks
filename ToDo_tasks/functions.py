@@ -143,16 +143,16 @@ def get_list_to_sign_cpe(sign_user):
     return to_sign_objects_cpe
 
 
-def get_task_edit_form(request, obj):
+def get_task_edit_form(request, obj, user):
     """Функция формирующая форму для редактирования задания"""
-    form = TaskEditForm(instance=obj)
+    form = TaskEditForm(user=user, instance=obj)
     # Получаем отдел пользователя
-    department_user = Employee.objects.get(user=request.user).department
+    # department_user = Employee.objects.get(user=request.user).department
     # Оставляем только пользователей отдела с возможностью подписывать задания
-    form.fields['first_sign_user'].queryset = Employee.objects.filter(department=department_user).filter(
-        right_to_sign=True)  # получаем в 1ое поле список пользователей по двум фильтрам
-    form.fields['second_sign_user'].queryset = Employee.objects.filter(department=department_user).filter(
-        right_to_sign=True)  # получаем во 2ое поле список пользователей по двум фильтрам
+    # form.fields['first_sign_user'].queryset = Employee.objects.filter(department=department_user).filter(
+    #     right_to_sign=True)  # получаем в 1ое поле список пользователей по двум фильтрам
+    # form.fields['second_sign_user'].queryset = Employee.objects.filter(department=department_user).filter(
+    #     right_to_sign=True)  # получаем во 2ое поле список пользователей по двум фильтрам
     return form
 
 
@@ -170,7 +170,7 @@ def get_list_incoming_tasks_to_sign(sign_user):
 
 
 def get_list_incoming_tasks_to_workers(sign_user):
-    queryset = CanAcceptModel.objects.get_queryset().filter(user_accept=sign_user)
+    queryset = CanChangeWorkersModel.objects.get_queryset().filter(user_accept=sign_user)
     list_departments = []
     for dep in queryset:
         list_departments.append(dep.dep_accept_id)
@@ -179,7 +179,7 @@ def get_list_incoming_tasks_to_workers(sign_user):
 
 
 def get_list_to_change_workers(sign_user):
-    queryset = CanAcceptModel.objects.get_queryset().filter(user_accept=sign_user)
+    queryset = CanChangeWorkersModel.objects.get_queryset().filter(user_accept=sign_user)
     list_departments = []
     for dep in queryset:
         list_departments.append(dep.dep_accept_id)

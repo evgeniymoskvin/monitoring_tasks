@@ -1,0 +1,63 @@
+{#{{ form }}#}
+<form id="formChange" method="post" action="{% url 'ajax_save_change_contract_form' %}"
+      data-contracts-url="{% url 'ajax_load_contracts' %}"
+      data-stages-url="{% url 'ajax_load_stages' %}">
+    {% csrf_token %}
+    <input id="obj_id" name="obj_id" hidden value="{{ obj_id }}">
+    <div class="modal-body">
+                <span class="text-3"
+                      style="display: inline-block; text-transform: uppercase; margin-top: 10px">Объект:</span>
+        {{ form.change_task_object }}
+        <span class="text-3"
+              style="display: inline-block; text-transform: uppercase; margin-top: 10px">Номер договора:</span>
+        {{ form.change_task_contract }}
+        <span class="text-3"
+              style="display: inline-block; text-transform: uppercase; margin-top: 10px">Этап:</span>
+        {{ form.change_task_stage }}
+    </div>
+
+    <div class="modal-footer">
+        <button type="button" class="button-cancel-rusatom" data-bs-dismiss="modal">Отмена</button>
+        <input type="submit" class="button-primary-rusatom" value="Сохранить">
+    </div>
+</form>
+<script>
+    /* JS для фильтрации списка контрактов */
+    $("#id_change_task_object").change(function () {
+        console.log('id_task_object')
+        var url = $("#formChange").attr("data-contracts-url");
+        var objectId = $(this).val();  // получаем object ID из HTML input
+
+        $.ajax({                       // формируем AJAX запрос
+            url: url,                    // подгружаем URL адрес для запроса
+            data: {
+                'object': objectId       // добавляем objectID в query параметры GET запроса
+            },
+            success: function (data) {   // `data` результат выполнения  функции `load_contract`
+                $("#id_change_task_contract").prop('disabled', false);
+                $("#id_change_task_contract").html(data);  // помещаем результат в выпадающее меню
+            }
+        });
+
+    });
+    /*!JS для фильтрации списка этапов*/
+    $("#id_change_task_contract").change(function () {
+        var url = $("#formChange").attr("data-stages-url");
+        var conractId = $(this).val();
+        console.log(conractId)
+
+        $.ajax({
+            url: url,
+            data: {
+                'contract': conractId
+            },
+            success: function (data) {
+                $("#id_change_task_stage").prop('disabled', false);
+                $("#id_change_task_stage").html(data);
+            }
+        });
+
+    });
+
+
+</script>
